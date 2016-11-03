@@ -100,10 +100,10 @@ public class SensorAdafruitRGB extends LinearOpMode {
         boolean bCurrState = false;
 
         // bLedOn represents the state of the LED.
-        boolean bLedOn = true;
+        boolean bLedOn = false;
 
         // get a reference to our ColorSensor object.
-        sensorRGB = new Adafruit_ColorSensor(hardwareMap, "color");
+        sensorRGB = new Adafruit_ColorSensor(hardwareMap, "BColor");
 
         sensorRGB.setLed(bLedOn);
 
