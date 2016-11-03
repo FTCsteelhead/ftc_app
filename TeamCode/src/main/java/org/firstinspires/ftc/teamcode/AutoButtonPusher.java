@@ -277,32 +277,6 @@ public class AutoButtonPusher extends LinearOpMode {
             robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             robot.robotBackward();
-            /*yawPIDController.setSetpoint(-90.0);
-
-            rotateComplete = false;
-
-            while ( opModeIsActive() && !rotateComplete && !Thread.currentThread().isInterrupted()) {
-                if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
-                    if (PIDResult.isOnTarget()) {
-                        robot.rightMotor_1.setPower(0);
-                        robot.rightMotor_2.setPower(0);
-                        robot.leftMotor_1.setPower(0);
-                        robot.leftMotor_2.setPower(0);
-                        telemetry.addData("PID OUT:", df.format(0.00));
-                        rotateComplete = true;
-                    } else {
-                        double output = PIDResult.getOutput();
-                        robot.rightMotor_1.setPower(output);
-                        robot.rightMotor_2.setPower(output);
-                        robot.leftMotor_1.setPower(-output);
-                        robot.leftMotor_2.setPower(-output);
-                        telemetry.addData("PID OUT:", df.format(output) + " , " + df.format(-output));
-                    }
-
-                } else {
-                    Log.w("navx", "YAW PID TIMEOUT");
-                }
-            }*/
 
             pidController.setPID(0.018, 0.05, 0.00203);
             pidController.setTolerance(0);
@@ -416,17 +390,18 @@ public class AutoButtonPusher extends LinearOpMode {
             robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
-//moves forward do that it will move past the first line
-           robot.leftMotor_2.setTargetPosition(-500);
-            robot.rightMotor_2.setTargetPosition(-500);
+            //moves forward do that it will move past the first line
+            robot.leftMotor_2.setTargetPosition(10);
+            robot.rightMotor_2.setTargetPosition(10);
 
-            robot.leftMotor_2.setPower(.1);
-            robot.rightMotor_2.setPower(.1);
-            robot.leftMotor_1.setPower(.1);
-            robot.rightMotor_1.setPower(.1);
+            robot.leftMotor_2.setPower(.2);
+            robot.rightMotor_2.setPower(.2);
+            robot.leftMotor_1.setPower(.2);
+            robot.rightMotor_1.setPower(.2);
 
             while (opModeIsActive() && robot.leftMotor_2.isBusy() && robot.rightMotor_2.isBusy()) {
-                telemetry.addData("DRIVING: ", "Moving %d encoder ticks", robot.leftMotor_2.getCurrentPosition());
+                telemetry.addData("ENC: left ", robot.leftMotor_2.getCurrentPosition());
+                telemetry.addData("ENC: Right ", robot.rightMotor_2.getCurrentPosition());
                 telemetry.update();
             }
 
@@ -439,38 +414,7 @@ public class AutoButtonPusher extends LinearOpMode {
             robot.leftMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            //drive until second line is found
-            driveSpeed = .25;
-            yawPIDController.setSetpoint(0.0);
-            while (colorSensor.alpha() < 8 && opModeIsActive() && !Thread.currentThread().isInterrupted()) {
-                if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
-                    if (PIDResult.isOnTarget()) {
-                        robot.rightMotor_1.setPower(driveSpeed);
-                        robot.rightMotor_2.setPower(driveSpeed);
-                        robot.leftMotor_1.setPower(driveSpeed);
-                        robot.leftMotor_2.setPower(driveSpeed);
-                        telemetry.addData("PID OUT:", df.format(0.00));
-                    } else {
-                        double output = PIDResult.getOutput();
-                        robot.leftMotor_1.setPower(limit(driveSpeed + output));
-                        robot.leftMotor_2.setPower(limit(driveSpeed + output));
-                        robot.rightMotor_1.setPower(limit(driveSpeed - output));
-                        robot.rightMotor_2.setPower(limit(driveSpeed - output));
-                        telemetry.addData("MOTOR OUT:", df.format(limit(driveSpeed + output))
-                                + " , " + df.format(limit(driveSpeed - output)));
-                    }
-
-                } else {
-                    Log.w("navx", "YAW PID TIMEOUT");
-                }
-            }
-
-
-            //turn 90 degrees to line
-            yawPIDController.setSetpoint(-90.0);
-
             rotateComplete = false;
-
             while ( opModeIsActive() && !rotateComplete && !Thread.currentThread().isInterrupted()) {
                 if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
                     if (PIDResult.isOnTarget()) {
@@ -494,6 +438,70 @@ public class AutoButtonPusher extends LinearOpMode {
                 }
             }
 
+            //drive until second line is found
+            driveSpeed = .25;
+            yawPIDController.setSetpoint(0.0);
+            sleep(500);
+            while (colorSensor.alpha() < 8 && opModeIsActive() && !Thread.currentThread().isInterrupted()) {
+                if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
+                    if (PIDResult.isOnTarget()) {
+                        robot.rightMotor_1.setPower(driveSpeed);
+                        robot.rightMotor_2.setPower(driveSpeed);
+                        robot.leftMotor_1.setPower(driveSpeed);
+                        robot.leftMotor_2.setPower(driveSpeed);
+                        telemetry.addData("PID OUT:", df.format(0.00));
+                    } else {
+                        double output = PIDResult.getOutput();
+                        robot.leftMotor_1.setPower(limit(driveSpeed + output));
+                        robot.leftMotor_2.setPower(limit(driveSpeed + output));
+                        robot.rightMotor_1.setPower(limit(driveSpeed - output));
+                        robot.rightMotor_2.setPower(limit(driveSpeed - output));
+                        telemetry.addData("MOTOR OUT:", df.format(limit(driveSpeed + output))
+                                + " , " + df.format(limit(driveSpeed - output)));
+                    }
+
+                } else {
+                    Log.w("navx", "YAW PID TIMEOUT");
+                }
+                telemetry.addData("Color:", colorSensor.alpha());
+                telemetry.addData("Rotation:", navxDevice.getYaw());
+                telemetry.update();
+            }
+
+            robot.robotRightPower(0.0);
+            robot.robotLeftPower(0.0);
+
+            robot.robotForward();
+
+            robot.leftMotor_2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightMotor_2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftMotor_2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            robot.leftMotor_2.setTargetPosition(80);
+            robot.rightMotor_2.setTargetPosition(80);
+
+            robot.leftMotor_1.setPower(.25);
+            robot.rightMotor_1.setPower(.25);
+            robot.leftMotor_2.setPower(.25);
+            robot.rightMotor_2.setPower(.25);
+
+
+            while (opModeIsActive() && robot.leftMotor_2.isBusy() && robot.rightMotor_2.isBusy()) {
+                telemetry.addData("ENC left : ", robot.leftMotor_2.getCurrentPosition());
+                telemetry.addData("ENC right : ", robot.rightMotor_2.getCurrentPosition());
+                telemetry.update();
+            }
+            robot.leftMotor_1.setPower(0);
+            robot.rightMotor_1.setPower(0);
+            robot.leftMotor_2.setPower(0);
+            robot.rightMotor_2.setPower(0);
+
+            robot.leftMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            robot.robotBackward();
+
             //follow line until beacon
             pidController = new ColorPIDController(colorSensor, 3, 22);
             pidController.setPID(0.018, 0.05, 0.00203);
@@ -510,6 +518,9 @@ public class AutoButtonPusher extends LinearOpMode {
                 telemetry.addData("Output: ", pidController.getOutput());
                 telemetry.update();
             }
+            robot.robotLeftPower(0);
+            robot.robotRightPower(0);
+            pidController.disable();
 
             runtime.reset();
             while (opModeIsActive() && runtime.milliseconds() < 500) {
