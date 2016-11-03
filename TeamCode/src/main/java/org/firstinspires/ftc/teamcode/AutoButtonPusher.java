@@ -332,7 +332,7 @@ public class AutoButtonPusher extends LinearOpMode {
           //  robot.pusherLeft.setPosition(.5);
 
            runtime.reset();
-            while (opModeIsActive() && runtime.milliseconds() < 1000) {
+            while (opModeIsActive() && runtime.milliseconds() > 500) {
             telemetry.addData("beacon color", beaconColor.blueColor());
                 telemetry.update();
             }
@@ -344,7 +344,7 @@ public class AutoButtonPusher extends LinearOpMode {
                robot.pusherLeft.setPosition(0.8);
 
             runtime.reset();
-            while (opModeIsActive() && runtime.milliseconds() < 2000);
+            while (opModeIsActive() && runtime.milliseconds() < 1000);
 
             robot.pusherRight.setPosition(0.8);
             robot.pusherLeft.setPosition(0.2);
@@ -356,11 +356,15 @@ public class AutoButtonPusher extends LinearOpMode {
             robot.leftMotor_2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            robot.leftMotor_2.setTargetPosition(1500);
-            robot.rightMotor_2.setTargetPosition(1500);
+
+
+            robot.leftMotor_2.setTargetPosition(700);
+            robot.rightMotor_2.setTargetPosition(700);
 
             robot.leftMotor_2.setPower(.25);
             robot.rightMotor_2.setPower(.25);
+            robot.leftMotor_1.setPower(.25);
+            robot.rightMotor_1.setPower(.25);
 
             while (opModeIsActive() && robot.leftMotor_2.isBusy() && robot.rightMotor_2.isBusy()) {
                 telemetry.addData("DRIVING: ", "Moving %d encoder ticks", robot.leftMotor_2.getCurrentPosition());
@@ -368,6 +372,8 @@ public class AutoButtonPusher extends LinearOpMode {
             }
             robot.leftMotor_2.setPower(0);
             robot.rightMotor_2.setPower(0);
+            robot.leftMotor_1.setPower(0);
+            robot.rightMotor_1.setPower(0);
 
             robot.leftMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -402,6 +408,39 @@ public class AutoButtonPusher extends LinearOpMode {
                 }
             }
 
+            robot.robotBackward();
+
+            robot.leftMotor_2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightMotor_2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftMotor_2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+//moves forward do that it will move past the first line
+           robot.leftMotor_2.setTargetPosition(-500);
+            robot.rightMotor_2.setTargetPosition(-500);
+
+            robot.leftMotor_2.setPower(.1);
+            robot.rightMotor_2.setPower(.1);
+            robot.leftMotor_1.setPower(.1);
+            robot.rightMotor_1.setPower(.1);
+
+            while (opModeIsActive() && robot.leftMotor_2.isBusy() && robot.rightMotor_2.isBusy()) {
+                telemetry.addData("DRIVING: ", "Moving %d encoder ticks", robot.leftMotor_2.getCurrentPosition());
+                telemetry.update();
+            }
+
+            robot.leftMotor_2.setPower(0);
+            robot.rightMotor_2.setPower(0);
+            robot.leftMotor_1.setPower(0);
+            robot.rightMotor_1.setPower(0);
+
+
+            robot.leftMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            //drive until second line is found
+            driveSpeed = .25;
             yawPIDController.setSetpoint(0.0);
             while (colorSensor.alpha() < 8 && opModeIsActive() && !Thread.currentThread().isInterrupted()) {
                 if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
@@ -426,6 +465,36 @@ public class AutoButtonPusher extends LinearOpMode {
                 }
             }
 
+
+            //turn 90 degrees to line
+            yawPIDController.setSetpoint(-90.0);
+
+            rotateComplete = false;
+
+            while ( opModeIsActive() && !rotateComplete && !Thread.currentThread().isInterrupted()) {
+                if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
+                    if (PIDResult.isOnTarget()) {
+                        robot.rightMotor_1.setPower(0);
+                        robot.rightMotor_2.setPower(0);
+                        robot.leftMotor_1.setPower(0);
+                        robot.leftMotor_2.setPower(0);
+                        telemetry.addData("PID OUT:", df.format(0.00));
+                        rotateComplete = true;
+                    } else {
+                        double output = PIDResult.getOutput();
+                        robot.rightMotor_1.setPower(output);
+                        robot.rightMotor_2.setPower(output);
+                        robot.leftMotor_1.setPower(-output);
+                        robot.leftMotor_2.setPower(-output);
+                        telemetry.addData("PID OUT:", df.format(output) + " , " + df.format(-output));
+                    }
+
+                } else {
+                    Log.w("navx", "YAW PID TIMEOUT");
+                }
+            }
+
+            //follow line until beacon
             pidController = new ColorPIDController(colorSensor, 3, 22);
             pidController.setPID(0.018, 0.05, 0.00203);
             pidController.setTolerance(0);
@@ -441,6 +510,26 @@ public class AutoButtonPusher extends LinearOpMode {
                 telemetry.addData("Output: ", pidController.getOutput());
                 telemetry.update();
             }
+
+            runtime.reset();
+            while (opModeIsActive() && runtime.milliseconds() < 500) {
+                telemetry.addData("beacon color", beaconColor.blueColor());
+                telemetry.update();
+            }
+
+
+            if(beaconColor.blueColor() >  60)
+                robot.pusherRight.setPosition(0.2);
+            else
+                robot.pusherLeft.setPosition(0.8);
+
+            runtime.reset();
+            while (opModeIsActive() && runtime.milliseconds() < 1000);
+
+            robot.pusherRight.setPosition(0.8);
+            robot.pusherLeft.setPosition(0.2);
+            robot.robotLeftPower(0);
+            robot.robotRightPower(0);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

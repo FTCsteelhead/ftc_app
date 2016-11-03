@@ -50,7 +50,7 @@ import java.text.DecimalFormat;
  * Acceleration data.
  */
 @TeleOp(name = "Sensor: navX Motion-processed Data", group = "Sensor")
-//@Disabled
+@Disabled
 public class SensorNavXProcessedOp extends OpMode {
 
   /* This is the port on the Core Device Interace Module */

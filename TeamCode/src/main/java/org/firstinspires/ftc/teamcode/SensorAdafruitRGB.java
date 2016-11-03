@@ -73,6 +73,7 @@ import org.steelhead.ftc.Adafruit_ColorSensor;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name = "Sensor: AdafruitRGB", group = "Sensor")
+@Disabled
 public class SensorAdafruitRGB extends LinearOpMode {
 
     Adafruit_ColorSensor sensorRGB;

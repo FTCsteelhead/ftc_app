@@ -52,7 +52,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Steelhead TeleOp: Main TeleOp", group="Steelhead TeleOp")
+@TeleOp(name="Steelhead TeleOp", group="Steelhead")
 
 public class SteelheadMainTeleOp extends OpMode{
 
@@ -68,6 +68,7 @@ public class SteelheadMainTeleOp extends OpMode{
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        robot.robotForward();
 
         telemetry.addData("Status", "WAITING");    //
         updateTelemetry(telemetry);
@@ -97,31 +98,36 @@ public class SteelheadMainTeleOp extends OpMode{
 
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-        left = gamepad1.left_stick_y;
-        right = (gamepad1.right_stick_y);
+        left = -gamepad1.left_stick_y;
+        right = -(gamepad1.right_stick_y);
         robot.robotLeftPower(left);
         robot.robotRightPower(right);
 
         if(gamepad1.a) {
-            telemetry.addData("Shooter", "FIRE");
-            //robot.shooterMotor.setPower(1);
+            robot.pusherRight.setPosition(robot.pusherRight.getPosition() + .05 );
         } else {
             //robot.shooterMotor.setPower(0);
         }
 
         if(gamepad1.b) {
-            telemetry.addData("Arm", "Down");
-            //robot.armMotor.setPower(0.5);
+            robot.pusherRight.setPosition(robot.pusherRight.getPosition() - .05 );
         } else {
             //robot.armMotor.setPower(0);
         }
 
+        if(gamepad1.x) {
+            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() + .05 );
+        } else {
+            //robot.shooterMotor.setPower(0);
+        }
+
         if(gamepad1.y) {
-            telemetry.addData("Shooter", "Up");
-            //robot.armMotor.setPower(-0.5);
+            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - .05 );
         } else {
             //robot.armMotor.setPower(0);
         }
+
+
 
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);

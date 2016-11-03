@@ -55,7 +55,7 @@ import java.text.DecimalFormat;
  * for the navX-Model sensor should be used.
  */
 @TeleOp(name = "Concept: navX Rotate to Angle PID - Loop", group = "Concept")
-//@Disabled
+@Disabled
 public class RotateToDegree extends OpMode {
 
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
