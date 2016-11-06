@@ -35,7 +35,6 @@ import android.util.Log;
 
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -53,9 +52,9 @@ import java.text.DecimalFormat;
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Button Pusher", group = "Button")
+@Autonomous(name = "Button Pusher - Blue", group = "Button")
 //@Disabled
-public class AutoButtonPusher extends LinearOpMode {
+public class AutoButtonPusherBlue extends LinearOpMode {
 
     private final int NAVX_DIM_I2C_PORT = 0;
     private AHRS navxDevice;
@@ -174,7 +173,7 @@ public class AutoButtonPusher extends LinearOpMode {
             yawPIDController.setOutputRange(MIN_OUTPUT_VAL, MAX_OUTPUT_VAL);
             yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, TOLERANCE_DEGREES);
             yawPIDController.setPID(YAW_PID_P, YAW_PID_I, YAW_PID_D);
-            yawPIDController.setSetpoint(-45.0);
+            yawPIDController.setSetpoint(45.0);
             yawPIDController.enable(true);
 
             navXPIDController.PIDResult PIDResult = new navXPIDController.PIDResult();
@@ -313,9 +312,9 @@ public class AutoButtonPusher extends LinearOpMode {
 
 
             if(beaconColor.blueColor() >  60)
-                robot.pusherRight.setPosition(0.2);
+                robot.pusherLeft.setPosition(0.8);
             else
-               robot.pusherLeft.setPosition(0.8);
+                robot.pusherRight.setPosition(0.2);
 
             runtime.reset();
             while (opModeIsActive() && runtime.milliseconds() < 1000);
@@ -332,8 +331,8 @@ public class AutoButtonPusher extends LinearOpMode {
 
 
 
-            robot.leftMotor_2.setTargetPosition(700);
-            robot.rightMotor_2.setTargetPosition(700);
+            robot.leftMotor_2.setTargetPosition(400);
+            robot.rightMotor_2.setTargetPosition(400);
 
             robot.leftMotor_2.setPower(.25);
             robot.rightMotor_2.setPower(.25);
@@ -530,9 +529,10 @@ public class AutoButtonPusher extends LinearOpMode {
 
 
             if(beaconColor.blueColor() >  60)
-                robot.pusherRight.setPosition(0.2);
-            else
                 robot.pusherLeft.setPosition(0.8);
+            else
+                robot.pusherRight.setPosition(0.2);
+
 
             runtime.reset();
             while (opModeIsActive() && runtime.milliseconds() < 1000);
