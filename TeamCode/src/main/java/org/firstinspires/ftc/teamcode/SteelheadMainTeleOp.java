@@ -100,34 +100,47 @@ public class SteelheadMainTeleOp extends OpMode{
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
         left = -gamepad1.left_stick_y;
         right = -(gamepad1.right_stick_y);
-        robot.robotLeftPower(left);
-        robot.robotRightPower(right);
+        robot.robotLeftPower(left/2);
+        robot.robotRightPower(right/2);
+
+        int num = 0;
 
         if(gamepad1.a) {
-            robot.pusherRight.setPosition(robot.pusherRight.getPosition() + .05 );
-        } else {
-            //robot.shooterMotor.setPower(0);
+            num++;
         }
 
-        if(gamepad1.b) {
-            robot.pusherRight.setPosition(robot.pusherRight.getPosition() - .05 );
-        } else {
-            //robot.armMotor.setPower(0);
+        if(gamepad1.b ) {
+            num--;
         }
 
-        if(gamepad1.x) {
-            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() + .05 );
-        } else {
-            //robot.shooterMotor.setPower(0);
+        while(num % 2 == 1)
+        {
+            robot.robotBackward();
         }
 
-        if(gamepad1.y) {
-            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - .05 );
-        } else {
-            //robot.armMotor.setPower(0);
+        while(num % 2 == 0)
+        {
+            robot.robotForward();
         }
 
 
+
+        if(gamepad1.right_bumper) {
+            left = -gamepad1.left_stick_y;
+            right = -(gamepad1.right_stick_y);
+            robot.robotLeftPower(left);
+            robot.robotRightPower(right);
+        }
+
+        if(gamepad2.right_bumper)
+            robot.pusherRight.setPosition(robot.pusherRight.getPosition() + .01 );
+        if(gamepad2.right_trigger > 0)
+            robot.pusherRight.setPosition(robot.pusherRight.getPosition() - .01 );
+
+        if(gamepad2.left_bumper)
+            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() + .01 );
+        if(gamepad2.left_trigger > 0)
+            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - .01 );
 
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);

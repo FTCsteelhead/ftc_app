@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class AutoRobotFunctions {
 
+
     private double navKP;
     private double navKI;
     private double navKD;
@@ -75,8 +76,10 @@ public class AutoRobotFunctions {
                 } else {
                     double output = yawPIDResult.getOutput();
                     leftMotor.setPower(output);
-                    //TODO: set the correct motor side to negative so it turns the correct direction
                     rightMotor.setPower(output);
+
+                    //TODO: set the correct motor side to negative so it turns the correct direction
+
                 }
             }
         }
@@ -100,8 +103,10 @@ public class AutoRobotFunctions {
 
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
 
+
+
         //TODO: add a someway to distinguish different stop conditions. like encoders and color
-        while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
+        while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted() ) {
             if (stopConditions == StopConditions.COLOR) {
                 if (colorSensor.alpha() > stopVal) {
                     leftMotor.setPower(0);
@@ -165,6 +170,8 @@ public class AutoRobotFunctions {
         this.navKI = Ki;
         this.navKD = Kd;
     }
+
+
     private double limit(double a, double minOutputVal, double maxOutputVal) {
         return Math.min(Math.max(a, minOutputVal), maxOutputVal);
     }
