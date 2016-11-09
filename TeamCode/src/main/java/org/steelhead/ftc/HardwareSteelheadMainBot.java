@@ -100,4 +100,19 @@ public class HardwareSteelheadMainBot {
         leftMotor_1.setZeroPowerBehavior(behavior);
         leftMotor_2.setZeroPowerBehavior(behavior);
     }
+
+    public void enableEncoders(boolean enabled) {
+        if (enabled) {
+            leftMotor_2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightMotor_2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            leftMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+    }
+
+    public void stopAndClearEncoders() {
+        leftMotor_2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor_2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
 }

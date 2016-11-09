@@ -34,6 +34,9 @@ package org.firstinspires.ftc.teamcode;
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -55,7 +58,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: MR Color", group = "Sensor")
-@Disabled
+//@Disabled
 public class MRColor extends LinearOpMode {
 
     ColorSensor colorSensor;    // Hardware Device Object
@@ -73,6 +76,7 @@ public class MRColor extends LinearOpMode {
         // get a reference to the RelativeLayout so we can change the background
         // color of the Robot Controller app to match the hue detected by the RGB sensor.
         final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(R.id.RelativeLayout);
+        final RelativeLayout rlo = (RelativeLayout) ((Activity) hardwareMap.appContext).findViewById(R.id.RelativeLayout);
 
         // bPrevState and bCurrState represent the previous and current state of the button.
         boolean bPrevState = false;
@@ -82,7 +86,7 @@ public class MRColor extends LinearOpMode {
         boolean bLedOn = true;
 
         // get a reference to our ColorSensor object.
-        colorSensor = hardwareMap.colorSensor.get("color");
+        //colorSensor = hardwareMap.colorSensor.get("color");
 
         // Set the LED in the beginning
         colorSensor.enableLed(bLedOn);
@@ -126,7 +130,9 @@ public class MRColor extends LinearOpMode {
             // to the HSVToColor method.
             relativeLayout.post(new Runnable() {
                 public void run() {
+
                     relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
+
                 }
             });
 

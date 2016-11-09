@@ -18,6 +18,11 @@ public class AutoRobotFunctions {
     private double navKI;
     private double navKD;
 
+    private double colorKP;
+    private double colorKI;
+    private double colorKD;
+
+    private HardwareSteelheadMainBot robot;
     private DcMotor leftMotor;
     private DcMotor rightMotor;
 
@@ -31,11 +36,13 @@ public class AutoRobotFunctions {
     public enum StopConditions {COLOR, ENCODER, BUTTON}
 
     AutoRobotFunctions(byte navXDevicePortNumber, HardwareMap hardwareMap, DcMotor leftMotor,
-                       DcMotor rightMotor, LinearOpMode currentOpMode) {
+                       DcMotor rightMotor, HardwareSteelheadMainBot robot, LinearOpMode currentOpMode) {
+        //TODO: get left motor and right motor from hardware class not variables
         boolean calibrationComplete = false;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.hardwareMap = hardwareMap;
+        this.robot = robot;
         this.currentOpMode = currentOpMode;
 
         navXDevice = AHRS.getInstance(this.hardwareMap.deviceInterfaceModule.get("dim"),
@@ -88,7 +95,12 @@ public class AutoRobotFunctions {
                                   double motorSpeedMul, double minPower,
                                          StopConditions stopConditions, int stopVal) {
         double workingForwardSpeed = forwardDriveSpeed;
-        //TODO: make a function that clears the encoders on both motors
+
+        if (motorSpeedMul != -1 || stopConditions == StopConditions.ENCODER) {
+            robot.enableEncoders(true);
+            robot.stopAndClearEncoders();
+        }
+
         navXPIDController yawPIDController = new navXPIDController(navXDevice,
                 navXPIDController.navXTimestampedDataSource.YAW);
 
@@ -100,8 +112,8 @@ public class AutoRobotFunctions {
 
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
 
-        //TODO: add a someway to distinguish different stop conditions. like encoders and color
         while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
+            //Stop at either an encoder value or light value
             if (stopConditions == StopConditions.COLOR) {
                 if (colorSensor.alpha() > stopVal) {
                     leftMotor.setPower(0);
@@ -144,19 +156,27 @@ public class AutoRobotFunctions {
                 }
             }
         }
-        //TODO: clean up after ourselves
+        //clean up after ourselves after driving straight
+        robot.stopAndClearEncoders();
+        robot.enableEncoders(false);
+        yawPIDController.close();
     }
 
-    public void PIDLineFollow(int threshHoldLow, int threshHoldHigh) {
+    public void PIDLineFollow(int threshHoldLow, int threshHoldHigh, double driveSpeed,
+                              double tolerance, double maxMotorInput, double minMotorInput) {
         ColorPIDController pidController = new ColorPIDController(colorSensor, threshHoldLow, threshHoldHigh);
-        //TODO: add color pid controller support values and enable it
+        pidController.setPID(colorKP, colorKI, colorKD);
+        pidController.setTolerance(tolerance);
 
+        pidController.enable();
         while (currentOpMode.opModeIsActive() /*TODO: add push button support for stops*/) {
             double output = pidController.getOutput();
-            //TODO: set power correctly shouldn't be zero
-            leftMotor.setPower(0);
-            rightMotor.setPower(0);
-        }
+            leftMotor.setPower(limit((driveSpeed - output), minMotorInput, maxMotorInput));
+            rightMotor.setPower(limit((driveSpeed + output), minMotorInput, maxMotorInput));
+    }
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+        pidController.disable();
         //TODO: clean up after ourselves
     }
 
@@ -164,6 +184,11 @@ public class AutoRobotFunctions {
         this.navKP = Kp;
         this.navKI = Ki;
         this.navKD = Kd;
+    }
+    public void setColorPID(double Kp, double Ki, double Kd) {
+        this.colorKP = Kp;
+        this.colorKI = Ki;
+        this.colorKD= Kd;
     }
     private double limit(double a, double minOutputVal, double maxOutputVal) {
         return Math.min(Math.max(a, minOutputVal), maxOutputVal);
