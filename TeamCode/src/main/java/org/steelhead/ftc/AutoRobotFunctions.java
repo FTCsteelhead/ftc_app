@@ -86,7 +86,7 @@ public class AutoRobotFunctions {
                     double output = yawPIDResult.getOutput();
                     leftMotor.setPower(output);
                     //TODO: set the correct motor side to negative so it turns the correct direction
-                    rightMotor.setPower(output);
+                    rightMotor.setPower(-output);
                 }
             }
         }
@@ -94,12 +94,13 @@ public class AutoRobotFunctions {
 
     }
 
-    public void navXDriveStraightToColor(double degree, double tolerance,
+    public void navXDriveStraight(double degree, double tolerance,
                                   double minMotorOutput, double maxMotorOutput,
                                   double forwardDriveSpeed, int encoderDistance,
                                   double motorSpeedMul, double minPower,
                                          StopConditions stopConditions, int stopVal) {
-        double workingForwardSpeed = forwardDriveSpeed;
+        double rightWorkingForwardSpeed = forwardDriveSpeed;
+        double leftWorkingForwardSpeed = forwardDriveSpeed;
         //enable and clear the encoders
         robot.enableEncoders(true);
         robot.stopAndClearEncoders();
@@ -126,6 +127,11 @@ public class AutoRobotFunctions {
                     rightMotor.setPower(0);
                     break;
                 }
+                if (rightMotor.getCurrentPosition() >= stopVal) {
+                    leftMotor.setPower(0);
+                    rightMotor.setPower(0);
+                    break;
+                }
             } else if (stopConditions == StopConditions.BUTTON && touchSensor.isPressed()) {
                 leftMotor.setPower(0);
                 rightMotor.setPower(0);
@@ -133,13 +139,13 @@ public class AutoRobotFunctions {
             }
             if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
                 if (yawPIDResult.isOnTarget()) {
-                    leftMotor.setPower(workingForwardSpeed);
-                    rightMotor.setPower(workingForwardSpeed);
+                    leftMotor.setPower(leftWorkingForwardSpeed);
+                    rightMotor.setPower(rightWorkingForwardSpeed);
                 } else {
                     double output = yawPIDResult.getOutput();
-                    leftMotor.setPower(workingForwardSpeed + output);
+                    leftMotor.setPower(leftWorkingForwardSpeed - output);
                     //TODO: set the correct motor side to negative so it turns the correct direction
-                    rightMotor.setPower(workingForwardSpeed + output);
+                    rightMotor.setPower(rightWorkingForwardSpeed + output);
                 }
             }
 
@@ -148,13 +154,28 @@ public class AutoRobotFunctions {
             This is basically a P controller.
             If the multiplier is equal to -1 turn off the speed reduction
             */
+
+
             //TODO: Play with adding left and right controllers separate might not work good tho
+
+
             if (motorSpeedMul != -1) {
                 if (leftMotor.getCurrentPosition() >= (encoderDistance - 500)) {
                     int error = (encoderDistance - leftMotor.getCurrentPosition()) - 500;
-                    workingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
-                    if (workingForwardSpeed < minPower) {
-                        workingForwardSpeed = minPower;
+                    leftWorkingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
+                    if (leftWorkingForwardSpeed < minPower) {
+                        leftWorkingForwardSpeed = minPower;
+                    }
+
+                }
+            }
+
+            if (motorSpeedMul != -1) {
+                if (rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
+                    int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
+                    rightWorkingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
+                    if (rightWorkingForwardSpeed < minPower) {
+                        rightWorkingForwardSpeed = minPower;
                     }
 
                 }
@@ -182,6 +203,35 @@ public class AutoRobotFunctions {
             rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
         }
         pidController.disable();
+    }
+
+    public void runWithEncoders(int targetPosition, double leftMotorPower, double rightMotorPower)
+    {
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftMotor.setTargetPosition(targetPosition);
+        rightMotor.setTargetPosition(targetPosition);
+
+        leftMotor.setPower(leftMotorPower);
+        rightMotor.setPower(rightMotorPower);
+
+
+
+        while (currentOpMode.opModeIsActive() && leftMotor.isBusy() && rightMotor.isBusy()) {
+            currentOpMode.telemetry.addData("ENC left : ", leftMotor.getCurrentPosition());
+            currentOpMode.telemetry.addData("ENC right : ", rightMotor.getCurrentPosition());
+            currentOpMode.telemetry.update();
+        }
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
     }
 
     public void setNavXPID(double Kp, double Ki, double Kd) {
