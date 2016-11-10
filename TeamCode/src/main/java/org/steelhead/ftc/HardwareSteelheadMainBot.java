@@ -1,9 +1,11 @@
 package org.steelhead.ftc;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 /**
  * Created by Alec Matthews on 9/18/16.
@@ -18,15 +20,18 @@ public class HardwareSteelheadMainBot {
     public DcMotor rightMotor_2     = null;
     public Servo pusherRight        = null;
     public Servo pusherLeft         = null;
-    //public DcMotor armMotor         = null;
-    //public DcMotor shooterMotor     = null;
+    public ColorSensor colorSensor  = null;
+    public TouchSensor touchSensor  = null;
+
 
     private String leftMotorName_1  = "leftMotor1";
     private String leftMotorName_2  = "leftMotor2";
     private String rightMotorName_1 = "rightMotor1";
     private String rightMotorName_2 = "rightMotor2";
-    private String pusherRightName      = "pusherRight";
-    private String pusherLeftName       = "pusherLeft";
+    private String pusherRightName  = "pusherRight";
+    private String pusherLeftName   = "pusherLeft";
+    private String touchSensorName  = "touch";
+    private String colorSensorName  = "color";
 
     public void init(HardwareMap aHwMap) {
 
@@ -56,6 +61,16 @@ public class HardwareSteelheadMainBot {
 
         pusherRight.setPosition(0.8);
         pusherLeft.setPosition(0.2);
+
+        //initialize sensors
+        touchSensor = aHwMap.touchSensor.get(touchSensorName);
+
+        //nasty trick to get the color sensor to work
+        colorSensor = aHwMap.colorSensor.get(colorSensorName);
+        colorSensor.enableLed(true);
+        colorSensor.enableLed(false);
+        colorSensor.enableLed(true);
+        colorSensor.getManufacturer();
     }
 
     public void setLeftMotorName(String newName) {
