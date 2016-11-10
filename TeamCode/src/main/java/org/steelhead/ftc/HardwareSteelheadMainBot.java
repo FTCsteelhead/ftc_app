@@ -14,12 +14,13 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
  **/
 
 public class HardwareSteelheadMainBot {
-    public DcMotor leftMotor_1      = null;
-    public DcMotor rightMotor_1     = null;
-    public Servo pusherRight        = null;
-    public Servo pusherLeft         = null;
-    public ColorSensor colorSensor  = null;
-    public TouchSensor touchSensor  = null;
+    public DcMotor leftMotor_1              = null;
+    public DcMotor rightMotor_1             = null;
+    public Servo pusherRight                = null;
+    public Servo pusherLeft                 = null;
+    public ColorSensor colorSensor          = null;
+    public TouchSensor touchSensor          = null;
+    public Adafruit_ColorSensor beaconColor  = null;
 
 
     private String leftMotorName_1  = "leftMotor1";
@@ -28,6 +29,7 @@ public class HardwareSteelheadMainBot {
     private String pusherLeftName   = "pusherLeft";
     private String touchSensorName  = "touch";
     private String colorSensorName  = "color";
+    private String beaconColorName  = "BColor";
 
     public void init(HardwareMap aHwMap) {
 
@@ -63,6 +65,10 @@ public class HardwareSteelheadMainBot {
         colorSensor.enableLed(false);
         colorSensor.enableLed(true);
         colorSensor.getManufacturer();
+
+        //Adafruit Color sensor
+        beaconColor = new Adafruit_ColorSensor(aHwMap, beaconColorName);
+        beaconColor.setLed(false);
     }
 
     public void setLeftMotorName(String newName) {

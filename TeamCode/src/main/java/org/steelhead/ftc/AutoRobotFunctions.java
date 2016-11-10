@@ -30,12 +30,13 @@ public class AutoRobotFunctions {
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
     private AHRS navXDevice;
 
-    private HardwareMap hardwareMap;
     private LinearOpMode currentOpMode;
     private ColorSensor colorSensor;
+    private Adafruit_ColorSensor beaconColor;
     private TouchSensor touchSensor;
 
     public enum StopConditions {COLOR, ENCODER, BUTTON}
+    public enum Team {RED, BLUE}
 
     AutoRobotFunctions(byte navXDevicePortNumber, HardwareMap hardwareMap,
                        LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
@@ -43,12 +44,12 @@ public class AutoRobotFunctions {
         //TODO: change the motors when the hardware gets modified
         this.leftMotor = robot.leftMotor_1;
         this.rightMotor = robot.rightMotor_1;
-        this.hardwareMap = hardwareMap;
         this.currentOpMode = currentOpMode;
         this.touchSensor = robot.touchSensor;
         this.colorSensor = robot.colorSensor;
+        this.beaconColor = robot.beaconColor;
 
-        navXDevice = AHRS.getInstance(this.hardwareMap.deviceInterfaceModule.get("dim"),
+        navXDevice = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                 navXDevicePortNumber, AHRS.DeviceDataType.kProcessedData,
                 NAVX_DEVICE_UPDATE_RATE_HZ);
 
@@ -98,12 +99,12 @@ public class AutoRobotFunctions {
                                   double minMotorOutput, double maxMotorOutput,
                                   double forwardDriveSpeed, int encoderDistance,
                                   double motorSpeedMul, double minPower,
-                                         StopConditions stopConditions, int stopVal) {
-        double rightWorkingForwardSpeed = forwardDriveSpeed;
-        double leftWorkingForwardSpeed = forwardDriveSpeed;
+                                         StopConditions stopCondition, int stopVal) {
+        double workingForwardSpeed = forwardDriveSpeed;
         //enable and clear the encoders
         robot.enableEncoders(true);
         robot.stopAndClearEncoders();
+
         navXPIDController yawPIDController = new navXPIDController(navXDevice,
                 navXPIDController.navXTimestampedDataSource.YAW);
 
@@ -116,36 +117,30 @@ public class AutoRobotFunctions {
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
 
         while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
-            if (stopConditions == StopConditions.COLOR && colorSensor.alpha() > stopVal) {
+            if (stopCondition == StopConditions.COLOR && colorSensor.alpha() > stopVal) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
                     break;
-            } else if (stopConditions == StopConditions.ENCODER) {
-                //TODO: maybe stop each motor separately?? Probably wont work
-                if (leftMotor.getCurrentPosition() >= stopVal) {
-                    leftMotor.setPower(0);
-                    rightMotor.setPower(0);
-                    break;
-                }
+            } else if (stopCondition == StopConditions.ENCODER) {
                 if (rightMotor.getCurrentPosition() >= stopVal) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
                     break;
                 }
-            } else if (stopConditions == StopConditions.BUTTON && touchSensor.isPressed()) {
+            } else if (stopCondition == StopConditions.BUTTON && touchSensor.isPressed()) {
                 leftMotor.setPower(0);
                 rightMotor.setPower(0);
                 break;
             }
             if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
                 if (yawPIDResult.isOnTarget()) {
-                    leftMotor.setPower(leftWorkingForwardSpeed);
-                    rightMotor.setPower(rightWorkingForwardSpeed);
+                    leftMotor.setPower(workingForwardSpeed);
+                    rightMotor.setPower(workingForwardSpeed);
                 } else {
                     double output = yawPIDResult.getOutput();
-                    leftMotor.setPower(leftWorkingForwardSpeed - output);
+                    leftMotor.setPower(workingForwardSpeed - output);
                     //TODO: set the correct motor side to negative so it turns the correct direction
-                    rightMotor.setPower(rightWorkingForwardSpeed + output);
+                    rightMotor.setPower(workingForwardSpeed + output);
                 }
             }
 
@@ -155,27 +150,12 @@ public class AutoRobotFunctions {
             If the multiplier is equal to -1 turn off the speed reduction
             */
 
-
-            //TODO: Play with adding left and right controllers separate might not work good tho
-
-
-            if (motorSpeedMul != -1) {
-                if (leftMotor.getCurrentPosition() >= (encoderDistance - 500)) {
-                    int error = (encoderDistance - leftMotor.getCurrentPosition()) - 500;
-                    leftWorkingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
-                    if (leftWorkingForwardSpeed < minPower) {
-                        leftWorkingForwardSpeed = minPower;
-                    }
-
-                }
-            }
-
             if (motorSpeedMul != -1) {
                 if (rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
                     int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
-                    rightWorkingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
-                    if (rightWorkingForwardSpeed < minPower) {
-                        rightWorkingForwardSpeed = minPower;
+                    workingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
+                    if (workingForwardSpeed < minPower) {
+                        workingForwardSpeed = minPower;
                     }
 
                 }
@@ -186,8 +166,9 @@ public class AutoRobotFunctions {
         yawPIDController.close();
     }
 
-    public void PIDLineFollow(int threshHoldLow, int threshHoldHigh, double driveSpeed,
-                              double minOutputVal, double maxOutputVal, double tolerance, StopConditions stopConditions) {
+    public void PIDLineFollow(int threshHoldLow, int threshHoldHigh,
+                              double driveSpeed, double minOutputVal,
+                              double maxOutputVal, double tolerance, StopConditions stopConditions) {
         ColorPIDController pidController = new ColorPIDController(colorSensor, threshHoldLow, threshHoldHigh);
         pidController.setPID(colorKP, colorKI, colorKD);
         pidController.setTolerance(tolerance);
@@ -205,12 +186,9 @@ public class AutoRobotFunctions {
         pidController.disable();
     }
 
-    public void runWithEncoders(int targetPosition, double leftMotorPower, double rightMotorPower)
-    {
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void runWithEncoders(int targetPosition, double leftMotorPower, double rightMotorPower) {
+        robot.enableEncoders(true);
+        robot.stopAndClearEncoders();
 
         leftMotor.setTargetPosition(targetPosition);
         rightMotor.setTargetPosition(targetPosition);
@@ -218,19 +196,42 @@ public class AutoRobotFunctions {
         leftMotor.setPower(leftMotorPower);
         rightMotor.setPower(rightMotorPower);
 
-
-
         while (currentOpMode.opModeIsActive() && leftMotor.isBusy() && rightMotor.isBusy()) {
-            currentOpMode.telemetry.addData("ENC left : ", leftMotor.getCurrentPosition());
-            currentOpMode.telemetry.addData("ENC right : ", rightMotor.getCurrentPosition());
+            currentOpMode.telemetry.addData("ENC left: ", leftMotor.getCurrentPosition());
+            currentOpMode.telemetry.addData("ENC right: ", rightMotor.getCurrentPosition());
             currentOpMode.telemetry.update();
         }
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 
+        robot.enableEncoders(false);
+    }
 
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    public void pushButton(Team team) {
+
+        //TODO: fix color sensor by adding tha adafruit one
+        try {
+            Thread.sleep(500);
+            if (team == Team.RED) {
+                if (beaconColor.blueColor() > 60) {
+                    robot.pusherRight.setPosition(0.2);
+                } else {
+                    robot.pusherLeft.setPosition(0.8);
+                }
+            } else {
+                if (beaconColor.blueColor() > 60) {
+                    robot.pusherRight.setPosition(0.8);
+                } else {
+                    robot.pusherLeft.setPosition(0.2);
+                }
+            }
+
+            Thread.sleep(1000);
+            robot.pusherRight.setPosition(0.8);
+            robot.pusherLeft.setPosition(0.2);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
     }
 

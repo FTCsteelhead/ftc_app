@@ -66,6 +66,12 @@ public class AutoRed extends LinearOpMode {
 
     private final byte NAVX_UPDATE_RATE_HZ = 50;
     private final double TOLERANCE_DEGREES = 2.0;
+    private final double YAW_PID_P = 0.06;
+    private final double YAW_PID_I = 0.0012;
+    private final double YAW_PID_D = 0.85;
+
+    private double MAX_OUTPUT_VAL = 0.15;
+    private double MIN_OUTPUT_VAL = -0.15;
     
 
     private boolean calibrationComplete = false;
