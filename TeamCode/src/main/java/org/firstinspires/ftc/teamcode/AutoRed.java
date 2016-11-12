@@ -129,9 +129,9 @@ public class AutoRed extends LinearOpMode {
         //wait for start of the match
         waitForStart();
 
-        robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
      //   robot.leftMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
       //  robot.rightMotor_2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         while (!calibrationComplete) {
@@ -142,33 +142,33 @@ public class AutoRed extends LinearOpMode {
 
         robot.robotBackward();
 
-        robot.leftMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.rightMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        robot.leftMotor_1.setTargetPosition(500);
-        robot.rightMotor_1.setTargetPosition(500);
+        robot.leftMotor.setTargetPosition(500);
+        robot.rightMotor.setTargetPosition(500);
 
-        robot.leftMotor_1.setPower(.25);
-        robot.rightMotor_1.setPower(.25);
+        robot.leftMotor.setPower(.25);
+        robot.rightMotor.setPower(.25);
        // robot.leftMotor_2.setPower(.25);
        // robot.rightMotor_2.setPower(.25);
 
 
-        while (opModeIsActive() && robot.leftMotor_1.isBusy() && robot.rightMotor_1.isBusy()) {
-            telemetry.addData("DRIVING: ", "Moving %d encoder ticks", robot.leftMotor_1.getCurrentPosition());
+        while (opModeIsActive() && robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) {
+            telemetry.addData("DRIVING: ", "Moving %d encoder ticks", robot.leftMotor.getCurrentPosition());
             telemetry.update();
         }
-        robot.leftMotor_1.setPower(0);
-        robot.rightMotor_1.setPower(0);
+        robot.leftMotor.setPower(0);
+        robot.rightMotor.setPower(0);
        // robot.leftMotor_2.setPower(0);
      //   robot.rightMotor_2.setPower(0);
 
-        robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.rightMotor_1.setDirection(DcMotor.Direction.FORWARD);
+        robot.rightMotor.setDirection(DcMotor.Direction.FORWARD);
      //   robot.rightMotor_2.setDirection(DcMotorSimple.Direction.FORWARD);
 
         robot.robotSetZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -192,17 +192,17 @@ public class AutoRed extends LinearOpMode {
             while ( opModeIsActive() && !rotateComplete && !Thread.currentThread().isInterrupted()) {
                 if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
                     if (PIDResult.isOnTarget()) {
-                        robot.rightMotor_1.setPower(0);
+                        robot.rightMotor.setPower(0);
                       //  robot.rightMotor_2.setPower(0);
-                        robot.leftMotor_1.setPower(0);
+                        robot.leftMotor.setPower(0);
                       //  robot.leftMotor_2.setPower(0);
                         telemetry.addData("PID OUT:", df.format(0.00));
                         rotateComplete = true;
                     } else {
                         double output = PIDResult.getOutput();
-                        robot.rightMotor_1.setPower(output);
+                        robot.rightMotor.setPower(output);
                       //  robot.rightMotor_2.setPower(output);
-                        robot.leftMotor_1.setPower(-output);
+                        robot.leftMotor.setPower(-output);
                      //   robot.leftMotor_2.setPower(-output);
                         telemetry.addData("PID OUT:", df.format(output) + " , " + df.format(-output));
                     }
@@ -215,9 +215,9 @@ public class AutoRed extends LinearOpMode {
 
             robot.robotBackward();
 
-            robot.rightMotor_1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            robot.rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
           //  robot.rightMotor_2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            robot.leftMotor_1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            robot.leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
            // robot.leftMotor_2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
@@ -229,16 +229,16 @@ public class AutoRed extends LinearOpMode {
             while (colorSensor.alpha() < 8 && opModeIsActive() && !Thread.currentThread().isInterrupted()) {
                 if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
                     if (PIDResult.isOnTarget()) {
-                        robot.rightMotor_1.setPower(driveSpeed);
+                        robot.rightMotor.setPower(driveSpeed);
                         //robot.rightMotor_2.setPower(driveSpeed);
-                        robot.leftMotor_1.setPower(driveSpeed);
+                        robot.leftMotor.setPower(driveSpeed);
                       //  robot.leftMotor_2.setPower(driveSpeed);
                         telemetry.addData("PID OUT:", df.format(0.00));
                     } else {
                         double output = PIDResult.getOutput();
-                        robot.leftMotor_1.setPower(limit(driveSpeed + output));
+                        robot.leftMotor.setPower(limit(driveSpeed + output));
                       //  robot.leftMotor_2.setPower(limit(driveSpeed + output));
-                        robot.rightMotor_1.setPower(limit(driveSpeed - output));
+                        robot.rightMotor.setPower(limit(driveSpeed - output));
                       //  robot.rightMotor_2.setPower(limit(driveSpeed - output));
                         telemetry.addData("MOTOR OUT:", df.format(limit(driveSpeed + output))
                                 + " , " + df.format(limit(driveSpeed - output)));
@@ -256,32 +256,32 @@ public class AutoRed extends LinearOpMode {
 
             robot.robotForward();
 
-            robot.leftMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            robot.leftMotor_1.setTargetPosition(80);
-            robot.rightMotor_1.setTargetPosition(80);
+            robot.leftMotor.setTargetPosition(80);
+            robot.rightMotor.setTargetPosition(80);
 
-            robot.leftMotor_1.setPower(.25);
-            robot.rightMotor_1.setPower(.25);
+            robot.leftMotor.setPower(.25);
+            robot.rightMotor.setPower(.25);
            // robot.leftMotor_2.setPower(.25);
            // robot.rightMotor_2.setPower(.25);
 
 
-            while (opModeIsActive() && robot.leftMotor_1.isBusy() && robot.rightMotor_1.isBusy()) {
-                telemetry.addData("ENC left : ", robot.leftMotor_1.getCurrentPosition());
-                telemetry.addData("ENC right : ", robot.rightMotor_1.getCurrentPosition());
+            while (opModeIsActive() && robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) {
+                telemetry.addData("ENC left : ", robot.leftMotor.getCurrentPosition());
+                telemetry.addData("ENC right : ", robot.rightMotor.getCurrentPosition());
                 telemetry.update();
             }
-            robot.leftMotor_1.setPower(0);
-            robot.rightMotor_1.setPower(0);
+            robot.leftMotor.setPower(0);
+            robot.rightMotor.setPower(0);
          //   robot.leftMotor_2.setPower(0);
           //  robot.rightMotor_2.setPower(0);
 
-            robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             robot.robotBackward();
 
@@ -294,9 +294,9 @@ public class AutoRed extends LinearOpMode {
             sleep(500);
             while (opModeIsActive() && !touchSensor.isPressed()) {
                 double output = pidController.getOutput();
-                robot.leftMotor_1.setPower(limit(DRIVE_SPEED - output));
+                robot.leftMotor.setPower(limit(DRIVE_SPEED - output));
               //  robot.leftMotor_2.setPower(limit(DRIVE_SPEED - output));
-                robot.rightMotor_1.setPower(limit(DRIVE_SPEED + output));
+                robot.rightMotor.setPower(limit(DRIVE_SPEED + output));
               //  robot.rightMotor_2.setPower(limit(DRIVE_SPEED + output));
 
                 telemetry.addData("Output: ", pidController.getOutput());
@@ -332,32 +332,32 @@ public class AutoRed extends LinearOpMode {
 
             robot.robotForward();
 
-            robot.leftMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
 
-            robot.leftMotor_1.setTargetPosition(700);
-            robot.rightMotor_1.setTargetPosition(700);
+            robot.leftMotor.setTargetPosition(700);
+            robot.rightMotor.setTargetPosition(700);
 
           //  robot.leftMotor_2.setPower(.25);
          //   robot.rightMotor_2.setPower(.25);
-            robot.leftMotor_1.setPower(.25);
-            robot.rightMotor_1.setPower(.25);
+            robot.leftMotor.setPower(.25);
+            robot.rightMotor.setPower(.25);
 
-            while (opModeIsActive() && robot.leftMotor_1.isBusy() && robot.rightMotor_1.isBusy()) {
-                telemetry.addData("DRIVING: ", "Moving %d encoder ticks", robot.leftMotor_1.getCurrentPosition());
+            while (opModeIsActive() && robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) {
+                telemetry.addData("DRIVING: ", "Moving %d encoder ticks", robot.leftMotor.getCurrentPosition());
                 telemetry.update();
             }
          //   robot.leftMotor_2.setPower(0);
           //  robot.rightMotor_2.setPower(0);
-            robot.leftMotor_1.setPower(0);
-            robot.rightMotor_1.setPower(0);
+            robot.leftMotor.setPower(0);
+            robot.rightMotor.setPower(0);
 
-            robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             robot.robotBackward();
 
@@ -369,17 +369,17 @@ public class AutoRed extends LinearOpMode {
             while ( opModeIsActive() && !rotateComplete && !Thread.currentThread().isInterrupted()) {
                 if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
                     if (PIDResult.isOnTarget()) {
-                        robot.rightMotor_1.setPower(0);
+                        robot.rightMotor.setPower(0);
                      //   robot.rightMotor_2.setPower(0);
-                        robot.leftMotor_1.setPower(0);
+                        robot.leftMotor.setPower(0);
                      //   robot.leftMotor_2.setPower(0);
                         telemetry.addData("PID OUT:", df.format(0.00));
                         rotateComplete = true;
                     } else {
                         double output = PIDResult.getOutput();
-                        robot.rightMotor_1.setPower(output);
+                        robot.rightMotor.setPower(output);
                       //  robot.rightMotor_2.setPower(output);
-                        robot.leftMotor_1.setPower(-output);
+                        robot.leftMotor.setPower(-output);
                        // robot.leftMotor_2.setPower(-output);
                         telemetry.addData("PID OUT:", df.format(output) + " , " + df.format(-output));
                     }
@@ -391,51 +391,51 @@ public class AutoRed extends LinearOpMode {
 
             robot.robotBackward();
 
-            robot.leftMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
             //moves forward do that it will move past the first line
-            robot.leftMotor_1.setTargetPosition(10);
-            robot.rightMotor_1.setTargetPosition(10);
+            robot.leftMotor.setTargetPosition(10);
+            robot.rightMotor.setTargetPosition(10);
 
           //  robot.leftMotor_2.setPower(.2);
           //  robot.rightMotor_2.setPower(.2);
-            robot.leftMotor_1.setPower(.2);
-            robot.rightMotor_1.setPower(.2);
+            robot.leftMotor.setPower(.2);
+            robot.rightMotor.setPower(.2);
 
-            while (opModeIsActive() && robot.leftMotor_1.isBusy() && robot.rightMotor_1.isBusy()) {
-                telemetry.addData("ENC: left ", robot.leftMotor_1.getCurrentPosition());
-                telemetry.addData("ENC: Right ", robot.rightMotor_1.getCurrentPosition());
+            while (opModeIsActive() && robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) {
+                telemetry.addData("ENC: left ", robot.leftMotor.getCurrentPosition());
+                telemetry.addData("ENC: Right ", robot.rightMotor.getCurrentPosition());
                 telemetry.update();
             }
 
          //   robot.leftMotor_2.setPower(0);
           //  robot.rightMotor_2.setPower(0);
-            robot.leftMotor_1.setPower(0);
-            robot.rightMotor_1.setPower(0);
+            robot.leftMotor.setPower(0);
+            robot.rightMotor.setPower(0);
 
 
-            robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             rotateComplete = false;
             while ( opModeIsActive() && !rotateComplete && !Thread.currentThread().isInterrupted()) {
                 if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
                     if (PIDResult.isOnTarget()) {
-                        robot.rightMotor_1.setPower(0);
+                        robot.rightMotor.setPower(0);
                      //   robot.rightMotor_2.setPower(0);
-                        robot.leftMotor_1.setPower(0);
+                        robot.leftMotor.setPower(0);
                       //  robot.leftMotor_2.setPower(0);
                         telemetry.addData("PID OUT:", df.format(0.00));
                         rotateComplete = true;
                     } else {
                         double output = PIDResult.getOutput();
-                        robot.rightMotor_1.setPower(output);
+                        robot.rightMotor.setPower(output);
                      //   robot.rightMotor_2.setPower(output);
-                        robot.leftMotor_1.setPower(-output);
+                        robot.leftMotor.setPower(-output);
                      //   robot.leftMotor_2.setPower(-output);
                         telemetry.addData("PID OUT:", df.format(output) + " , " + df.format(-output));
                     }
@@ -452,16 +452,16 @@ public class AutoRed extends LinearOpMode {
             while (colorSensor.alpha() < 8 && opModeIsActive() && !Thread.currentThread().isInterrupted()) {
                 if (yawPIDController.waitForNewUpdate(PIDResult, DEVICE_TIMEOUT_MS)) {
                     if (PIDResult.isOnTarget()) {
-                        robot.rightMotor_1.setPower(driveSpeed);
+                        robot.rightMotor.setPower(driveSpeed);
                       //  robot.rightMotor_2.setPower(driveSpeed);
-                        robot.leftMotor_1.setPower(driveSpeed);
+                        robot.leftMotor.setPower(driveSpeed);
                       //  robot.leftMotor_2.setPower(driveSpeed);
                         telemetry.addData("PID OUT:", df.format(0.00));
                     } else {
                         double output = PIDResult.getOutput();
-                        robot.leftMotor_1.setPower(limit(driveSpeed + output));
+                        robot.leftMotor.setPower(limit(driveSpeed + output));
                       //  robot.leftMotor_2.setPower(limit(driveSpeed + output));
-                        robot.rightMotor_1.setPower(limit(driveSpeed - output));
+                        robot.rightMotor.setPower(limit(driveSpeed - output));
                       //  robot.rightMotor_2.setPower(limit(driveSpeed - output));
                         telemetry.addData("MOTOR OUT:", df.format(limit(driveSpeed + output))
                                 + " , " + df.format(limit(driveSpeed - output)));
@@ -480,32 +480,32 @@ public class AutoRed extends LinearOpMode {
 
             robot.robotForward();
 
-            robot.leftMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            robot.leftMotor_1.setTargetPosition(80);
-            robot.rightMotor_1.setTargetPosition(80);
+            robot.leftMotor.setTargetPosition(80);
+            robot.rightMotor.setTargetPosition(80);
 
-            robot.leftMotor_1.setPower(.25);
-            robot.rightMotor_1.setPower(.25);
+            robot.leftMotor.setPower(.25);
+            robot.rightMotor.setPower(.25);
          //  robot.leftMotor_2.setPower(.25);
           //  robot.rightMotor_2.setPower(.25);
 
 
-            while (opModeIsActive() && robot.leftMotor_1.isBusy() && robot.rightMotor_1.isBusy()) {
-                telemetry.addData("ENC left : ", robot.leftMotor_1.getCurrentPosition());
-                telemetry.addData("ENC right : ", robot.rightMotor_1.getCurrentPosition());
+            while (opModeIsActive() && robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) {
+                telemetry.addData("ENC left : ", robot.leftMotor.getCurrentPosition());
+                telemetry.addData("ENC right : ", robot.rightMotor.getCurrentPosition());
                 telemetry.update();
             }
-            robot.leftMotor_1.setPower(0);
-            robot.rightMotor_1.setPower(0);
+            robot.leftMotor.setPower(0);
+            robot.rightMotor.setPower(0);
            // robot.leftMotor_2.setPower(0);
            // robot.rightMotor_2.setPower(0);
 
-            robot.leftMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            robot.rightMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             robot.robotBackward();
 
@@ -517,9 +517,9 @@ public class AutoRed extends LinearOpMode {
             pidController.enable();
             while (opModeIsActive() && !touchSensor.isPressed()) {
                 double output = pidController.getOutput();
-                robot.leftMotor_1.setPower(limit(DRIVE_SPEED - output));
+                robot.leftMotor.setPower(limit(DRIVE_SPEED - output));
                // robot.leftMotor_2.setPower(limit(DRIVE_SPEED - output));
-                robot.rightMotor_1.setPower(limit(DRIVE_SPEED + output));
+                robot.rightMotor.setPower(limit(DRIVE_SPEED + output));
              //  robot.rightMotor_2.setPower(limit(DRIVE_SPEED + output));
 
                 telemetry.addData("Output: ", pidController.getOutput());

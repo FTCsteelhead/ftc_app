@@ -14,13 +14,13 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
  **/
 
 public class HardwareSteelheadMainBot {
-    public DcMotor leftMotor_1              = null;
-    public DcMotor rightMotor_1             = null;
+    public DcMotor leftMotor                = null;
+    public DcMotor rightMotor               = null;
     public Servo pusherRight                = null;
     public Servo pusherLeft                 = null;
     public ColorSensor colorSensor          = null;
     public TouchSensor touchSensor          = null;
-    public Adafruit_ColorSensor beaconColor  = null;
+    public Adafruit_ColorSensor beaconColor = null;
 
 
     private String leftMotorName_1  = "leftMotor1";
@@ -33,21 +33,21 @@ public class HardwareSteelheadMainBot {
 
     public void init(HardwareMap aHwMap) {
 
-        leftMotor_1 = aHwMap.dcMotor.get(leftMotorName_1);
+        leftMotor = aHwMap.dcMotor.get(leftMotorName_1);
 
-        rightMotor_1 = aHwMap.dcMotor.get(rightMotorName_1);
+        rightMotor = aHwMap.dcMotor.get(rightMotorName_1);
 
         //sets the robot direction to backward
         //TODO: check the directions once the electronics are set up
-        leftMotor_1.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMotor_1.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         robotLeftPower(0);
         robotRightPower(0);
 
-        leftMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         pusherRight = aHwMap.servo.get(pusherRightName);
@@ -82,40 +82,40 @@ public class HardwareSteelheadMainBot {
     }
 
     public void robotLeftPower(double power) {
-        leftMotor_1.setPower(power);
+        leftMotor.setPower(power);
     }
 
     public void robotRightPower(double power) {
-        rightMotor_1.setPower(power);
+        rightMotor.setPower(power);
     }
 
     public void robotForward() {
-        leftMotor_1.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMotor_1.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public void robotBackward() {
-        leftMotor_1.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMotor_1.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public void robotSetZeroPowerBehavior (DcMotor.ZeroPowerBehavior behavior) {
-        rightMotor_1.setZeroPowerBehavior(behavior);
-        leftMotor_1.setZeroPowerBehavior(behavior);
+        rightMotor.setZeroPowerBehavior(behavior);
+        leftMotor.setZeroPowerBehavior(behavior);
     }
 
     public void enableEncoders(boolean enabled) {
         if (enabled) {
-            leftMotor_1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightMotor_1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } else {
-            leftMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            rightMotor_1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
     }
 
     public void stopAndClearEncoders() {
-        leftMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor_1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

@@ -97,10 +97,8 @@ public class ConceptNavXDriveStraight extends OpMode {
                 AHRS.DeviceDataType.kProcessedData,
                 NAVX_DEVICE_UPDATE_RATE_HZ);
 
-        robot.leftMotor_1.setDirection(DcMotorSimple.Direction.REVERSE);
-        robot.leftMotor_2.setDirection(DcMotorSimple.Direction.FORWARD);
-        robot.rightMotor_1.setDirection(DcMotorSimple.Direction.REVERSE);
-        robot.rightMotor_2.setDirection(DcMotorSimple.Direction.REVERSE);
+        robot.leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        robot.rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         /* If possible, use encoders when driving, as it results in more */
         /* predictable drive system response.                           */
@@ -159,18 +157,14 @@ public class ConceptNavXDriveStraight extends OpMode {
 
             if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
                 if (yawPIDResult.isOnTarget()) {
-                    robot.leftMotor_1.setPower(drive_speed);
-                    robot.leftMotor_2.setPower(drive_speed);
-                    robot.rightMotor_1.setPower(drive_speed);
-                    robot.rightMotor_2.setPower(drive_speed);
+                    robot.leftMotor.setPower(drive_speed);
+                    robot.rightMotor.setPower(drive_speed);
                     telemetry.addData("Motor Output", df.format(drive_speed) + ", " +
                             df.format(drive_speed));
                 } else {
                     double output = yawPIDResult.getOutput();
-                    robot.leftMotor_1.setPower(limit(drive_speed + output));
-                    robot.leftMotor_2.setPower(limit(drive_speed + output));
-                    robot.rightMotor_1.setPower(limit(drive_speed - output));
-                    robot.rightMotor_2.setPower(limit(drive_speed - output));
+                    robot.leftMotor.setPower(limit(drive_speed + output));
+                    robot.rightMotor.setPower(limit(drive_speed - output));
                     telemetry.addData("Motor Output", df.format(limit(drive_speed + output)) + ", " +
                             df.format(limit(drive_speed - output)));
                 }

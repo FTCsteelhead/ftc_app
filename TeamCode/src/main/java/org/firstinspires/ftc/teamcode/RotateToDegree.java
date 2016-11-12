@@ -93,13 +93,10 @@ public class RotateToDegree extends OpMode {
                 AHRS.DeviceDataType.kProcessedData,
                 NAVX_DEVICE_UPDATE_RATE_HZ);
 
-        robot.rightMotor_1.setDirection(DcMotor.Direction.FORWARD);
-        robot.rightMotor_2.setDirection(DcMotorSimple.Direction.FORWARD);
+        robot.rightMotor.setDirection(DcMotor.Direction.FORWARD);
 
-        robot.rightMotor_1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        robot.rightMotor_2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        robot.leftMotor_1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        robot.leftMotor_2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        robot.rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        robot.leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         /* If possible, use encoders when driving, as it results in more */
         /* predictable drive system response.                           */
@@ -148,17 +145,13 @@ public class RotateToDegree extends OpMode {
              */
             if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
                 if (yawPIDResult.isOnTarget()) {
-                    robot.rightMotor_1.setPower(0);
-                    robot.rightMotor_2.setPower(0);
-                    robot.leftMotor_1.setPower(0);
-                    robot.leftMotor_2.setPower(0);
+                    robot.rightMotor.setPower(0);
+                    robot.leftMotor.setPower(0);
                     telemetry.addData("Motor Output", df.format(0.00));
                 } else {
                     double output = yawPIDResult.getOutput();
-                    robot.rightMotor_1.setPower(output);
-                    robot.rightMotor_2.setPower(output);
-                    robot.leftMotor_1.setPower(-output);
-                    robot.leftMotor_2.setPower(-output);
+                    robot.rightMotor.setPower(output);
+                    robot.leftMotor.setPower(-output);
                     telemetry.addData("Motor Output", df.format(output) + ", " +
                             df.format(-output));
                 }

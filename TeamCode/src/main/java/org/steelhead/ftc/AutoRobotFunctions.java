@@ -38,13 +38,14 @@ public class AutoRobotFunctions {
     public enum StopConditions {COLOR, ENCODER, BUTTON}
     public enum Team {RED, BLUE}
 
-    AutoRobotFunctions(byte navXDevicePortNumber, HardwareMap hardwareMap,
+    public AutoRobotFunctions(byte navXDevicePortNumber, HardwareMap hardwareMap,
                        LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
         boolean calibrationComplete = false;
         //TODO: change the motors when the hardware gets modified
-        this.leftMotor = robot.leftMotor_1;
-        this.rightMotor = robot.rightMotor_1;
+        this.leftMotor = robot.leftMotor;
+        this.rightMotor = robot.rightMotor;
         this.currentOpMode = currentOpMode;
+        this.robot = robot;
         this.touchSensor = robot.touchSensor;
         this.colorSensor = robot.colorSensor;
         this.beaconColor = robot.beaconColor;
@@ -190,6 +191,9 @@ public class AutoRobotFunctions {
         robot.enableEncoders(true);
         robot.stopAndClearEncoders();
 
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         leftMotor.setTargetPosition(targetPosition);
         rightMotor.setTargetPosition(targetPosition);
 
@@ -204,6 +208,7 @@ public class AutoRobotFunctions {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
 
+        robot.stopAndClearEncoders();
         robot.enableEncoders(false);
     }
 
