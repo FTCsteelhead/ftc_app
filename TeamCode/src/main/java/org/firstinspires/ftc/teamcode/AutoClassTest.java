@@ -55,17 +55,13 @@ public class AutoClassTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
-
         robot.init(hardwareMap);
-
         AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions((byte) 0, hardwareMap, this, robot);
-
         robot.robotBackward();
 
-
-
         waitForStart();
-
-        autoRobotFunctions.runWithEncoders(1000, 0.25, 0.25);
+        autoRobotFunctions.setPoliceLED(true);
+        autoRobotFunctions.runWithEncoders(1000, 0.25);
+        autoRobotFunctions.setPoliceLED(false);
     }
 }

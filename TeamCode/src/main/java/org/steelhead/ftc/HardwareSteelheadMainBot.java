@@ -3,6 +3,8 @@ package org.steelhead.ftc;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -21,6 +23,7 @@ public class HardwareSteelheadMainBot {
     public ColorSensor colorSensor          = null;
     public TouchSensor touchSensor          = null;
     public Adafruit_ColorSensor beaconColor = null;
+    public DigitalChannel policeLED         = null;
 
 
     private String leftMotorName_1  = "leftMotor1";
@@ -30,11 +33,11 @@ public class HardwareSteelheadMainBot {
     private String touchSensorName  = "touch";
     private String colorSensorName  = "color";
     private String beaconColorName  = "BColor";
+    private String policeLEDName    = "policeLED";
 
     public void init(HardwareMap aHwMap) {
 
         leftMotor = aHwMap.dcMotor.get(leftMotorName_1);
-
         rightMotor = aHwMap.dcMotor.get(rightMotorName_1);
 
         //sets the robot direction to backward
@@ -69,6 +72,12 @@ public class HardwareSteelheadMainBot {
         //Adafruit Color sensor
         beaconColor = new Adafruit_ColorSensor(aHwMap, beaconColorName);
         beaconColor.setLed(false);
+
+        //Police LED
+        policeLED = aHwMap.digitalChannel.get(policeLEDName);
+        policeLED.setMode(DigitalChannelController.Mode.OUTPUT);
+        policeLED.setState(false);
+
     }
 
     public void setLeftMotorName(String newName) {

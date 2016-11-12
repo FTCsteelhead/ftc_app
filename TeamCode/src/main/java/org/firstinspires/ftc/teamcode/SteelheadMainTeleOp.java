@@ -56,12 +56,9 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 
 public class SteelheadMainTeleOp extends OpMode{
 
-    /* Declare OpMode members. */
-    HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot(); // use the class created to define a Pushbot's hardware
+    // use the defined hardware class for the robot
+    HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
     @Override
     public void init() {
         /* Initialize the hardware variables.
@@ -74,23 +71,14 @@ public class SteelheadMainTeleOp extends OpMode{
         updateTelemetry(telemetry);
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
     @Override
     public void init_loop() {
     }
 
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
     @Override
     public void start() {
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
     @Override
     public void loop() {
         double left = 0;

@@ -5,6 +5,7 @@ import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -15,25 +16,31 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 public class AutoRobotFunctions {
 
+    //PID Values for the navX sensor
     private double navKP;
     private double navKI;
     private double navKD;
 
+    //PID Values for the Modern Robotics Sensor
     private double colorKP;
     private double colorKI;
     private double colorKD;
 
+    //Movement components of the robot including a robot hardware class
     private HardwareSteelheadMainBot robot;
     private DcMotor leftMotor;
     private DcMotor rightMotor;
 
+    //NavX Sensor
     private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
     private AHRS navXDevice;
 
+    //Rest of the sensors
     private LinearOpMode currentOpMode;
     private ColorSensor colorSensor;
     private Adafruit_ColorSensor beaconColor;
     private TouchSensor touchSensor;
+    private DigitalChannel policeLED;
 
     public enum StopConditions {COLOR, ENCODER, BUTTON}
     public enum Team {RED, BLUE}
@@ -42,14 +49,16 @@ public class AutoRobotFunctions {
                        LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
         boolean calibrationComplete = false;
         //TODO: change the motors when the hardware gets modified
-        this.leftMotor = robot.leftMotor;
-        this.rightMotor = robot.rightMotor;
-        this.currentOpMode = currentOpMode;
-        this.robot = robot;
-        this.touchSensor = robot.touchSensor;
-        this.colorSensor = robot.colorSensor;
-        this.beaconColor = robot.beaconColor;
+        this.robot          = robot;
+        this.currentOpMode  = currentOpMode;
+        this.leftMotor      = robot.leftMotor;
+        this.rightMotor     = robot.rightMotor;
+        this.touchSensor    = robot.touchSensor;
+        this.colorSensor    = robot.colorSensor;
+        this.beaconColor    = robot.beaconColor;
+        this.policeLED      = robot.policeLED;
 
+        //Setup the navX sensor and wait for calibration to complete
         navXDevice = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
                 navXDevicePortNumber, AHRS.DeviceDataType.kProcessedData,
                 NAVX_DEVICE_UPDATE_RATE_HZ);
@@ -61,7 +70,7 @@ public class AutoRobotFunctions {
         }
         navXDevice.zeroYaw();
     }
-
+    //PID controller for rotation to a degree
     public void navxRotateToDegree(double degree, double tolerance,
                                    double minMotorOutput, double maxMotorOutput) {
         boolean rotationComplete = false;
@@ -95,17 +104,18 @@ public class AutoRobotFunctions {
         yawPIDController.close();
 
     }
-
+    //Drive straight with a PID controller
     public void navXDriveStraight(double degree, double tolerance,
                                   double minMotorOutput, double maxMotorOutput,
                                   double forwardDriveSpeed, int encoderDistance,
-                                  double motorSpeedMul, double minPower,
+                                  double motorSpeedMul, double minEndPower,
                                          StopConditions stopCondition, int stopVal) {
         double workingForwardSpeed = forwardDriveSpeed;
-        //enable and clear the encoders
+        //Enable and clear the encoders
         robot.enableEncoders(true);
         robot.stopAndClearEncoders();
 
+        //Setup the yaw PID controller
         navXPIDController yawPIDController = new navXPIDController(navXDevice,
                 navXPIDController.navXTimestampedDataSource.YAW);
 
@@ -144,19 +154,18 @@ public class AutoRobotFunctions {
                     rightMotor.setPower(workingForwardSpeed + output);
                 }
             }
-
             /*
             Slow the robot as it gets close to the line so it does not overshoot,
             This is basically a P controller.
             If the multiplier is equal to -1 turn off the speed reduction
             */
-
+            //TODO: use this as a structure for a motor ramp function
             if (motorSpeedMul != -1) {
                 if (rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
                     int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
                     workingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
-                    if (workingForwardSpeed < minPower) {
-                        workingForwardSpeed = minPower;
+                    if (workingForwardSpeed < minEndPower) {
+                        workingForwardSpeed = minEndPower;
                     }
 
                 }
@@ -166,11 +175,13 @@ public class AutoRobotFunctions {
         robot.enableEncoders(false);
         yawPIDController.close();
     }
-
+    //PID controller for following a line
     public void PIDLineFollow(int threshHoldLow, int threshHoldHigh,
                               double driveSpeed, double minOutputVal,
-                              double maxOutputVal, double tolerance, StopConditions stopConditions) {
-        ColorPIDController pidController = new ColorPIDController(colorSensor, threshHoldLow, threshHoldHigh);
+                              double maxOutputVal, double tolerance,
+                              StopConditions stopConditions) {
+        ColorPIDController pidController = new ColorPIDController(this.colorSensor,
+                threshHoldLow, threshHoldHigh);
         pidController.setPID(colorKP, colorKI, colorKD);
         pidController.setTolerance(tolerance);
         pidController.enable();
@@ -186,8 +197,8 @@ public class AutoRobotFunctions {
         }
         pidController.disable();
     }
-
-    public void runWithEncoders(int targetPosition, double leftMotorPower, double rightMotorPower) {
+    //Drive to an encoder limit
+    public void runWithEncoders(int targetPosition, double MotorPower) {
         robot.enableEncoders(true);
         robot.stopAndClearEncoders();
 
@@ -197,8 +208,8 @@ public class AutoRobotFunctions {
         leftMotor.setTargetPosition(targetPosition);
         rightMotor.setTargetPosition(targetPosition);
 
-        leftMotor.setPower(leftMotorPower);
-        rightMotor.setPower(rightMotorPower);
+        leftMotor.setPower(MotorPower);
+        rightMotor.setPower(MotorPower);
 
         while (currentOpMode.opModeIsActive() && leftMotor.isBusy() && rightMotor.isBusy()) {
             currentOpMode.telemetry.addData("ENC left: ", leftMotor.getCurrentPosition());
@@ -211,10 +222,9 @@ public class AutoRobotFunctions {
         robot.stopAndClearEncoders();
         robot.enableEncoders(false);
     }
-
+    //Push the proper color button for the team the robot is on
     public void pushButton(Team team) {
 
-        //TODO: fix color sensor by adding tha adafruit one
         try {
             Thread.sleep(500);
             if (team == Team.RED) {
@@ -237,19 +247,24 @@ public class AutoRobotFunctions {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
     }
-
+    //Turn the police LED on or off
+    public void setPoliceLED(boolean state) {
+        policeLED.setState(state);
+    }
+    //Set the PID values for the NavX sensor
     public void setNavXPID(double Kp, double Ki, double Kd) {
         this.navKP = Kp;
         this.navKI = Ki;
         this.navKD = Kd;
     }
+    //Set the PID values for Color sensor
     public void setColorPID(double Kp, double Ki, double Kd) {
         this.colorKP = Kp;
         this.colorKI = Ki;
         this.colorKD = Kd;
     }
+    //Limit function
     private double limit(double a, double minOutputVal, double maxOutputVal) {
         return Math.min(Math.max(a, minOutputVal), maxOutputVal);
     }
