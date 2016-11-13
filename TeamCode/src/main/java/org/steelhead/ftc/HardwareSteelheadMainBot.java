@@ -127,4 +127,8 @@ public class HardwareSteelheadMainBot {
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
+    //Turn the police LED on or off
+    public void setPoliceLED(boolean state) {
+        policeLED.setState(state);
+    }
 }

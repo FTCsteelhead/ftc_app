@@ -74,7 +74,7 @@ public class AutoRobotFunctions {
     public void navxRotateToDegree(double degree, double tolerance,
                                    double minMotorOutput, double maxMotorOutput) {
         boolean rotationComplete = false;
-
+        robot.robotSetZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         navXPIDController yawPIDController = new navXPIDController(navXDevice,
                 navXPIDController.navXTimestampedDataSource.YAW);
 
@@ -102,6 +102,7 @@ public class AutoRobotFunctions {
             }
         }
         yawPIDController.close();
+        robot.robotSetZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
     //Drive straight with a PID controller
@@ -188,6 +189,8 @@ public class AutoRobotFunctions {
 
         while (currentOpMode.opModeIsActive()) {
             if (stopConditions == StopConditions.BUTTON && touchSensor.isPressed()) {
+                leftMotor.setPower(0);
+                rightMotor.setPower(0);
                 break;
             }
             double output = pidController.getOutput();
@@ -247,10 +250,6 @@ public class AutoRobotFunctions {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-    //Turn the police LED on or off
-    public void setPoliceLED(boolean state) {
-        policeLED.setState(state);
     }
     //Set the PID values for the NavX sensor
     public void setNavXPID(double Kp, double Ki, double Kd) {
