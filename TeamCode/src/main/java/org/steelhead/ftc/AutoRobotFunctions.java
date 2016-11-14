@@ -49,7 +49,6 @@ public class AutoRobotFunctions {
     public AutoRobotFunctions(byte navXDevicePortNumber, HardwareMap hardwareMap,
                        LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
         boolean calibrationComplete = false;
-        //TODO: change the motors when the hardware gets modified
         this.robot          = robot;
         this.currentOpMode  = currentOpMode;
         this.leftMotor      = robot.leftMotor;
@@ -104,7 +103,6 @@ public class AutoRobotFunctions {
         }
         yawPIDController.close();
         robot.robotSetZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
     }
     //Drive straight with a PID controller
     public void navXDriveStraight(double degree, double tolerance,
@@ -136,7 +134,7 @@ public class AutoRobotFunctions {
         while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
             //ramp the motor up to prevent damage and jerk
             //TODO: Check this function to see if it works
-                if (rampTime.milliseconds() <= 500 && !rampComplete) {
+                if (!rampComplete && rampTime.milliseconds() <= 500) {
                     int error = (int) rampTime.milliseconds();
                     workingForwardSpeed = error * rampMul;
                     if (workingForwardSpeed > forwardDriveSpeed) {
@@ -177,7 +175,7 @@ public class AutoRobotFunctions {
             */
             //TODO: use this as a structure for a motor ramp function
             if (motorSpeedMul != -1) {
-                if (rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
+                if (rampComplete && rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
                     int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
                     workingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
                     if (workingForwardSpeed < minEndPower) {
@@ -232,11 +230,10 @@ public class AutoRobotFunctions {
         leftMotor.setTargetPosition(targetPosition);
         rightMotor.setTargetPosition(targetPosition);
 
-        //TODO: add a motor ramp function to driving with encoders
         rampTime.reset();
         while (currentOpMode.opModeIsActive() && leftMotor.isBusy() && rightMotor.isBusy()) {
             //Ramp the motor to start with
-            if (rampTime.milliseconds() <= 500 && !rampComplete) {
+            if (!rampComplete && rampTime.milliseconds() <= 500) {
                 int error = (int) rampTime.milliseconds();
                 workingForwardSpeed = error * rampUpMul;
                 if (workingForwardSpeed >= motorPower) {
@@ -247,7 +244,7 @@ public class AutoRobotFunctions {
                 rightMotor.setPower(workingForwardSpeed);
             }
             //Ramp down as the robot approaches the target.
-            if (rightMotor.getCurrentPosition() >= (targetPosition - 30)) {
+            if (rampComplete && rightMotor.getCurrentPosition() >= (targetPosition - 30)) {
                 int error = (targetPosition - rightMotor.getCurrentPosition()) - 30;
                 workingForwardSpeed = motorPower - error * rampDownMul;
                 if (workingForwardSpeed < 0.1) {
