@@ -219,7 +219,8 @@ public class AutoRobotFunctions {
     public void runWithEncoders(int targetPosition, double motorPower) {
         boolean rampComplete = false;
         ElapsedTime rampTime = new ElapsedTime();
-        double rampMul = motorPower/500;
+        double rampUpMul = motorPower/500;
+        double rampDownMul = motorPower/30;
         double workingForwardSpeed = 0;
 
         robot.enableEncoders(true);
@@ -237,10 +238,20 @@ public class AutoRobotFunctions {
             //Ramp the motor to start with
             if (rampTime.milliseconds() <= 500 && !rampComplete) {
                 int error = (int) rampTime.milliseconds();
-                workingForwardSpeed = error * rampMul;
+                workingForwardSpeed = error * rampUpMul;
                 if (workingForwardSpeed >= motorPower) {
                     workingForwardSpeed = motorPower;
                     rampComplete = true;
+                }
+                leftMotor.setPower(workingForwardSpeed);
+                rightMotor.setPower(workingForwardSpeed);
+            }
+            //Ramp down as the robot approaches the target.
+            if (rightMotor.getCurrentPosition() >= (targetPosition - 30)) {
+                int error = (targetPosition - rightMotor.getCurrentPosition()) - 30;
+                workingForwardSpeed = motorPower - error * rampDownMul;
+                if (workingForwardSpeed < 0.1) {
+                    workingForwardSpeed = 0.1;
                 }
                 leftMotor.setPower(workingForwardSpeed);
                 rightMotor.setPower(workingForwardSpeed);
