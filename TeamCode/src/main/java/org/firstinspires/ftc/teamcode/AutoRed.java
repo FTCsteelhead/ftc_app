@@ -35,10 +35,7 @@ public class AutoRed extends LinearOpMode {
     private double MAX_OUTPUT_LINE = 0.25;
     private double MIN_OUTPUT_LINE = -0.25;
 
-    private boolean calibrationComplete = false;
-    private boolean rotateComplete = false;
-
-    AutoRobotFunctions autoRobotFunctions;
+    private AutoRobotFunctions autoRobotFunctions;
 
     @Override
     public void runOpMode() throws InterruptedException {

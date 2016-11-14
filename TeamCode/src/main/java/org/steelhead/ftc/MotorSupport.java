@@ -1,5 +1,6 @@
 package org.steelhead.ftc;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,11 +13,7 @@ public class MotorSupport {
 
     /*TODO: add a motor ramp function using a p controller.
      *There is an example in the AutoRobotFunctions class */
-    private DcMotor dcMotor = null;
-
-    public MotorSupport() {
-
-    }
+    private DcMotor dcMotor;
 
     public MotorSupport(DcMotor motor) {
         dcMotor = motor;

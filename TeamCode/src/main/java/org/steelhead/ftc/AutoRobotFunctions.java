@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by Alec Matthews on 11/6/2016.
@@ -112,6 +113,9 @@ public class AutoRobotFunctions {
                                   double motorSpeedMul, double minEndPower,
                                          StopConditions stopCondition, int stopVal) {
         double workingForwardSpeed = forwardDriveSpeed;
+        double rampMul = forwardDriveSpeed/20;
+        boolean rampComplete = false;
+        ElapsedTime rampTime = new ElapsedTime();
         //Enable and clear the encoders
         robot.enableEncoders(true);
         robot.stopAndClearEncoders();
@@ -128,7 +132,18 @@ public class AutoRobotFunctions {
 
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
 
+        rampTime.reset();
         while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
+            //ramp the motor up to prevent damage and jerk
+            //TODO: Check this function to see if it works
+                if (rampTime.milliseconds() <= 20 && !rampComplete) {
+                    int error = (int) rampTime.milliseconds();
+                    workingForwardSpeed = error * rampMul;
+                    if (workingForwardSpeed > forwardDriveSpeed) {
+                        workingForwardSpeed = forwardDriveSpeed;
+                        rampComplete = true;
+                    }
+                }
             if (stopCondition == StopConditions.COLOR && colorSensor.alpha() > stopVal) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
@@ -201,7 +216,12 @@ public class AutoRobotFunctions {
         pidController.disable();
     }
     //Drive to an encoder limit
-    public void runWithEncoders(int targetPosition, double MotorPower) {
+    public void runWithEncoders(int targetPosition, double motorPower) {
+        boolean rampComplete = false;
+        ElapsedTime rampTime = new ElapsedTime();
+        double rampMul = motorPower/20;
+        double workingForwardSpeed = 0;
+
         robot.enableEncoders(true);
         robot.stopAndClearEncoders();
 
@@ -211,10 +231,20 @@ public class AutoRobotFunctions {
         leftMotor.setTargetPosition(targetPosition);
         rightMotor.setTargetPosition(targetPosition);
 
-        leftMotor.setPower(MotorPower);
-        rightMotor.setPower(MotorPower);
-
+        //TODO: add a motor ramp function to driving with encoders
+        rampTime.reset();
         while (currentOpMode.opModeIsActive() && leftMotor.isBusy() && rightMotor.isBusy()) {
+            //Ramp the motor to start with
+            if (rampTime.milliseconds() <= 20 && !rampComplete) {
+                int error = (int) rampTime.milliseconds();
+                workingForwardSpeed = error * rampMul;
+                if (workingForwardSpeed >= motorPower) {
+                    workingForwardSpeed = motorPower;
+                    rampComplete = true;
+                }
+                leftMotor.setPower(workingForwardSpeed);
+                rightMotor.setPower(workingForwardSpeed);
+            }
             currentOpMode.telemetry.addData("ENC left: ", leftMotor.getCurrentPosition());
             currentOpMode.telemetry.addData("ENC right: ", rightMotor.getCurrentPosition());
             currentOpMode.telemetry.update();
