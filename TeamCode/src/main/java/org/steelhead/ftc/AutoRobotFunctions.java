@@ -113,7 +113,7 @@ public class AutoRobotFunctions {
                                   double motorSpeedMul, double minEndPower,
                                          StopConditions stopCondition, int stopVal) {
         double workingForwardSpeed = forwardDriveSpeed;
-        double rampMul = forwardDriveSpeed/20;
+        double rampMul = forwardDriveSpeed/500;
         boolean rampComplete = false;
         ElapsedTime rampTime = new ElapsedTime();
         //Enable and clear the encoders
@@ -136,7 +136,7 @@ public class AutoRobotFunctions {
         while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
             //ramp the motor up to prevent damage and jerk
             //TODO: Check this function to see if it works
-                if (rampTime.milliseconds() <= 20 && !rampComplete) {
+                if (rampTime.milliseconds() <= 500 && !rampComplete) {
                     int error = (int) rampTime.milliseconds();
                     workingForwardSpeed = error * rampMul;
                     if (workingForwardSpeed > forwardDriveSpeed) {
@@ -219,7 +219,7 @@ public class AutoRobotFunctions {
     public void runWithEncoders(int targetPosition, double motorPower) {
         boolean rampComplete = false;
         ElapsedTime rampTime = new ElapsedTime();
-        double rampMul = motorPower/20;
+        double rampMul = motorPower/500;
         double workingForwardSpeed = 0;
 
         robot.enableEncoders(true);
@@ -235,7 +235,7 @@ public class AutoRobotFunctions {
         rampTime.reset();
         while (currentOpMode.opModeIsActive() && leftMotor.isBusy() && rightMotor.isBusy()) {
             //Ramp the motor to start with
-            if (rampTime.milliseconds() <= 20 && !rampComplete) {
+            if (rampTime.milliseconds() <= 500 && !rampComplete) {
                 int error = (int) rampTime.milliseconds();
                 workingForwardSpeed = error * rampMul;
                 if (workingForwardSpeed >= motorPower) {
