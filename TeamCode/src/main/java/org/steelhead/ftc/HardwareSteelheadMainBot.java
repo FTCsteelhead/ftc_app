@@ -20,7 +20,7 @@ public class HardwareSteelheadMainBot {
     public DcMotor rightMotor               = null;
     public Servo pusherRight                = null;
     public Servo pusherLeft                 = null;
-    public ColorSensor colorSensor          = null;
+    public ColorSensor color                = null;
     public TouchSensor touchSensor          = null;
     public Adafruit_ColorSensor beaconColor = null;
     public DigitalChannel policeLED         = null;
@@ -63,11 +63,11 @@ public class HardwareSteelheadMainBot {
         touchSensor = aHwMap.touchSensor.get(touchSensorName);
 
         //nasty trick to get the color sensor to work
-        colorSensor = aHwMap.colorSensor.get(colorSensorName);
-        colorSensor.enableLed(true);
-        colorSensor.enableLed(false);
-        colorSensor.enableLed(true);
-        colorSensor.getManufacturer();
+        color = aHwMap.colorSensor.get(colorSensorName);
+        color.enableLed(true);
+        color.enableLed(false);
+        color.enableLed(true);
+        color.getManufacturer();
 
         //Adafruit Color sensor
         beaconColor = new Adafruit_ColorSensor(aHwMap, beaconColorName);
@@ -128,7 +128,7 @@ public class HardwareSteelheadMainBot {
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     //Turn the police LED on or off
-    public void setPoliceLED(boolean state) {
+     public void setPoliceLED(boolean state) {
         policeLED.setState(state);
     }
 }

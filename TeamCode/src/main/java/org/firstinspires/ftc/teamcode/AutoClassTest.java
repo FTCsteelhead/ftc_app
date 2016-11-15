@@ -60,8 +60,8 @@ public class AutoClassTest extends LinearOpMode {
         robot.robotBackward();
 
         waitForStart();
-        robot.setPoliceLED(true);
+      //  robot.setPoliceLED(true);
         autoRobotFunctions.runWithEncoders(1000, 0.25);
-        robot.setPoliceLED(false);
+       // robot.setPoliceLED(false);
     }
 }

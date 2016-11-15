@@ -38,10 +38,10 @@ public class AutoRobotFunctions {
 
     //Rest of the sensors
     private LinearOpMode currentOpMode;
-    private ColorSensor colorSensor;
+    private ColorSensor color;
     private Adafruit_ColorSensor beaconColor;
     private TouchSensor touchSensor;
-    private DigitalChannel policeLED;
+   private DigitalChannel policeLED;
 
     public enum StopConditions {COLOR, ENCODER, BUTTON}
     public enum Team {RED, BLUE}
@@ -54,7 +54,7 @@ public class AutoRobotFunctions {
         this.leftMotor      = robot.leftMotor;
         this.rightMotor     = robot.rightMotor;
         this.touchSensor    = robot.touchSensor;
-        this.colorSensor    = robot.colorSensor;
+        this.color    = robot.color;
         this.beaconColor    = robot.beaconColor;
         this.policeLED      = robot.policeLED;
 
@@ -142,7 +142,7 @@ public class AutoRobotFunctions {
                         rampComplete = true;
                     }
                 }
-            if (stopCondition == StopConditions.COLOR && colorSensor.alpha() > stopVal) {
+            if (stopCondition == StopConditions.COLOR && color.alpha() > stopVal) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
                     break;
@@ -194,7 +194,7 @@ public class AutoRobotFunctions {
                               double driveSpeed, double minOutputVal,
                               double maxOutputVal, double tolerance,
                               StopConditions stopConditions) {
-        ColorPIDController pidController = new ColorPIDController(this.colorSensor,
+        ColorPIDController pidController = new ColorPIDController(this.color,
                 threshHoldLow, threshHoldHigh);
         pidController.setPID(colorKP, colorKI, colorKD);
         pidController.setTolerance(tolerance);
