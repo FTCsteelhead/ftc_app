@@ -41,22 +41,23 @@ public class AutoRobotFunctions {
     private ColorSensor color;
     private Adafruit_ColorSensor beaconColor;
     private TouchSensor touchSensor;
-   private DigitalChannel policeLED;
+    private DigitalChannel policeLED;
 
     public enum StopConditions {COLOR, ENCODER, BUTTON}
+
     public enum Team {RED, BLUE}
 
     public AutoRobotFunctions(byte navXDevicePortNumber, HardwareMap hardwareMap,
-                       LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
+                              LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
         boolean calibrationComplete = false;
-        this.robot          = robot;
-        this.currentOpMode  = currentOpMode;
-        this.leftMotor      = robot.leftMotor;
-        this.rightMotor     = robot.rightMotor;
-        this.touchSensor    = robot.touchSensor;
-        this.color    = robot.color;
-        this.beaconColor    = robot.beaconColor;
-        this.policeLED      = robot.policeLED;
+        this.robot = robot;
+        this.currentOpMode = currentOpMode;
+        this.leftMotor = robot.leftMotor;
+        this.rightMotor = robot.rightMotor;
+        this.touchSensor = robot.touchSensor;
+        this.color = robot.color;
+        this.beaconColor = robot.beaconColor;
+        this.policeLED = robot.policeLED;
 
         //Setup the navX sensor and wait for calibration to complete
         navXDevice = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
@@ -70,11 +71,13 @@ public class AutoRobotFunctions {
         }
         navXDevice.zeroYaw();
     }
+
     //PID controller for rotation to a degree
     public void navxRotateToDegree(double degree, double tolerance,
                                    double minMotorOutput, double maxMotorOutput) {
         boolean rotationComplete = false;
         robot.robotSetZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         navXPIDController yawPIDController = new navXPIDController(navXDevice,
                 navXPIDController.navXTimestampedDataSource.YAW);
 
@@ -85,34 +88,43 @@ public class AutoRobotFunctions {
         yawPIDController.setPID(navKP, navKI, navKD);
 
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
+        yawPIDController.enable(true);
 
-        while (!rotationComplete && currentOpMode.opModeIsActive()
-                && !Thread.currentThread().isInterrupted()) {
-            if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
-                if (yawPIDResult.isOnTarget()) {
-                    leftMotor.setPower(0);
-                    rightMotor.setPower(0);
-                    rotationComplete = true;
-                } else {
-                    double output = yawPIDResult.getOutput();
-                    leftMotor.setPower(output);
-                    //TODO: set the correct motor side to negative so it turns the correct direction
-                    rightMotor.setPower(-output);
+        try {
+            while (!rotationComplete && currentOpMode.opModeIsActive()
+                    && !Thread.currentThread().isInterrupted()) {
+                if (yawPIDController.waitForNewUpdate(yawPIDResult, 500)) {
+                    if (yawPIDResult.isOnTarget()) {
+                        leftMotor.setPower(0);
+                        rightMotor.setPower(0);
+                        rotationComplete = true;
+                    } else {
+                        double output = yawPIDResult.getOutput();
+                        leftMotor.setPower(output);
+                        //TODO: set the correct motor side to negative so it turns the correct direction
+                        rightMotor.setPower(-output);
+                    }
                 }
+                currentOpMode.telemetry.addData("YAW: ", navXDevice.getYaw());
+                currentOpMode.telemetry.update();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
+        yawPIDController.enable(false);
         yawPIDController.close();
         robot.robotSetZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+
     //Drive straight with a PID controller
     public void navXDriveStraight(double degree, double tolerance,
-                                  double minMotorOutput, double maxMotorOutput,
+                                  double minOutputRage, double maxOutputRange,
                                   double forwardDriveSpeed, int encoderDistance,
                                   double motorSpeedMul, double minEndPower,
-                                         StopConditions stopCondition, int stopVal) {
+                                  StopConditions stopCondition, int stopVal) {
         double workingForwardSpeed = forwardDriveSpeed;
-        double rampMul = forwardDriveSpeed/500;
-        boolean rampComplete = false;
+        //double rampMul = forwardDriveSpeed / 500;
+        boolean rampComplete = true;
         ElapsedTime rampTime = new ElapsedTime();
         //Enable and clear the encoders
         robot.enableEncoders(true);
@@ -124,71 +136,85 @@ public class AutoRobotFunctions {
 
         yawPIDController.setSetpoint(degree);
         yawPIDController.setContinuous(true);
-        yawPIDController.setOutputRange(minMotorOutput, maxMotorOutput);
+        yawPIDController.setOutputRange(minOutputRage, maxOutputRange);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, tolerance);
         yawPIDController.setPID(navKP, navKI, navKD);
 
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
 
+        yawPIDController.enable(true);
         rampTime.reset();
-        while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
-            //ramp the motor up to prevent damage and jerk
-            //TODO: Check this function to see if it works
-                if (!rampComplete && rampTime.milliseconds() <= 500) {
+        try {
+            while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
+                //ramp the motor up to prevent damage and jerk
+                //TODO: Check this function to see if it works
+                /*if (!rampComplete && rampTime.milliseconds() <= 500) {
                     int error = (int) rampTime.milliseconds();
                     workingForwardSpeed = error * rampMul;
                     if (workingForwardSpeed > forwardDriveSpeed) {
                         workingForwardSpeed = forwardDriveSpeed;
                         rampComplete = true;
                     }
-                }
-            if (stopCondition == StopConditions.COLOR && color.alpha() > stopVal) {
+                }*/
+                if (stopCondition == StopConditions.COLOR && color.alpha() > stopVal) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
                     break;
-            } else if (stopCondition == StopConditions.ENCODER) {
-                if (rightMotor.getCurrentPosition() >= stopVal) {
+                } else if (stopCondition == StopConditions.ENCODER) {
+                    if (rightMotor.getCurrentPosition() >= stopVal) {
+                        leftMotor.setPower(0);
+                        rightMotor.setPower(0);
+                        break;
+                    }
+                } else if (stopCondition == StopConditions.BUTTON && touchSensor.isPressed()) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
                     break;
                 }
-            } else if (stopCondition == StopConditions.BUTTON && touchSensor.isPressed()) {
-                leftMotor.setPower(0);
-                rightMotor.setPower(0);
-                break;
-            }
-            if (yawPIDController.isNewUpdateAvailable(yawPIDResult)) {
-                if (yawPIDResult.isOnTarget()) {
-                    leftMotor.setPower(workingForwardSpeed);
-                    rightMotor.setPower(workingForwardSpeed);
+                if (yawPIDController.waitForNewUpdate(yawPIDResult, 500)) {
+                    if (yawPIDResult.isOnTarget()) {
+                        leftMotor.setPower(workingForwardSpeed);
+                        rightMotor.setPower(workingForwardSpeed);
+                        currentOpMode.telemetry.addData("Target: ", "On Target");
+                    } else {
+                        double output = yawPIDResult.getOutput();
+                        leftMotor.setPower(limit((workingForwardSpeed + output), minOutputRage, maxOutputRange));
+                        //TODO: set the correct motor side to negative so it turns the correct direction
+                        rightMotor.setPower(limit((workingForwardSpeed - output), minOutputRage, maxOutputRange));
+                        currentOpMode.telemetry.addData("Output: ", output);
+                        currentOpMode.telemetry.addData("Target: ", navXDevice.getYaw());
+                    }
                 } else {
-                    double output = yawPIDResult.getOutput();
-                    leftMotor.setPower(workingForwardSpeed - output);
-                    //TODO: set the correct motor side to negative so it turns the correct direction
-                    rightMotor.setPower(workingForwardSpeed + output);
+                    currentOpMode.telemetry.addData("navx: ", "DEVICE TIME OUT!");
                 }
-            }
             /*
             Slow the robot as it gets close to the line so it does not overshoot,
             This is basically a P controller.
             If the multiplier is equal to -1 turn off the speed reduction
             */
-            //TODO: use this as a structure for a motor ramp function
-            if (motorSpeedMul != -1) {
-                if (rampComplete && rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
-                    int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
-                    workingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
-                    if (workingForwardSpeed < minEndPower) {
-                        workingForwardSpeed = minEndPower;
-                    }
+                //TODO: use this as a structure for a motor ramp function
+                if (motorSpeedMul != -1) {
+                    if (rampComplete && rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
+                        int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
+                        workingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
+                        if (workingForwardSpeed < minEndPower) {
+                            workingForwardSpeed = minEndPower;
+                        }
 
+                    }
                 }
+                currentOpMode.telemetry.addData("Working Speed: ", workingForwardSpeed);
+                currentOpMode.telemetry.update();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
+        yawPIDController.enable(false);
         robot.stopAndClearEncoders();
         robot.enableEncoders(false);
         yawPIDController.close();
     }
+
     //PID controller for following a line
     public void PIDLineFollow(int threshHoldLow, int threshHoldHigh,
                               double driveSpeed, double minOutputVal,
@@ -213,12 +239,13 @@ public class AutoRobotFunctions {
         }
         pidController.disable();
     }
+
     //Drive to an encoder limit
     public void runWithEncoders(int targetPosition, double motorPower) {
         boolean rampComplete = false;
         ElapsedTime rampTime = new ElapsedTime();
-        double rampUpMul = motorPower/500;
-        double rampDownMul = motorPower/30;
+        double rampUpMul = motorPower / 500;
+        double rampDownMul = motorPower / 30;
         double workingForwardSpeed = 0;
 
         robot.enableEncoders(true);
@@ -227,19 +254,14 @@ public class AutoRobotFunctions {
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if (robot.isRobotBackward()) {
-            leftMotor.setTargetPosition(-targetPosition);
-            rightMotor.setTargetPosition(-targetPosition);
-        } else {
-            leftMotor.setTargetPosition(targetPosition);
-            rightMotor.setTargetPosition(targetPosition);
-        }
+        leftMotor.setTargetPosition(targetPosition);
+        rightMotor.setTargetPosition(targetPosition);
 
         rampTime.reset();
         leftMotor.setPower(motorPower);
         rightMotor.setPower(motorPower);
         while (currentOpMode.opModeIsActive() && leftMotor.isBusy() && rightMotor.isBusy()) {
-            /*/Ramp the motor to start with
+            //Ramp the motor to start with
             if (!rampComplete && rampTime.milliseconds() <= 500) {
                 int error = (int) rampTime.milliseconds();
                 workingForwardSpeed = error * rampUpMul;
@@ -259,7 +281,7 @@ public class AutoRobotFunctions {
                 }
                 leftMotor.setPower(workingForwardSpeed);
                 rightMotor.setPower(workingForwardSpeed);
-            }*/
+            }
             currentOpMode.telemetry.addData("ENC left: ", leftMotor.getCurrentPosition());
             currentOpMode.telemetry.addData("ENC right: ", rightMotor.getCurrentPosition());
             currentOpMode.telemetry.update();
@@ -270,6 +292,7 @@ public class AutoRobotFunctions {
         robot.stopAndClearEncoders();
         robot.enableEncoders(false);
     }
+
     //Push the proper color button for the team the robot is on
     public void pushButton(Team team) {
 
@@ -296,18 +319,21 @@ public class AutoRobotFunctions {
             Thread.currentThread().interrupt();
         }
     }
+
     //Set the PID values for the NavX sensor
     public void setNavXPID(double Kp, double Ki, double Kd) {
         this.navKP = Kp;
         this.navKI = Ki;
         this.navKD = Kd;
     }
+
     //Set the PID values for Color sensor
     public void setColorPID(double Kp, double Ki, double Kd) {
         this.colorKP = Kp;
         this.colorKI = Ki;
         this.colorKD = Kd;
     }
+
     //Limit function
     private double limit(double a, double minOutputVal, double maxOutputVal) {
         return Math.min(Math.max(a, minOutputVal), maxOutputVal);
