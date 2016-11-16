@@ -35,6 +35,8 @@ public class HardwareSteelheadMainBot {
     private String beaconColorName  = "BColor";
     private String policeLEDName    = "policeLED";
 
+    private boolean isRobotBackward = false;
+
     public void init(HardwareMap aHwMap) {
 
         leftMotor = aHwMap.dcMotor.get(leftMotorName_1);
@@ -42,8 +44,7 @@ public class HardwareSteelheadMainBot {
 
         //sets the robot direction to backward
         //TODO: check the directions once the electronics are set up
-        leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        robotBackward();
 
 
         robotLeftPower(0);
@@ -101,11 +102,13 @@ public class HardwareSteelheadMainBot {
     public void robotForward() {
         leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        isRobotBackward = false;
     }
 
     public void robotBackward() {
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        isRobotBackward = true;
     }
 
     public void robotSetZeroPowerBehavior (DcMotor.ZeroPowerBehavior behavior) {
@@ -130,5 +133,9 @@ public class HardwareSteelheadMainBot {
     //Turn the police LED on or off
      public void setPoliceLED(boolean state) {
         policeLED.setState(state);
+    }
+
+    public boolean isRobotBackward() {
+        return isRobotBackward;
     }
 }

@@ -227,12 +227,19 @@ public class AutoRobotFunctions {
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftMotor.setTargetPosition(targetPosition);
-        rightMotor.setTargetPosition(targetPosition);
+        if (robot.isRobotBackward()) {
+            leftMotor.setTargetPosition(-targetPosition);
+            rightMotor.setTargetPosition(-targetPosition);
+        } else {
+            leftMotor.setTargetPosition(targetPosition);
+            rightMotor.setTargetPosition(targetPosition);
+        }
 
         rampTime.reset();
+        leftMotor.setPower(motorPower);
+        rightMotor.setPower(motorPower);
         while (currentOpMode.opModeIsActive() && leftMotor.isBusy() && rightMotor.isBusy()) {
-            //Ramp the motor to start with
+            /*/Ramp the motor to start with
             if (!rampComplete && rampTime.milliseconds() <= 500) {
                 int error = (int) rampTime.milliseconds();
                 workingForwardSpeed = error * rampUpMul;
@@ -252,7 +259,7 @@ public class AutoRobotFunctions {
                 }
                 leftMotor.setPower(workingForwardSpeed);
                 rightMotor.setPower(workingForwardSpeed);
-            }
+            }*/
             currentOpMode.telemetry.addData("ENC left: ", leftMotor.getCurrentPosition());
             currentOpMode.telemetry.addData("ENC right: ", rightMotor.getCurrentPosition());
             currentOpMode.telemetry.update();

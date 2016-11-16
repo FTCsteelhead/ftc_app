@@ -57,11 +57,13 @@ public class AutoClassTest extends LinearOpMode {
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
         robot.init(hardwareMap);
         AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions((byte) 0, hardwareMap, this, robot);
-        robot.robotBackward();
+        robot.robotForward();
+
 
         waitForStart();
-      //  robot.setPoliceLED(true);
+        runtime.reset();
+        robot.setPoliceLED(true);
         autoRobotFunctions.runWithEncoders(1000, 0.25);
-       // robot.setPoliceLED(false);
+        robot.setPoliceLED(false);
     }
 }

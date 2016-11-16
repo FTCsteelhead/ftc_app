@@ -174,7 +174,7 @@ public class Adafruit_ColorSensor implements I2cController.I2cPortReadyCallback 
     private void executeCommands() {
         boolean isRead  = false;
         boolean isWrite = false;
-        boolean isLowfirst = false;
+        boolean isLowFirst = false;
         byte regNumber = 0;
         byte regCount = 0;
         long regValue = 0;
@@ -187,14 +187,14 @@ public class Adafruit_ColorSensor implements I2cController.I2cPortReadyCallback 
                 regNumber = element.regNumber;
                 regCount = element.regCount;
                 regValue = element.regValue;
-                isLowfirst = element.isLowFirst;
+                isLowFirst = element.isLowFirst;
                 element = null;
             }
         } finally {
             wLock.unlock();
         }
         if (isWrite) {
-            writeCommand(regNumber, regCount, regValue, isLowfirst);
+            writeCommand(regNumber, regCount, regValue, isLowFirst);
         } else if (isRead) {
             readCommand(regNumber, regCount);
         } else {
