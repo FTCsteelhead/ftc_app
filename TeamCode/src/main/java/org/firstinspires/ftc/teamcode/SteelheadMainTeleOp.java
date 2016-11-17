@@ -103,7 +103,7 @@ public class SteelheadMainTeleOp extends OpMode{
         }
 
 
-       // TODO: Check this ramp giving me a null pointer exception
+       // TODO: Check this it is giving me a null pointer exception
     /*  while(num % 2 == 1 && currentOpMode.opModeIsActive())
         {
             robot.robotBackward();
