@@ -57,16 +57,18 @@ public class AutoClassTest extends LinearOpMode {
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
         robot.init(hardwareMap);
         AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions((byte) 1, hardwareMap, this, robot);
-        autoRobotFunctions.setNavXPID(0.6, 0.0012, 0.85);
-        robot.robotBackward();
+        autoRobotFunctions.setNavXPID(0.33, 0.0008, 0.95);
+        robot.robotForward();
 
 
         waitForStart();
         runtime.reset();
         robot.setPoliceLED(true);
         //autoRobotFunctions.navxRotateToDegree(90, 2, -0.15, 0.15);
-        autoRobotFunctions.navXDriveStraight(0.0, 2, -0.15, 0.25, 0.15, 5000, -1, 0.1,
-                AutoRobotFunctions.StopConditions.BUTTON, 0);
+        //autoRobotFunctions.navXDriveStraight(0.0, 2, -0.15, 0.65, 0.5, 5000, 0.0005, 0.1,
+                //AutoRobotFunctions.StopConditions.BUTTON, 0);
+
+        autoRobotFunctions.runWithEncoders(500, 0.25);
         robot.setPoliceLED(false);
     }
 }

@@ -44,6 +44,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
+import org.steelhead.ftc.HardwareSteelheadMainBot;
+
 /*
  *
  * This is an example LinearOpMode that shows how to use
@@ -67,6 +69,9 @@ public class MRColor extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+        HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
+        robot.init(hardwareMap);
+
         // hsvValues is an array that will hold the hue, saturation, and value information.
         float hsvValues[] = {0F, 0F, 0F};
 
@@ -76,7 +81,6 @@ public class MRColor extends LinearOpMode {
         // get a reference to the RelativeLayout so we can change the background
         // color of the Robot Controller app to match the hue detected by the RGB sensor.
         final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(R.id.RelativeLayout);
-        final RelativeLayout rlo = (RelativeLayout) ((Activity) hardwareMap.appContext).findViewById(R.id.RelativeLayout);
 
         // bPrevState and bCurrState represent the previous and current state of the button.
         boolean bPrevState = false;
@@ -87,6 +91,8 @@ public class MRColor extends LinearOpMode {
 
         // get a reference to our ColorSensor object.
         //colorSensor = hardwareMap.colorSensor.get("color");
+
+        colorSensor = robot.color;
 
         // Set the LED in the beginning
         colorSensor.enableLed(bLedOn);

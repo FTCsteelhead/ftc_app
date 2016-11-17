@@ -33,7 +33,8 @@ public class AutoRobotFunctions {
     private DcMotor rightMotor;
 
     //NavX Sensor
-    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
+    private final byte NAVX_DEVICE_UPDATE_RATE_HZ   = 50;
+    private final int  DEVICE_TIMEOUT_MS            = 500;
     private AHRS navXDevice;
 
     //Rest of the sensors
@@ -93,7 +94,7 @@ public class AutoRobotFunctions {
         try {
             while (!rotationComplete && currentOpMode.opModeIsActive()
                     && !Thread.currentThread().isInterrupted()) {
-                if (yawPIDController.waitForNewUpdate(yawPIDResult, 500)) {
+                if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
                     if (yawPIDResult.isOnTarget()) {
                         leftMotor.setPower(0);
                         rightMotor.setPower(0);
@@ -119,16 +120,16 @@ public class AutoRobotFunctions {
     //Drive straight with a PID controller
     public void navXDriveStraight(double degree, double tolerance,
                                   double minOutputRage, double maxOutputRange,
-                                  double forwardDriveSpeed, int encoderDistance,
+                                  double driveSpeed, int encoderDistance,
                                   double motorSpeedMul, double minEndPower,
                                   StopConditions stopCondition, int stopVal) {
-        double workingForwardSpeed = forwardDriveSpeed;
-        //double rampMul = forwardDriveSpeed / 500;
+        double workingForwardSpeed = driveSpeed;
+        //double rampMul = driveSpeed / 500;
         boolean rampComplete = true;
         ElapsedTime rampTime = new ElapsedTime();
         //Enable and clear the encoders
-        robot.enableEncoders(true);
         robot.stopAndClearEncoders();
+        robot.enableEncoders(true);
 
         //Setup the yaw PID controller
         navXPIDController yawPIDController = new navXPIDController(navXDevice,
@@ -139,20 +140,22 @@ public class AutoRobotFunctions {
         yawPIDController.setOutputRange(minOutputRage, maxOutputRange);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, tolerance);
         yawPIDController.setPID(navKP, navKI, navKD);
-
+        yawPIDController.enable(true);
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
 
-        yawPIDController.enable(true);
         rampTime.reset();
         try {
             while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
+
+               currentOpMode.telemetry.addData("Right Encoder", rightMotor.getCurrentPosition());
+                currentOpMode.telemetry.addData("Left Encoder", leftMotor.getCurrentPosition());
                 //ramp the motor up to prevent damage and jerk
                 //TODO: Check this function to see if it works
                 /*if (!rampComplete && rampTime.milliseconds() <= 500) {
                     int error = (int) rampTime.milliseconds();
                     workingForwardSpeed = error * rampMul;
-                    if (workingForwardSpeed > forwardDriveSpeed) {
-                        workingForwardSpeed = forwardDriveSpeed;
+                    if (workingForwardSpeed > driveSpeed) {
+                        workingForwardSpeed = driveSpeed;
                         rampComplete = true;
                     }
                 }*/
@@ -171,7 +174,7 @@ public class AutoRobotFunctions {
                     rightMotor.setPower(0);
                     break;
                 }
-                if (yawPIDController.waitForNewUpdate(yawPIDResult, 500)) {
+                if (yawPIDController.waitForNewUpdate(yawPIDResult, DEVICE_TIMEOUT_MS)) {
                     if (yawPIDResult.isOnTarget()) {
                         leftMotor.setPower(workingForwardSpeed);
                         rightMotor.setPower(workingForwardSpeed);
@@ -196,23 +199,25 @@ public class AutoRobotFunctions {
                 if (motorSpeedMul != -1) {
                     if (rampComplete && rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
                         int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
-                        workingForwardSpeed = forwardDriveSpeed - error * motorSpeedMul;
+                        workingForwardSpeed = driveSpeed + error * motorSpeedMul;
                         if (workingForwardSpeed < minEndPower) {
                             workingForwardSpeed = minEndPower;
                         }
 
                     }
                 }
+                currentOpMode.telemetry.addData("Light Val: ", color.alpha());
                 currentOpMode.telemetry.addData("Working Speed: ", workingForwardSpeed);
                 currentOpMode.telemetry.update();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        } finally {
+            yawPIDController.enable(false);
+            robot.stopAndClearEncoders();
+            robot.enableEncoders(false);
+            yawPIDController.close();
         }
-        yawPIDController.enable(false);
-        robot.stopAndClearEncoders();
-        robot.enableEncoders(false);
-        yawPIDController.close();
     }
 
     //PID controller for following a line
@@ -248,8 +253,8 @@ public class AutoRobotFunctions {
         double rampDownMul = motorPower / 30;
         double workingForwardSpeed = 0;
 
-        robot.enableEncoders(true);
         robot.stopAndClearEncoders();
+        robot.enableEncoders(true);
 
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -262,7 +267,7 @@ public class AutoRobotFunctions {
         rightMotor.setPower(motorPower);
         while (currentOpMode.opModeIsActive() && leftMotor.isBusy() && rightMotor.isBusy()) {
             //Ramp the motor to start with
-            if (!rampComplete && rampTime.milliseconds() <= 500) {
+            if (!rampComplete && rampTime.milliseconds() <= 30) {
                 int error = (int) rampTime.milliseconds();
                 workingForwardSpeed = error * rampUpMul;
                 if (workingForwardSpeed >= motorPower) {
