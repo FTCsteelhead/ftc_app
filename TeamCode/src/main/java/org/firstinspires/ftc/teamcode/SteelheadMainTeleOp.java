@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
@@ -58,6 +59,8 @@ public class SteelheadMainTeleOp extends OpMode{
 
     // use the defined hardware class for the robot
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
+
+    private LinearOpMode currentOpMode;
 
     @Override
     public void init() {
@@ -86,10 +89,8 @@ public class SteelheadMainTeleOp extends OpMode{
 
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-        left = -gamepad1.left_stick_y;
-        right = -(gamepad1.right_stick_y);
-        robot.robotLeftPower(left/2);
-        robot.robotRightPower(right/2);
+
+
 
         int num = 0;
 
@@ -101,34 +102,72 @@ public class SteelheadMainTeleOp extends OpMode{
             num--;
         }
 
-        while(num % 2 == 1)
+
+       // TODO: Check this ramp giving me a null pointer exception
+    /*  while(num % 2 == 1 && currentOpMode.opModeIsActive())
         {
             robot.robotBackward();
         }
 
-        while(num % 2 == 0)
+        while(num % 2 == 0  && currentOpMode.opModeIsActive())
         {
             robot.robotForward();
         }
 
 
+    /* while(gamepad1.left_stick_y != 0 && currentOpMode.opModeIsActive())
+     {
+         telemetry.addData("left power", left);
+         telemetry.update();
+         resetStartTime();
+         while(getRuntime() < .25)
+         {
+             if(left < .5 && left > 0)
+                 left = getRuntime() + .1;
+             else if (left > -.5 && left < 0)
+                 left = -(getRuntime() + .1);
+             else
+                 left = gamepad1.left_stick_y;
+         }
+     }
 
+        while(gamepad1.right_stick_y != 0 && currentOpMode.opModeIsActive())
+        {
+            telemetry.addData("right power", right);
+            telemetry.update();
+            resetStartTime();
+            while(getRuntime() < .25)
+            {
+                if(right < .5 && right > 0)
+                 right = getRuntime() + .1;
+                else if (right > -.5 && right < 0)
+                    right = -(getRuntime() + .1);
+                else
+                    right = gamepad1.right_stick_y;
+            }
+        }
+*/
         if(gamepad1.right_bumper) {
-            left = -gamepad1.left_stick_y;
-            right = -(gamepad1.right_stick_y);
-            robot.robotLeftPower(left);
-            robot.robotRightPower(right);
+            left = (-gamepad1.left_stick_y);
+            right = (-(gamepad1.right_stick_y));
+        }
+        else{
+            left = (-gamepad1.left_stick_y)/2;
+            right = (-(gamepad1.right_stick_y))/2;
         }
 
+        robot.robotLeftPower(left);
+        robot.robotRightPower(right);
+
         if(gamepad2.right_bumper)
-            robot.pusherRight.setPosition(robot.pusherRight.getPosition() + .01 );
+            robot.pusherRight.setPosition(robot.pusherRight.getPosition() - .03 );
         if(gamepad2.right_trigger > 0)
-            robot.pusherRight.setPosition(robot.pusherRight.getPosition() - .01 );
+            robot.pusherRight.setPosition(robot.pusherRight.getPosition() + .03 );
 
         if(gamepad2.left_bumper)
-            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() + .01 );
+            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() + .03 );
         if(gamepad2.left_trigger > 0)
-            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - .01 );
+            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - .03 );
 
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
