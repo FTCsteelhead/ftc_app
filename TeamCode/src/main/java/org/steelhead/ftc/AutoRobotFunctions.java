@@ -48,6 +48,8 @@ public class AutoRobotFunctions {
 
     public enum Team {RED, BLUE}
 
+    public enum LineSide {LEFT, RIGHT}
+
     public AutoRobotFunctions(byte navXDevicePortNumber, HardwareMap hardwareMap,
                               LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
         boolean calibrationComplete = false;
@@ -68,6 +70,11 @@ public class AutoRobotFunctions {
         while (!calibrationComplete && currentOpMode.opModeIsActive()) {
             calibrationComplete = !navXDevice.isCalibrating();
             currentOpMode.telemetry.addData("CAL: ", "NavX device calibrating");
+            currentOpMode.telemetry.update();
+        }
+
+        if (!navXDevice.isConnected()) {
+            currentOpMode.telemetry.addData("ERROR: ", "NavX not connected");
             currentOpMode.telemetry.update();
         }
         navXDevice.zeroYaw();
@@ -224,7 +231,7 @@ public class AutoRobotFunctions {
     public void PIDLineFollow(int threshHoldLow, int threshHoldHigh,
                               double driveSpeed, double minOutputVal,
                               double maxOutputVal, double tolerance,
-                              StopConditions stopConditions) {
+                              StopConditions stopConditions, LineSide lineSide) {
         ColorPIDController pidController = new ColorPIDController(this.color,
                 threshHoldLow, threshHoldHigh);
         pidController.setPID(colorKP, colorKI, colorKD);
@@ -239,8 +246,13 @@ public class AutoRobotFunctions {
             }
             double output = pidController.getOutput();
             //TODO: Check sides of the line follower
-            leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
-            rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+            if (lineSide == LineSide.LEFT) {
+                leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
+                rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+            } else {
+                leftMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+                rightMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
+            }
         }
         pidController.disable();
     }
@@ -302,27 +314,41 @@ public class AutoRobotFunctions {
     public void pushButton(Team team) {
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(100);
             if (team == Team.RED) {
                 if (beaconColor.blueColor() > 60) {
-                    robot.pusherRight.setPosition(0.2);
+                    robot.pusherRight.setPosition(0.1);
                 } else {
-                    robot.pusherLeft.setPosition(0.8);
+                    robot.pusherLeft.setPosition(0.9);
                 }
             } else {
                 if (beaconColor.blueColor() > 60) {
-                    robot.pusherRight.setPosition(0.8);
+                    robot.pusherLeft.setPosition(0.9);
                 } else {
-                    robot.pusherLeft.setPosition(0.2);
+                    robot.pusherRight.setPosition(0.1);
                 }
             }
 
-            Thread.sleep(1000);
+            Thread.sleep(600);
             robot.pusherRight.setPosition(0.8);
             robot.pusherLeft.setPosition(0.2);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    public void pusherActive(boolean state) {
+        if (state) {
+            robot.pusherRight.setPosition(0.2);
+            robot.pusherLeft.setPosition(0.8);
+        } else {
+            robot.pusherRight.setPosition(0.8);
+            robot.pusherLeft.setPosition(0.2);
+        }
+    }
+
+    public void close() {
+        navXDevice.close();
     }
 
     //Set the PID values for the NavX sensor

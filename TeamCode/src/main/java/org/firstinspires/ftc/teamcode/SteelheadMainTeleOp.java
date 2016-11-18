@@ -60,8 +60,6 @@ public class SteelheadMainTeleOp extends OpMode{
     // use the defined hardware class for the robot
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
-    private LinearOpMode currentOpMode;
-
     @Override
     public void init() {
         /* Initialize the hardware variables.
@@ -89,8 +87,6 @@ public class SteelheadMainTeleOp extends OpMode{
 
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
-
-
 
         int num = 0;
 

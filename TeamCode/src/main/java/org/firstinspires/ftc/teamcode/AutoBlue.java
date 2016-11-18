@@ -12,16 +12,15 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 @Autonomous(name = "Button Pusher - Blue", group = "Button")
 //@Disabled
 public class AutoBlue extends LinearOpMode {
-
-    private final byte NAVX_DIM_I2C_PORT = 0;
+    private final byte NAVX_DIM_I2C_PORT = 1;
     private final double TOLERANCE_DEGREES = 2.0;
 
-    private double MAX_OUTPUT_DRIVE = 0.5;
-    private double MIN_OUTPUT_DRIVE = -0.5;
-    private double MAX_OUTPUT_ROTATE = 0.25;
-    private double MIN_OUTPUT_ROTATE = -0.25;
-    private double MAX_OUTPUT_LINE = 0.25;
-    private double MIN_OUTPUT_LINE = -0.25;
+    private double MAX_OUTPUT_DRIVE = 0.65;
+    private double MIN_OUTPUT_DRIVE = -0.15;
+    private double MAX_OUTPUT_ROTATE = 0.15;
+    private double MIN_OUTPUT_ROTATE = -0.15;
+    private double MAX_OUTPUT_LINE = 0.30;
+    private double MIN_OUTPUT_LINE = -0.15;
 
     private AutoRobotFunctions autoRobotFunctions;
 
@@ -30,66 +29,61 @@ public class AutoBlue extends LinearOpMode {
 
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
+        robot.init(hardwareMap);
+
         autoRobotFunctions = new AutoRobotFunctions(NAVX_DIM_I2C_PORT, hardwareMap, this, robot);
 
         //Setup the PID values for the NavX sensor
-        autoRobotFunctions.setNavXPID(0.06, 0.0012, 0.85);
+        autoRobotFunctions.setNavXPID(0.33, 0.0008, 0.95);
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
-        //Initialize the hardware
-        robot.init(hardwareMap);
 
         telemetry.addData("STATUS:", "init complete");
         telemetry.update();
 
         //wait for start of the match
+        robot.setPoliceLED(true);
         waitForStart();
+        robot.setPoliceLED(true);
 
-        robot.robotBackward();
+        robot.robotForward();
+        //autoRobotFunctions.pusherActive(true);
         autoRobotFunctions.runWithEncoders(500, 0.25);
 
         autoRobotFunctions.navxRotateToDegree(45.0, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-        //TODO: check this degree it could work with -45.0 degrees
-        autoRobotFunctions.navXDriveStraight(135.0, TOLERANCE_DEGREES,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, 0.50, 500, 0.005, 0.05,
-                AutoRobotFunctions.StopConditions.COLOR, 8);
+        autoRobotFunctions.navXDriveStraight(45.0, TOLERANCE_DEGREES,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, 0.50, 3900, 0.0005, 0.1,
+                AutoRobotFunctions.StopConditions.COLOR, 20);
 
-        robot.robotForward();
-
-        autoRobotFunctions.runWithEncoders(80, 0.25);
-
-        robot.robotBackward();
-
-        autoRobotFunctions.PIDLineFollow(3, 22, 0.10, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON);
+        //autoRobotFunctions.pusherActive(false);
+        autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
 
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
 
-        robot.robotForward();
-
-        autoRobotFunctions.runWithEncoders(700, 0.25);
-
         robot.robotBackward();
+        autoRobotFunctions.runWithEncoders(1000, 0.35);
 
+        robot.robotForward();
+        //autoRobotFunctions.pusherActive(true);
         autoRobotFunctions.navxRotateToDegree(0.0, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-        autoRobotFunctions.runWithEncoders(10, 0.20);
-
-        autoRobotFunctions.navxRotateToDegree(0.0, TOLERANCE_DEGREES,
-                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+        autoRobotFunctions.runWithEncoders(500, 0.35);
 
         autoRobotFunctions.navXDriveStraight(0.0, TOLERANCE_DEGREES, MIN_OUTPUT_DRIVE,
-                MAX_OUTPUT_DRIVE, 0.25, 500, 0.005, 0.05,
-                AutoRobotFunctions.StopConditions.COLOR, 8);
-        robot.robotForward();
-        autoRobotFunctions.runWithEncoders(80, 0.25);
-        robot.robotBackward();
-        autoRobotFunctions.PIDLineFollow(3, 22, 0.10, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON);
+                MAX_OUTPUT_DRIVE, 0.5, 2700, 0.0005, 0.1,
+                AutoRobotFunctions.StopConditions.COLOR, 20);
+
+        //autoRobotFunctions.pusherActive(false);
+        autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
+        autoRobotFunctions.close();
+        robot.setPoliceLED(false);
+        robot.close();
 
         telemetry.addData("STATUS:", "Complete");
         telemetry.update();

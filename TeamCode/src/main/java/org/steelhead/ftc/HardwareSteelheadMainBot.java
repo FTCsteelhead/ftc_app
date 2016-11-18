@@ -138,4 +138,15 @@ public class HardwareSteelheadMainBot {
     public boolean isRobotBackward() {
         return isRobotBackward;
     }
+
+    public void close() {
+        leftMotor.close();
+        rightMotor.close();
+        pusherLeft.close();
+        pusherRight.close();
+        color.close();
+        beaconColor.close();
+        touchSensor.close();
+        policeLED.close();
+    }
 }
