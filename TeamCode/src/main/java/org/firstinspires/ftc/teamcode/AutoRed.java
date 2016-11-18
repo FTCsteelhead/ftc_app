@@ -47,7 +47,11 @@ public class AutoRed extends LinearOpMode {
         autoRobotFunctions = new AutoRobotFunctions(NAVX_DIM_I2C_PORT, hardwareMap, this, robot);
 
         //Setup the PID values for the NavX sensor
-        autoRobotFunctions.setNavXPID(0.33, 0.0008, 0.95);
+        //TODO: adjust values for drive straight
+        autoRobotFunctions.setNavXPIDDriveStraight(0.33, 0.0008, 0.95);
+        autoRobotFunctions.setNavXPIDTurn(0.33, 0.0008, 0.95);
+
+        //TODO: also this needs work
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
 

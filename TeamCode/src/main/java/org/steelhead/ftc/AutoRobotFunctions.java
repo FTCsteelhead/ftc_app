@@ -18,9 +18,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class AutoRobotFunctions {
 
     //PID Values for the navX sensor
-    private double navKP;
-    private double navKI;
-    private double navKD;
+    private double navKPdrive;
+    private double navKIdrive;
+    private double navKDdrive;
+
+    private double navKPturn;
+    private double navKIturn;
+    private double navKDturn;
 
     //PID Values for the Modern Robotics Sensor
     private double colorKP;
@@ -93,7 +97,7 @@ public class AutoRobotFunctions {
         yawPIDController.setContinuous(true);
         yawPIDController.setOutputRange(minMotorOutput, maxMotorOutput);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, tolerance);
-        yawPIDController.setPID(navKP, navKI, navKD);
+        yawPIDController.setPID(navKPturn, navKIturn, navKDturn);
 
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
         yawPIDController.enable(true);
@@ -145,7 +149,7 @@ public class AutoRobotFunctions {
         yawPIDController.setContinuous(true);
         yawPIDController.setOutputRange(minOutputRage, maxOutputRange);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, tolerance);
-        yawPIDController.setPID(navKP, navKI, navKD);
+        yawPIDController.setPID(navKPdrive, navKIdrive, navKDdrive);
         yawPIDController.enable(true);
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
 
@@ -361,10 +365,16 @@ public class AutoRobotFunctions {
     }
 
     //Set the PID values for the NavX sensor
-    public void setNavXPID(double Kp, double Ki, double Kd) {
-        this.navKP = Kp;
-        this.navKI = Ki;
-        this.navKD = Kd;
+    public void setNavXPIDDriveStraight(double Kp, double Ki, double Kd) {
+        this.navKPdrive = Kp;
+        this.navKIdrive = Ki;
+        this.navKDdrive = Kd;
+    }
+
+    public void setNavXPIDTurn(double Kp, double Ki, double Kd) {
+        this.navKPturn = Kp;
+        this.navKIturn = Ki;
+        this.navKDturn = Kd;
     }
 
     //Set the PID values for Color sensor
