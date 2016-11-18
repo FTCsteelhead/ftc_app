@@ -109,7 +109,6 @@ public class AutoRobotFunctions {
                     } else {
                         double output = yawPIDResult.getOutput();
                         leftMotor.setPower(output);
-                        //TODO: set the correct motor side to negative so it turns the correct direction
                         rightMotor.setPower(-output);
                     }
                 }
@@ -157,7 +156,7 @@ public class AutoRobotFunctions {
                currentOpMode.telemetry.addData("Right Encoder", rightMotor.getCurrentPosition());
                 currentOpMode.telemetry.addData("Left Encoder", leftMotor.getCurrentPosition());
                 //ramp the motor up to prevent damage and jerk
-                //TODO: Check this function to see if it works
+
                 /*if (!rampComplete && rampTime.milliseconds() <= 500) {
                     int error = (int) rampTime.milliseconds();
                     workingForwardSpeed = error * rampMul;
@@ -189,7 +188,6 @@ public class AutoRobotFunctions {
                     } else {
                         double output = yawPIDResult.getOutput();
                         leftMotor.setPower(limit((workingForwardSpeed + output), minOutputRage, maxOutputRange));
-                        //TODO: set the correct motor side to negative so it turns the correct direction
                         rightMotor.setPower(limit((workingForwardSpeed - output), minOutputRage, maxOutputRange));
                         currentOpMode.telemetry.addData("Output: ", output);
                         currentOpMode.telemetry.addData("Target: ", navXDevice.getYaw());
@@ -202,7 +200,7 @@ public class AutoRobotFunctions {
             This is basically a P controller.
             If the multiplier is equal to -1 turn off the speed reduction
             */
-                //TODO: use this as a structure for a motor ramp function
+
                 if (motorSpeedMul != -1) {
                     if (rampComplete && rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
                         int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
@@ -239,17 +237,28 @@ public class AutoRobotFunctions {
         pidController.enable();
 
         while (currentOpMode.opModeIsActive()) {
+
             if (stopConditions == StopConditions.BUTTON && touchSensor.isPressed()) {
                 leftMotor.setPower(0);
                 rightMotor.setPower(0);
                 break;
             }
             double output = pidController.getOutput();
-            //TODO: Check sides of the line follower
+
             if (lineSide == LineSide.LEFT) {
-                leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
-                rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+                if(navXDevice.getYaw() >= 180 || navXDevice.getYaw() <= -180) {
+                    leftMotor.setPower((limit((driveSpeed - output), minOutputVal, maxOutputVal))*-1);
+                    rightMotor.setPower((limit((driveSpeed + output), minOutputVal, maxOutputVal))*-1);
+                }
+                else {
+                    leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
+                    rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+                }
             } else {
+                if(navXDevice.getYaw() >= 180 || navXDevice.getYaw() <= -180){
+                    leftMotor.setPower((limit((driveSpeed - output), minOutputVal, maxOutputVal))*-1);
+                    rightMotor.setPower((limit((driveSpeed + output), minOutputVal, maxOutputVal))*-1);
+                }
                 leftMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
                 rightMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
             }
@@ -263,7 +272,7 @@ public class AutoRobotFunctions {
         ElapsedTime rampTime = new ElapsedTime();
         double rampUpMul = motorPower / 500;
         double rampDownMul = motorPower / 30;
-        double workingForwardSpeed = 0;
+        double workingForwardSpeed;
 
         robot.stopAndClearEncoders();
         robot.enableEncoders(true);
