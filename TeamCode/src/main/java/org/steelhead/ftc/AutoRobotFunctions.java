@@ -18,9 +18,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class AutoRobotFunctions {
 
     //PID Values for the navX sensor
-    private double navKP;
-    private double navKI;
-    private double navKD;
+    private double navKPdrive;
+    private double navKIdrive;
+    private double navKDdrive;
+
+    private double navKPturn;
+    private double navKIturn;
+    private double navKDturn;
 
     //PID Values for the Modern Robotics Sensor
     private double colorKP;
@@ -93,7 +97,7 @@ public class AutoRobotFunctions {
         yawPIDController.setContinuous(true);
         yawPIDController.setOutputRange(minMotorOutput, maxMotorOutput);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, tolerance);
-        yawPIDController.setPID(navKP, navKI, navKD);
+        yawPIDController.setPID(navKPturn, navKIturn, navKDturn);
 
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
         yawPIDController.enable(true);
@@ -146,7 +150,7 @@ public class AutoRobotFunctions {
         yawPIDController.setContinuous(true);
         yawPIDController.setOutputRange(minOutputRage, maxOutputRange);
         yawPIDController.setTolerance(navXPIDController.ToleranceType.ABSOLUTE, tolerance);
-        yawPIDController.setPID(navKP, navKI, navKD);
+        yawPIDController.setPID(navKPdrive, navKIdrive, navKDdrive);
         yawPIDController.enable(true);
         navXPIDController.PIDResult yawPIDResult = new navXPIDController.PIDResult();
 
@@ -157,7 +161,7 @@ public class AutoRobotFunctions {
                currentOpMode.telemetry.addData("Right Encoder", rightMotor.getCurrentPosition());
                 currentOpMode.telemetry.addData("Left Encoder", leftMotor.getCurrentPosition());
                 //ramp the motor up to prevent damage and jerk
-                //TODO: Check this function to see if it works
+
                 /*if (!rampComplete && rampTime.milliseconds() <= 500) {
                     int error = (int) rampTime.milliseconds();
                     workingForwardSpeed = error * rampMul;
@@ -202,7 +206,7 @@ public class AutoRobotFunctions {
             This is basically a P controller.
             If the multiplier is equal to -1 turn off the speed reduction
             */
-                //TODO: use this as a structure for a motor ramp function
+
                 if (motorSpeedMul != -1) {
                     if (rampComplete && rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
                         int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
@@ -231,10 +235,7 @@ public class AutoRobotFunctions {
     public void PIDLineFollow(int threshHoldLow, int threshHoldHigh,
                               double driveSpeed, double minOutputVal,
                               double maxOutputVal, double tolerance,
-                              StopConditions stopConditions, LineSide lineSide,
-                              double rotationLimitDegree, boolean degreeLimitOn) {
-        double currentAngle;
-
+                              StopConditions stopConditions, LineSide lineSide) {
         ColorPIDController pidController = new ColorPIDController(this.color,
                 threshHoldLow, threshHoldHigh);
         pidController.setPID(colorKP, colorKI, colorKD);
@@ -249,7 +250,7 @@ public class AutoRobotFunctions {
                 break;
             }
             double output = pidController.getOutput();
-            //TODO: Check sides of the line follower
+
             if (lineSide == LineSide.LEFT) {
                 leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
                 rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
@@ -274,7 +275,7 @@ public class AutoRobotFunctions {
         ElapsedTime rampTime = new ElapsedTime();
         double rampUpMul = motorPower / 500;
         double rampDownMul = motorPower / 30;
-        double workingForwardSpeed = 0;
+        double workingForwardSpeed;
 
         robot.stopAndClearEncoders();
         robot.enableEncoders(true);
@@ -363,10 +364,16 @@ public class AutoRobotFunctions {
     }
 
     //Set the PID values for the NavX sensor
-    public void setNavXPID(double Kp, double Ki, double Kd) {
-        this.navKP = Kp;
-        this.navKI = Ki;
-        this.navKD = Kd;
+    public void setNavXPIDDriveStraight(double Kp, double Ki, double Kd) {
+        this.navKPdrive = Kp;
+        this.navKIdrive = Ki;
+        this.navKDdrive = Kd;
+    }
+
+    public void setNavXPIDTurn(double Kp, double Ki, double Kd) {
+        this.navKPturn = Kp;
+        this.navKIturn = Ki;
+        this.navKDturn = Kd;
     }
 
     //Set the PID values for Color sensor
@@ -380,5 +387,4 @@ public class AutoRobotFunctions {
     private double limit(double a, double minOutputVal, double maxOutputVal) {
         return Math.min(Math.max(a, minOutputVal), maxOutputVal);
     }
-
 }
