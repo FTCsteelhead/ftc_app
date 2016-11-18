@@ -59,7 +59,7 @@ public class AutoBlue extends LinearOpMode {
 
         //autoRobotFunctions.pusherActive(false);
         autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT, 90, true);
 
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
 
@@ -79,7 +79,7 @@ public class AutoBlue extends LinearOpMode {
 
         //autoRobotFunctions.pusherActive(false);
         autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT, 90, true);
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
         autoRobotFunctions.close();
         robot.setPoliceLED(false);

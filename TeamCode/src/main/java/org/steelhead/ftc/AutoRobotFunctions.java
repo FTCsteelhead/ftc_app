@@ -231,7 +231,10 @@ public class AutoRobotFunctions {
     public void PIDLineFollow(int threshHoldLow, int threshHoldHigh,
                               double driveSpeed, double minOutputVal,
                               double maxOutputVal, double tolerance,
-                              StopConditions stopConditions, LineSide lineSide) {
+                              StopConditions stopConditions, LineSide lineSide,
+                              double rotationLimitDegree, boolean degreeLimitOn) {
+        double currentAngle;
+
         ColorPIDController pidController = new ColorPIDController(this.color,
                 threshHoldLow, threshHoldHigh);
         pidController.setPID(colorKP, colorKI, colorKD);
@@ -239,6 +242,7 @@ public class AutoRobotFunctions {
         pidController.enable();
 
         while (currentOpMode.opModeIsActive()) {
+            currentAngle = navXDevice.getYaw();
             if (stopConditions == StopConditions.BUTTON && touchSensor.isPressed()) {
                 leftMotor.setPower(0);
                 rightMotor.setPower(0);
@@ -249,10 +253,17 @@ public class AutoRobotFunctions {
             if (lineSide == LineSide.LEFT) {
                 leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
                 rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+                if (degreeLimitOn && currentAngle <= rotationLimitDegree - 45.0) {
+                    lineSide = LineSide.RIGHT;
+                }
             } else {
                 leftMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
                 rightMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
+                if (degreeLimitOn && currentAngle >= rotationLimitDegree + 45.0) {
+                    lineSide = LineSide.LEFT;
+                }
             }
+
         }
         pidController.disable();
     }
@@ -369,4 +380,5 @@ public class AutoRobotFunctions {
     private double limit(double a, double minOutputVal, double maxOutputVal) {
         return Math.min(Math.max(a, minOutputVal), maxOutputVal);
     }
+
 }
