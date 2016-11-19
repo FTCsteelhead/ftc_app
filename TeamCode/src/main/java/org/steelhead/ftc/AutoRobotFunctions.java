@@ -235,38 +235,49 @@ public class AutoRobotFunctions {
     public void PIDLineFollow(int threshHoldLow, int threshHoldHigh,
                               double driveSpeed, double minOutputVal,
                               double maxOutputVal, double tolerance,
-                              StopConditions stopConditions, LineSide lineSide) {
+                              StopConditions stopConditions, LineSide lineSide,
+                              double rotationLimitDegree, boolean degreeLimitOn) {
+        double currentAngle;
         ColorPIDController pidController = new ColorPIDController(this.color,
                 threshHoldLow, threshHoldHigh);
         pidController.setPID(colorKP, colorKI, colorKD);
         pidController.setTolerance(tolerance);
         pidController.enable();
 
-        while (currentOpMode.opModeIsActive()) {
-            currentAngle = navXDevice.getYaw();
-            if (stopConditions == StopConditions.BUTTON && touchSensor.isPressed()) {
-                leftMotor.setPower(0);
-                rightMotor.setPower(0);
-                break;
-            }
-            double output = pidController.getOutput();
-
-            if (lineSide == LineSide.LEFT) {
-                leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
-                rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
-                if (degreeLimitOn && currentAngle <= rotationLimitDegree - 45.0) {
-                    lineSide = LineSide.RIGHT;
+        try {
+            //Sleep to allow the pid controller to calculate a first value
+            Thread.sleep(100);
+            while (currentOpMode.opModeIsActive()) {
+                currentAngle = navXDevice.getYaw();
+                if (stopConditions == StopConditions.BUTTON && touchSensor.isPressed()) {
+                    leftMotor.setPower(0);
+                    rightMotor.setPower(0);
+                    break;
                 }
-            } else {
-                leftMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
-                rightMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
-                if (degreeLimitOn && currentAngle >= rotationLimitDegree + 45.0) {
-                    lineSide = LineSide.LEFT;
-                }
-            }
+                double output = pidController.getOutput();
 
+                if (lineSide == LineSide.LEFT) {
+                    leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
+                    rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+                    //TODO: test this with these enabled and disabled to see if they break it or make it better
+                    //if you do a rotate first this function should work. with some more tweaking it can work without the rotate
+                    if (degreeLimitOn && currentAngle <= rotationLimitDegree - 45.0) {
+                        lineSide = LineSide.RIGHT;
+                    }
+                } else {
+                    leftMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+                    rightMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
+                    if (degreeLimitOn && currentAngle >= rotationLimitDegree + 45.0) {
+                        lineSide = LineSide.LEFT;
+                    }
+                }
+
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            pidController.disable();
         }
-        pidController.disable();
     }
 
     //Drive to an encoder limit
