@@ -57,7 +57,8 @@ public class AutoClassTest extends LinearOpMode {
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
         robot.init(hardwareMap);
         AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions((byte) 1, hardwareMap, this, robot);
-        autoRobotFunctions.setNavXPID(0.33, 0.0008, 0.95);
+        autoRobotFunctions.setNavXPIDDriveStraight(0.33, 0.0008, 0.95);
+        autoRobotFunctions.setNavXPIDTurn(0.33, 0.0008, 0.95);
         robot.robotForward();
 
 

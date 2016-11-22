@@ -9,7 +9,7 @@ public class ArrayQueue<AnyType> {
     private int head;
     private int tail;
 
-    private static final int DEAFAULT_SIZE = 4;
+    private static final int DEFAULT_SIZE = 4;
 
     @SuppressWarnings("unchecked")
     private AnyType[] newQueue(int size) {
@@ -17,7 +17,7 @@ public class ArrayQueue<AnyType> {
     }
 
     public ArrayQueue() {
-        queue = newQueue(DEAFAULT_SIZE);
+        queue = newQueue(DEFAULT_SIZE);
         queueSize = queue.length;
         head = 0;
         tail = 0;

@@ -76,7 +76,7 @@ public class AutoRed extends LinearOpMode {
 
         //autoRobotFunctions.pusherActive(false);
         autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT, 90, true);
 
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
 
@@ -99,7 +99,7 @@ public class AutoRed extends LinearOpMode {
         robot.robotForward();*/
         //autoRobotFunctions.pusherActive(false);
         autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT, 90, true);
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
 
         autoRobotFunctions.close();
