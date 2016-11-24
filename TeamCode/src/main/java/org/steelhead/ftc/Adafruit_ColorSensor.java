@@ -171,6 +171,7 @@ public class Adafruit_ColorSensor implements I2cController.I2cPortReadyCallback 
         csDev.writeI2cCacheToController();
     }
 
+
     private void executeCommands() {
         boolean isRead  = false;
         boolean isWrite = false;
