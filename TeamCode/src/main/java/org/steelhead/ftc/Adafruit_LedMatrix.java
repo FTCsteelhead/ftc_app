@@ -12,6 +12,8 @@ import java.util.concurrent.locks.Lock;
  * to multiplexer converter. It supports different blink speeds and a low power sleep mode.
  */
 
+//// TODO: 11/25/16 Add methods to turn off the display and put it into sleep mode
+
 public class Adafruit_LedMatrix implements I2cController.I2cPortReadyCallback {
 
     static final short
@@ -141,6 +143,10 @@ public class Adafruit_LedMatrix implements I2cController.I2cPortReadyCallback {
         }
     }
 
+    public void updateDisplay() {
+        addUpdateScreenRequest();
+    }
+
     public void close() {
         transferQueue.close();
         dev.deregisterForPortReadyCallback();
@@ -195,7 +201,7 @@ public class Adafruit_LedMatrix implements I2cController.I2cPortReadyCallback {
             wCache[CACHE_MODE] = WRITE_MODE;
             wCache[DEV_ADDR] = (byte)(devAddr & 0xFF);
             wCache[REG_ADDR] = (byte)(regAddr & 0xFF);
-            wCache[REG_COUNT] = 0;
+            wCache[REG_COUNT] = 1;
 
             wCache[ACTION_FLAG] = -1;
         } finally {
@@ -229,6 +235,7 @@ public class Adafruit_LedMatrix implements I2cController.I2cPortReadyCallback {
     }
 
     private void addUpdateScreenRequest() {
+
         addRequest(new I2cTransferHT16K33(false));
     }
 

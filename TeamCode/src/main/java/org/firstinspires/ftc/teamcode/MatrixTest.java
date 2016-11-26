@@ -36,22 +36,25 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.steelhead.ftc.Adafruit_GFX;
 import org.steelhead.ftc.Adafruit_LedMatrix;
 
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Concept: NullOp", group = "Concept")
+@Autonomous(name = "Concept: LED Matrix", group = "Concept")
 //@Disabled
 public class MatrixTest extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private Adafruit_LedMatrix ledMatrix;
+    private Adafruit_GFX adafruitGfx;
 
     @Override
     public void init() {
         telemetry.addData("Status", "Initialized");
         ledMatrix = new Adafruit_LedMatrix(hardwareMap, "matrix");
+        adafruitGfx = new Adafruit_GFX(ledMatrix, (byte)8, (byte)8);
     }
 
     @Override
@@ -61,7 +64,12 @@ public class MatrixTest extends OpMode {
 
     @Override
     public void start() {
+
         runtime.reset();
+        adafruitGfx.fillScreen(Adafruit_LedMatrix.Color.GREEN);
+        adafruitGfx.drawRect((byte)2,(byte)2,(byte)4,(byte)4, Adafruit_LedMatrix.Color.RED);
+        adafruitGfx.drawRect((byte)3,(byte)3,(byte)2,(byte)2, Adafruit_LedMatrix.Color.YELLOW);
+        ledMatrix.updateDisplay();
     }
 
     @Override
