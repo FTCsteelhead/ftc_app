@@ -49,6 +49,7 @@ public class MatrixTest extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private Adafruit_LedMatrix ledMatrix;
     private Adafruit_GFX adafruitGfx;
+    private Thread t;
 
     @Override
     public void init() {
@@ -66,14 +67,61 @@ public class MatrixTest extends OpMode {
     public void start() {
 
         runtime.reset();
-        adafruitGfx.fillScreen(Adafruit_LedMatrix.Color.GREEN);
-        adafruitGfx.drawRect((byte)2,(byte)2,(byte)4,(byte)4, Adafruit_LedMatrix.Color.RED);
-        adafruitGfx.drawRect((byte)3,(byte)3,(byte)2,(byte)2, Adafruit_LedMatrix.Color.YELLOW);
+        adafruitGfx.drawChar((byte)1, (byte)1,'@', Adafruit_LedMatrix.Color.RED );
         ledMatrix.updateDisplay();
+        adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.RED);
+
+         t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.RED);
+                    for (int i = 7; i >= -45; i--) {
+                        ledMatrix.clearDisplay();
+                        adafruitGfx.setCursor(i, 1);
+                        adafruitGfx.print("Steelhead");
+                        ledMatrix.updateDisplay();
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.YELLOW);
+                    for (int i = 7; i >= -20; i--) {
+                        ledMatrix.clearDisplay();
+                        adafruitGfx.setCursor(i, 1);
+                        adafruitGfx.print("8176");
+                        ledMatrix.updateDisplay();
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.GREEN);
+
+                    for (int i = 7; i >= -55; i--) {
+                        ledMatrix.clearDisplay();
+                        adafruitGfx.setCursor(i, 1);
+                        adafruitGfx.print("MIG Sucks! ");
+                        ledMatrix.updateDisplay();
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+        t.start();
     }
 
     @Override
     public void loop() {
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+
     }
+
 }

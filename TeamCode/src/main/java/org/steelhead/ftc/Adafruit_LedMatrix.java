@@ -110,7 +110,7 @@ public class Adafruit_LedMatrix implements I2cController.I2cPortReadyCallback {
     }
 
     public void clearDisplay() {
-        for (int i=0; i<16; i++) {
+        for (int i=0; i<8; i++) {
             ramBuffer[i] = 0;
         }
     }
