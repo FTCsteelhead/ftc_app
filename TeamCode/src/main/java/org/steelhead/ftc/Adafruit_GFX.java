@@ -11,13 +11,61 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Adafruit_GFX {
     private Adafruit_LedMatrix ledMatrix;
     private byte width, height;
+    private int cursorX, cursorY;
+    private Adafruit_LedMatrix.Color textColor = Adafruit_LedMatrix.Color.GREEN;
+    private final char [] font;
 
     public Adafruit_GFX(Adafruit_LedMatrix ledMatrix, byte width, byte height) {
         this.ledMatrix = ledMatrix;
         this.width = width;
         this.height = height;
+        Font f = new Font();
+        font = f.font;
+    }
+    public void write(char c) {
+        if (c == '\n') {
+            cursorY += 8;
+            cursorX = 0;
+        } else if (c=='\r') {
+            //Do nothing
+        }else {
+            drawChar((byte)cursorX,(byte) cursorY, c, textColor);
+            cursorX += 6;
+        }
     }
 
+    public  void print(String s) {
+        int length = s.length();
+        for (int i = 0; i < length; i++) {
+            write(s.charAt(i));
+        }
+    }
+    public void drawChar(byte x, byte y, char c, Adafruit_LedMatrix.Color color) {
+        if ((x >= width) || (y >= height) || (x+6 < 0) || (y+8 < 0))
+            return;
+
+        for (int i = 0; i<6; i++) {
+            char line;
+            if (i < 5) {
+                line = font[(5*(c-32))+i];
+            }
+            else {
+                line = 0x0;
+            }
+            for (int j = 0; j<8; j++, line >>=1) {
+                if ((line & 0x1) == 1) {
+                    ledMatrix.drawPixel((byte)(x+i), (byte)(y+j), color);
+                }
+            }
+        }
+    }
+    public void setCursor(int x, int y) {
+        cursorX = x;
+        cursorY = y;
+    }
+    public void setTextColor(Adafruit_LedMatrix.Color color) {
+        this.textColor = color;
+    }
     public void drawRect(byte x, byte y, byte w, byte h, Adafruit_LedMatrix.Color color) {
         drawFastHLine(x, y, w, color);
         drawFastHLine(x,(byte)(y+h-1), w, color);
