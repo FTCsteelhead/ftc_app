@@ -97,6 +97,8 @@ public class MRGyroPID extends LinearOpMode {
             }
             lastResetState = curResetState;
 
+
+
             // get the x, y, and z values (rate of change of angle).
             xVal = gyro.rawX();
             yVal = gyro.rawY();

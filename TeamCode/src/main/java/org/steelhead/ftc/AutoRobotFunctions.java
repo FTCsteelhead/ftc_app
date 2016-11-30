@@ -78,7 +78,7 @@ public class AutoRobotFunctions {
                 navXDevicePortNumber, AHRS.DeviceDataType.kProcessedData,
                 NAVX_DEVICE_UPDATE_RATE_HZ);
 
-        while (!calibrationComplete && currentOpMode.opModeIsActive()) {
+      /*  while (!calibrationComplete && currentOpMode.opModeIsActive()) {
             calibrationComplete = !navXDevice.isCalibrating();
             currentOpMode.telemetry.addData("CAL: ", "NavX device calibrating");
             currentOpMode.telemetry.update();
@@ -88,7 +88,7 @@ public class AutoRobotFunctions {
             currentOpMode.telemetry.addData("ERROR: ", "NavX not connected");
             currentOpMode.telemetry.update();
         }
-        navXDevice.zeroYaw();
+        navXDevice.zeroYaw();*/
     }
     public AutoRobotFunctions(LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
         this.robot = robot;
@@ -107,6 +107,8 @@ public class AutoRobotFunctions {
             currentOpMode.telemetry.addData("Gyro", "Calibrating. Do Not Move!!");
             currentOpMode.telemetry.update();
         }
+
+        currentOpMode.telemetry.addData("Gyro", "Calibration COmplete");
     }
 
     //MR Gyro rotate PID
@@ -116,11 +118,11 @@ public class AutoRobotFunctions {
         GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
         pidController.setPID(gyroKP, gyroKI, gyroKD);
         pidController.enable();
-
+     //  gyro.resetZAxisIntegrator();
         try {
             Thread.sleep(100);
             while (!rotationComplete && currentOpMode.opModeIsActive()) {
-
+                currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue() );
                 if (pidController.isOnTarget()) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
@@ -146,10 +148,12 @@ public class AutoRobotFunctions {
         pidController.setPID(gyroKP, gyroKI, gyroKD);
         pidController.enable();
 
+
         try {
             //Sleep to allow the pid controller to calculate a first value
             Thread.sleep(100);
             while (currentOpMode.opModeIsActive()) {
+                currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue() );
                 if (stopCondition == StopConditions.COLOR && color.alpha() > stopVal) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);

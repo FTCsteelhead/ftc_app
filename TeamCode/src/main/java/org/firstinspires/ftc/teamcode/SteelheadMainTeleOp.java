@@ -64,6 +64,12 @@ public class SteelheadMainTeleOp extends OpMode{
     int num1 = 0;
     int num2 = 0;
     int num3 = 0;
+
+    double left = 0;
+    double right = 0;
+    double speed = 0.5;
+    double rampTime = 0.25;//seconds
+    double positionChange = 0.03;
     @Override
     public void init() {
         /* Initialize the hardware variables.
@@ -86,13 +92,8 @@ public class SteelheadMainTeleOp extends OpMode{
 
     @Override
     public void loop() {
-        double left = 0;
-        double right = 0;
-        double speed = 0.5;
-        double rampTime = 0.25;//seconds
-        double positionChange = 0.03;
 
-        // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
+
 
 
         if(gamepad2.a)
@@ -117,10 +118,10 @@ public class SteelheadMainTeleOp extends OpMode{
            num2++;
 
         if(num2 % 2 == 0)
-            robot.shooterServo.setPosition(0.0);
+            robot.shooterServo.setPosition(0.2);
 
         if(num2 % 2 == 1)
-            robot.shooterServo.setPosition(1.0);
+            robot.shooterServo.setPosition(0.8);
 
 
 
