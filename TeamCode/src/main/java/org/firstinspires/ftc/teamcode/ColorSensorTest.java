@@ -33,6 +33,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -45,6 +46,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Demonstrates empty OpMode
  */
 @TeleOp(name = "Sensor: Color Sensor", group = "Sensor")
+@Disabled
 public class ColorSensorTest extends LinearOpMode {
 
     private final double MAX_MOTOR_POWER = 0.25;

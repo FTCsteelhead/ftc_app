@@ -219,7 +219,6 @@ public class AutoRobotFunctions {
                     } else {
                         double output = yawPIDResult.getOutput();
                         leftMotor.setPower(output);
-                        //TODO: set the correct motor side to negative so it turns the correct direction
                         rightMotor.setPower(-output);
                     }
                 }
@@ -297,14 +296,14 @@ public class AutoRobotFunctions {
                     if (yawPIDResult.isOnTarget()) {
                         leftMotor.setPower(workingForwardSpeed);
                         rightMotor.setPower(workingForwardSpeed);
-                        currentOpMode.telemetry.addData("Target: ", "On Target");
+                        currentOpMode.telemetry.addData("Yaw", "On Target");
                     } else {
                         double output = yawPIDResult.getOutput();
                         leftMotor.setPower(limit((workingForwardSpeed + output), minOutputRage, maxOutputRange));
-                        //TODO: set the correct motor side to negative so it turns the correct direction
                         rightMotor.setPower(limit((workingForwardSpeed - output), minOutputRage, maxOutputRange));
-                        currentOpMode.telemetry.addData("Output: ", output);
-                        currentOpMode.telemetry.addData("Target: ", navXDevice.getYaw());
+                        currentOpMode.telemetry.addData("Output", output);
+                        currentOpMode.telemetry.addData("Yaw", navXDevice.getYaw());
+                        currentOpMode.telemetry.addData("Target", degree);
                     }
                 } else {
                     currentOpMode.telemetry.addData("navx: ", "DEVICE TIME OUT!");
@@ -325,8 +324,6 @@ public class AutoRobotFunctions {
 
                     }
                 }
-                currentOpMode.telemetry.addData("Light Val: ", color.alpha());
-                currentOpMode.telemetry.addData("Working Speed: ", workingForwardSpeed);
                 currentOpMode.telemetry.update();
             }
         } catch (InterruptedException e) {

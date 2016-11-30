@@ -48,9 +48,6 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 //@Disabled
 public class AutoClassTest extends LinearOpMode {
 
-    private ElapsedTime runtime = new ElapsedTime();
-
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -80,7 +77,6 @@ public class AutoClassTest extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        runtime.reset();
         robot.setPoliceLED(true);
         //autoRobotFunctions.navxRotateToDegree(90, 2, -0.15, 0.15);
        // autoRobotFunctions.navXDriveStraight(0.0, 2, -0.15, 0.65, 0.5, 5000, 0.0005, 0.1,
