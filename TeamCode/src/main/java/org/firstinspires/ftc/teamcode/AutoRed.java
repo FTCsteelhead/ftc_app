@@ -28,7 +28,7 @@ public class AutoRed extends LinearOpMode {
     private final byte NAVX_DIM_I2C_PORT = 1;
     private final double TOLERANCE_DEGREES = 2.0;
 
-    private double MAX_OUTPUT_DRIVE = 0.65;
+    private double MAX_OUTPUT_DRIVE = 0.75;
     private double MIN_OUTPUT_DRIVE = -0.15;
     private double MAX_OUTPUT_ROTATE = 0.15;
     private double MIN_OUTPUT_ROTATE = -0.15;
@@ -65,13 +65,13 @@ public class AutoRed extends LinearOpMode {
 
         robot.robotForward();
         //autoRobotFunctions.pusherActive(true);
-        autoRobotFunctions.runWithEncoders(500, 0.25);
+        autoRobotFunctions.runWithEncoders(500, 1.0);
 
         autoRobotFunctions.navxRotateToDegree(-45.0, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
         autoRobotFunctions.navXDriveStraight(-45.0, TOLERANCE_DEGREES,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, 0.50, 3900, 0.0005, 0.1,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, 1.0, 3900, 0.0005, 0.1,
                 AutoRobotFunctions.StopConditions.COLOR, 20);
 
         //autoRobotFunctions.pusherActive(false);
@@ -81,17 +81,17 @@ public class AutoRed extends LinearOpMode {
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
 
         robot.robotBackward();
-        autoRobotFunctions.runWithEncoders(1000, 0.35);
+        autoRobotFunctions.runWithEncoders(1000, 1.0);
 
         robot.robotForward();
         //autoRobotFunctions.pusherActive(true);
         autoRobotFunctions.navxRotateToDegree(0.0, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-        autoRobotFunctions.runWithEncoders(500, 0.35);
+        autoRobotFunctions.runWithEncoders(500, 1.0);
 
         autoRobotFunctions.navXDriveStraight(0.0, TOLERANCE_DEGREES, MIN_OUTPUT_DRIVE,
-                MAX_OUTPUT_DRIVE, 0.5, 3100, 0.0005, 0.08,
+                MAX_OUTPUT_DRIVE, 1.0, 3100, 0.0005, 0.08,
                 AutoRobotFunctions.StopConditions.COLOR, 20);
         /*robot.robotBackward();
         autoRobotFunctions.runWithEncoders(85, 0.2);

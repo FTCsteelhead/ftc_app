@@ -60,6 +60,10 @@ public class SteelheadMainTeleOp extends OpMode{
     // use the defined hardware class for the robot
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
+    int num = 0;
+    int num1 = 0;
+    int num2 = 0;
+    int num3 = 0;
     @Override
     public void init() {
         /* Initialize the hardware variables.
@@ -90,25 +94,48 @@ public class SteelheadMainTeleOp extends OpMode{
 
         // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
 
-        int num = 0;
 
-        if(gamepad1.a) {
-            num++;
-        }
+        if(gamepad2.a)
+          num++;
 
-        if(gamepad1.b ) {
-            num--;
-        }
+        if(num % 2 == 0)
+            robot.sweeperMotor.setPower(0.0);
+
+        if(num % 2 ==1)
+            robot.sweeperMotor.setPower(1.0);
+
+        if(gamepad2.b)
+            num1++;
+
+        if(num1 % 2 == 0)
+            robot.shooterPower(0.0);
+
+        if(num1 % 2 == 1)
+            robot.shooterPower(1.0);
+
+        if(gamepad2.x)
+           num2++;
+
+        if(num2 % 2 == 0)
+            robot.shooterServo.setPosition(0.0);
+
+        if(num2 % 2 == 1)
+            robot.shooterServo.setPosition(1.0);
 
 
 
-        if(num % 2 == 1) {
+
+
+        if(gamepad1.a)
+            num3++;
+
+
+       if(num3 % 2 == 1)
             robot.robotBackward();
-        }
 
-        if(num % 2 == 0) {
+        if(num3 % 2 == 0)
             robot.robotForward();
-        }
+
 
 
      if(gamepad1.left_stick_y != 0) {

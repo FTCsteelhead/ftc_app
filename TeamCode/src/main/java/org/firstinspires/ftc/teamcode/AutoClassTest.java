@@ -66,10 +66,17 @@ public class AutoClassTest extends LinearOpMode {
         runtime.reset();
         robot.setPoliceLED(true);
         //autoRobotFunctions.navxRotateToDegree(90, 2, -0.15, 0.15);
-        //autoRobotFunctions.navXDriveStraight(0.0, 2, -0.15, 0.65, 0.5, 5000, 0.0005, 0.1,
-                //AutoRobotFunctions.StopConditions.BUTTON, 0);
+       // autoRobotFunctions.navXDriveStraight(0.0, 2, -0.15, 0.65, 0.5, 5000, 0.0005, 0.1,
+              //  AutoRobotFunctions.StopConditions.BUTTON, 0);
 
-        autoRobotFunctions.runWithEncoders(500, 0.25);
+        autoRobotFunctions.runWithEncoders(1000, 0.5);
         robot.setPoliceLED(false);
+
+        autoRobotFunctions.close();
+
+        robot.close();
+
+        telemetry.addData("STATUS:", "Complete");
+        telemetry.update();
     }
 }

@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+
 
 /**
  * Created by Alec Matthews on 9/18/16.
@@ -18,22 +20,32 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 public class HardwareSteelheadMainBot {
     public DcMotor leftMotor                = null;
     public DcMotor rightMotor               = null;
+    public DcMotor sweeperMotor             = null;
+    public DcMotor rightShooterMotor        = null;
+    public DcMotor leftShooterMotor         = null;
     public Servo pusherRight                = null;
     public Servo pusherLeft                 = null;
+    public Servo shooterServo               = null;
     public ColorSensor color                = null;
     public TouchSensor touchSensor          = null;
+    public ModernRoboticsI2cGyro gyro                  = null;
     public Adafruit_ColorSensor beaconColor = null;
     public DigitalChannel policeLED         = null;
 
 
     private String leftMotorName_1  = "leftMotor1";
     private String rightMotorName_1 = "rightMotor1";
+    private String sweeperMotorName = "sweeper";
+    private String rightShooterMotorName = "rightShooter";
+    private String leftShooterMotorName = "leftShooter";
     private String pusherRightName  = "pusherRight";
     private String pusherLeftName   = "pusherLeft";
     private String touchSensorName  = "touch";
     private String colorSensorName  = "color";
+    private String gyroSensorName  = "gyro";
     private String beaconColorName  = "BColor";
     private String policeLEDName    = "policeLED";
+    private String shooterServoName    = "shooter";
 
     private boolean isRobotBackward = false;
 
@@ -42,10 +54,22 @@ public class HardwareSteelheadMainBot {
         leftMotor = aHwMap.dcMotor.get(leftMotorName_1);
         rightMotor = aHwMap.dcMotor.get(rightMotorName_1);
 
+        sweeperMotor = aHwMap.dcMotor.get(sweeperMotorName);
+
+        leftShooterMotor = aHwMap.dcMotor.get(leftShooterMotorName);
+        rightShooterMotor = aHwMap.dcMotor.get(rightShooterMotorName);
         //sets the robot direction to backward
         //TODO: check the directions once the electronics are set up
-        robotBackward();
+        robotForward();
 
+        sweeperMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        sweeperMotor.setPower(0);
+        leftShooterMotor.setPower(0);
+        rightShooterMotor.setPower(0);
 
         robotLeftPower(0);
         robotRightPower(0);
@@ -60,6 +84,10 @@ public class HardwareSteelheadMainBot {
         pusherRight.setPosition(0.8);
         pusherLeft.setPosition(0.2);
 
+        shooterServo = aHwMap.servo.get(shooterServoName);
+
+        shooterServo.setPosition(1.0);
+
         //initialize sensors
         touchSensor = aHwMap.touchSensor.get(touchSensorName);
 
@@ -69,6 +97,8 @@ public class HardwareSteelheadMainBot {
         color.enableLed(false);
         color.enableLed(true);
         color.getManufacturer();
+
+        gyro = (ModernRoboticsI2cGyro)aHwMap.gyroSensor.get(gyroSensorName);
 
         //Adafruit Color sensor
         beaconColor = new Adafruit_ColorSensor(aHwMap, beaconColorName);
@@ -97,6 +127,11 @@ public class HardwareSteelheadMainBot {
 
     public void robotRightPower(double power) {
         rightMotor.setPower(power);
+    }
+
+    public void shooterPower(double power){
+        leftShooterMotor.setPower(power);
+        rightShooterMotor.setPower(power);
     }
 
     public void robotForward() {

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 
 /**
  * Created by Alec Matthews on 11/6/2016.
@@ -31,6 +32,10 @@ public class AutoRobotFunctions {
     private double colorKI;
     private double colorKD;
 
+    private double gyroKP;
+    private double gyroKI;
+    private double gyroKD;
+
     //Movement components of the robot including a robot hardware class
     private HardwareSteelheadMainBot robot;
     private DcMotor leftMotor;
@@ -47,6 +52,7 @@ public class AutoRobotFunctions {
     private Adafruit_ColorSensor beaconColor;
     private TouchSensor touchSensor;
     private DigitalChannel policeLED;
+    private ModernRoboticsI2cGyro gyro;
 
     public enum StopConditions {COLOR, ENCODER, BUTTON}
 
@@ -63,6 +69,7 @@ public class AutoRobotFunctions {
         this.rightMotor = robot.rightMotor;
         this.touchSensor = robot.touchSensor;
         this.color = robot.color;
+        this.gyro = robot.gyro;
         this.beaconColor = robot.beaconColor;
         this.policeLED = robot.policeLED;
 
@@ -82,6 +89,92 @@ public class AutoRobotFunctions {
             currentOpMode.telemetry.update();
         }
         navXDevice.zeroYaw();
+    }
+
+    //MR Gyro rotate PID
+    public void MRRotate(double degree, double tolerance,
+                         double minMotorOutput, double maxMotorOutput) {
+        double currentAngle;
+        boolean rotationComplete = false;
+        GyroPIDController pidController = new GyroPIDController(this.gyro,
+                gyro.getHeading(), tolerance);
+        pidController.setPID(gyroKP, gyroKI, gyroKD);
+        pidController.setTolerance(tolerance);
+        pidController.enable();
+
+        try {
+            while (!rotationComplete && currentOpMode.opModeIsActive()) {
+
+                if (pidController.isOnTarget()) {
+                    leftMotor.setPower(0);
+                    rightMotor.setPower(0);
+                    rotationComplete = true;
+                } else {
+                    double output = pidController.getOutput();
+                    leftMotor.setPower(output);
+                    rightMotor.setPower(-output);
+                }
+            }
+
+
+
+        } finally {
+            pidController.disable();
+        }
+    }
+
+    //PID controller for MR Gyro
+    public void MRDriveStraight(int threshHoldLow, int threshHoldHigh,
+                                double driveSpeed, double minOutputVal,
+                                double maxOutputVal, double tolerance,
+                                StopConditions stopCondition, int stopVal,
+                                double rotationLimitDegree, boolean degreeLimitOn) {
+        double currentAngle;
+        GyroPIDController pidController = new GyroPIDController(this.gyro,
+                gyro.getHeading(), tolerance);
+        pidController.setPID(gyroKP, gyroKI, gyroKD);
+        pidController.setTolerance(tolerance);
+        pidController.enable();
+
+        try {
+            //Sleep to allow the pid controller to calculate a first value
+            Thread.sleep(100);
+            while (currentOpMode.opModeIsActive()) {
+                currentAngle = navXDevice.getYaw();
+                if (stopCondition == StopConditions.COLOR && color.alpha() > stopVal) {
+                    leftMotor.setPower(0);
+                    rightMotor.setPower(0);
+                    break;
+                } else if (stopCondition == StopConditions.ENCODER) {
+                    if (rightMotor.getCurrentPosition() >= stopVal) {
+                        leftMotor.setPower(0);
+                        rightMotor.setPower(0);
+                        break;
+                    }
+                } else if (stopCondition == StopConditions.BUTTON && touchSensor.isPressed()) {
+                    leftMotor.setPower(0);
+                    rightMotor.setPower(0);
+                    break;
+                }
+                double output = pidController.getOutput();
+
+                if(pidController.isOnTarget()) {
+                    leftMotor.setPower(driveSpeed);
+                    rightMotor.setPower(driveSpeed);
+                }
+                else {
+                    leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
+                    rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+
+                }
+
+
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            pidController.disable();
+        }
     }
 
     //PID controller for rotation to a degree
@@ -127,6 +220,8 @@ public class AutoRobotFunctions {
         yawPIDController.close();
         robot.robotSetZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+
+
 
     //Drive straight with a PID controller
     public void navXDriveStraight(double degree, double tolerance,
