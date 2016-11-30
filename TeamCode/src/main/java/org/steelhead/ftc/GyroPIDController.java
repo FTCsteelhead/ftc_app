@@ -1,6 +1,7 @@
 package org.steelhead.ftc;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
 /**
  * Created by Alec Matthews on 10/23/2016.
@@ -15,17 +16,14 @@ public class GyroPIDController {
     @Deprecated
     private boolean isOutputAvailable = false;
 
-    private double output;
+    private volatile double output;
     private boolean isActive = true;
     private double kp;
     private double ki;
     private double kd;
-    private double tolerance;
     private volatile boolean isOnTarget = false;
 
-    public GyroPIDController(final ModernRoboticsI2cGyro gyroSensor, final int angle, double tolerence) {
-       // this.offsetValue = tolerance;
-
+    public GyroPIDController(final ModernRoboticsI2cGyro gyro, final int angle, final int tolerance) {
 
         //Setup the separate thread for calculating the values
         //This is in a separate thread so it doesn't slow down the main thread.
@@ -38,18 +36,12 @@ public class GyroPIDController {
                 double integral = 0;
                 double derivative;
                 while (isActive) {
-
-                    int currentAngle = gyroSensor.getIntegratedZValue();
-                    error = currentAngle - angle;
-
-                    if(currentAngle < angle + tolerance && currentAngle < angle - tolerance)
-                        isOnTarget = true;
+                    int yaw = gyro.getIntegratedZValue();
+                    error = yaw - angle;
                     /*
                     Calculate the integral term. We are clamping it when the sign changes
                     when the error is 0 or when the error value is too big.
                     */
-
-
                     integral = integral + (error*0.017);
                     if (lastError > 0 && error < 0) {
                         integral = 0;
@@ -66,6 +58,12 @@ public class GyroPIDController {
                     lastError = error;
 
                     output = (kp * error) + (ki * integral) + (kd * derivative);
+
+                    if (yaw <= (angle+tolerance) && yaw >= -(angle+tolerance)) {
+                        isOnTarget = true;
+                    } else {
+                        isOnTarget = false;
+                    }
 
                     //Wait for the sensor to gather new values
                     //and slow down the loop so the integral term doesn't get too big too fast
@@ -93,6 +91,9 @@ public class GyroPIDController {
     public void disable() {
         isActive = false;
     }
+    public boolean isOnTarget() {
+        return isOnTarget;
+    }
     @Deprecated
     public boolean isOutputAvailable() {
         return isOutputAvailable;
@@ -100,14 +101,6 @@ public class GyroPIDController {
     //Get the value of calculated by the PID controller
 
     public double getOutput() {
-        if (output < tolerance && output > -tolerance) {
-            return 0;
-        }
         return output;
     }
-    public void setTolerance(double tolerance) {
-        this.tolerance = tolerance;
-    }
-
-    public boolean isOnTarget(){return isOnTarget;}
 }

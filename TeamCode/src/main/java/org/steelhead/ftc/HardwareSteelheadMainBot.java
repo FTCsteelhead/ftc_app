@@ -28,24 +28,24 @@ public class HardwareSteelheadMainBot {
     public Servo shooterServo               = null;
     public ColorSensor color                = null;
     public TouchSensor touchSensor          = null;
-    public ModernRoboticsI2cGyro gyro                  = null;
+    public ModernRoboticsI2cGyro gyro       = null;
     public Adafruit_ColorSensor beaconColor = null;
     public DigitalChannel policeLED         = null;
 
 
-    private String leftMotorName_1  = "leftMotor1";
-    private String rightMotorName_1 = "rightMotor1";
-    private String sweeperMotorName = "sweeper";
-    private String rightShooterMotorName = "rightShooter";
-    private String leftShooterMotorName = "leftShooter";
-    private String pusherRightName  = "pusherRight";
-    private String pusherLeftName   = "pusherLeft";
-    private String touchSensorName  = "touch";
-    private String colorSensorName  = "color";
-    private String gyroSensorName  = "gyro";
-    private String beaconColorName  = "BColor";
-    private String policeLEDName    = "policeLED";
-    private String shooterServoName    = "shooter";
+    private String leftMotorName_1          = "leftMotor1";
+    private String rightMotorName_1         = "rightMotor1";
+    private String sweeperMotorName         = "sweeper";
+    private String rightShooterMotorName    = "rightShooter";
+    private String leftShooterMotorName     = "leftShooter";
+    private String pusherRightName          = "pusherRight";
+    private String pusherLeftName           = "pusherLeft";
+    private String touchSensorName          = "touch";
+    private String colorSensorName          = "color";
+    private String gyroSensorName           = "gyro";
+    private String beaconColorName          = "BColor";
+    private String policeLEDName            = "policeLED";
+    private String shooterServoName         = "shooter";
 
     private boolean isRobotBackward = false;
 

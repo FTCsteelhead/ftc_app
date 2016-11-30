@@ -90,19 +90,35 @@ public class AutoRobotFunctions {
         }
         navXDevice.zeroYaw();
     }
+    public AutoRobotFunctions(LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
+        this.robot = robot;
+        this.currentOpMode = currentOpMode;
+        this.leftMotor = robot.leftMotor;
+        this.rightMotor = robot.rightMotor;
+        this.touchSensor = robot.touchSensor;
+        this.color = robot.color;
+        this.gyro = robot.gyro;
+        this.beaconColor = robot.beaconColor;
+        this.policeLED = robot.policeLED;
+
+        navXDevice = null;
+
+        while (currentOpMode.opModeIsActive() && gyro.isCalibrating()) {
+            currentOpMode.telemetry.addData("Gyro", "Calibrating. Do Not Move!!");
+            currentOpMode.telemetry.update();
+        }
+    }
 
     //MR Gyro rotate PID
-    public void MRRotate(double degree, double tolerance,
+    public void MRRotate(int degree, int tolerance,
                          double minMotorOutput, double maxMotorOutput) {
-        double currentAngle;
         boolean rotationComplete = false;
-        GyroPIDController pidController = new GyroPIDController(this.gyro,
-                gyro.getHeading(), tolerance);
+        GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
         pidController.setPID(gyroKP, gyroKI, gyroKD);
-        pidController.setTolerance(tolerance);
         pidController.enable();
 
         try {
+            Thread.sleep(100);
             while (!rotationComplete && currentOpMode.opModeIsActive()) {
 
                 if (pidController.isOnTarget()) {
@@ -111,36 +127,29 @@ public class AutoRobotFunctions {
                     rotationComplete = true;
                 } else {
                     double output = pidController.getOutput();
-                    leftMotor.setPower(output);
-                    rightMotor.setPower(-output);
+                    leftMotor.setPower(limit(output, minMotorOutput, maxMotorOutput));
+                    rightMotor.setPower(limit(-output, minMotorOutput, maxMotorOutput));
                 }
             }
-
-
-
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } finally {
             pidController.disable();
         }
     }
 
     //PID controller for MR Gyro
-    public void MRDriveStraight(int threshHoldLow, int threshHoldHigh,
-                                double driveSpeed, double minOutputVal,
-                                double maxOutputVal, double tolerance,
-                                StopConditions stopCondition, int stopVal,
-                                double rotationLimitDegree, boolean degreeLimitOn) {
-        double currentAngle;
-        GyroPIDController pidController = new GyroPIDController(this.gyro,
-                gyro.getHeading(), tolerance);
+    public void MRDriveStraight(int degree, double driveSpeed, double minOutputVal,
+                                double maxOutputVal, int tolerance,
+                                StopConditions stopCondition, int stopVal) {
+        GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
         pidController.setPID(gyroKP, gyroKI, gyroKD);
-        pidController.setTolerance(tolerance);
         pidController.enable();
 
         try {
             //Sleep to allow the pid controller to calculate a first value
             Thread.sleep(100);
             while (currentOpMode.opModeIsActive()) {
-                currentAngle = navXDevice.getYaw();
                 if (stopCondition == StopConditions.COLOR && color.alpha() > stopVal) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
@@ -488,7 +497,11 @@ public class AutoRobotFunctions {
         this.colorKI = Ki;
         this.colorKD = Kd;
     }
-
+    public void setGyroPID(double Kp, double Ki, double Kd) {
+        this.gyroKP = Kp;
+        this.gyroKI = Ki;
+        this.gyroKD = Kd;
+    }
     //Limit function
     private double limit(double a, double minOutputVal, double maxOutputVal) {
         return Math.min(Math.max(a, minOutputVal), maxOutputVal);
