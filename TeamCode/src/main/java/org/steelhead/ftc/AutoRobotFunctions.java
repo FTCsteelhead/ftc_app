@@ -103,12 +103,14 @@ public class AutoRobotFunctions {
 
         navXDevice = null;
 
-        while (currentOpMode.opModeIsActive() && gyro.isCalibrating()) {
+        gyro.calibrate();
+        while (!currentOpMode.isStopRequested() && gyro.isCalibrating()) {
             currentOpMode.telemetry.addData("Gyro", "Calibrating. Do Not Move!!");
             currentOpMode.telemetry.update();
         }
 
-        currentOpMode.telemetry.addData("Gyro", "Calibration COmplete");
+        currentOpMode.telemetry.addData("Gyro", "Calibration Complete");
+        currentOpMode.telemetry.update();
     }
 
     //MR Gyro rotate PID
@@ -123,15 +125,17 @@ public class AutoRobotFunctions {
             Thread.sleep(100);
             while (!rotationComplete && currentOpMode.opModeIsActive()) {
                 currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue() );
-                if (pidController.isOnTarget()) {
+                /*if (pidController.isOnTarget()) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
                     rotationComplete = true;
-                } else {
+                } else {*/
                     double output = pidController.getOutput();
                     leftMotor.setPower(limit(output, minMotorOutput, maxMotorOutput));
                     rightMotor.setPower(limit(-output, minMotorOutput, maxMotorOutput));
-                }
+                    currentOpMode.telemetry.addData("Output", output);
+                //}
+                currentOpMode.telemetry.update();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -476,7 +480,9 @@ public class AutoRobotFunctions {
     }
 
     public void close() {
-        navXDevice.close();
+        if (navXDevice != null) {
+            navXDevice.close();
+        }
     }
 
     //Set the PID values for the NavX sensor

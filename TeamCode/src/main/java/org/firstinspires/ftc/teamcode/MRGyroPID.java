@@ -49,7 +49,7 @@ import org.steelhead.ftc.GyroPIDController;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
 */
-@TeleOp(name = "Sensor: MR Gyro", group = "Sensor")
+@TeleOp(name = "Sensor: MR GyroPID", group = "Sensor")
 //@Disabled
 public class MRGyroPID extends LinearOpMode {
 
@@ -84,7 +84,7 @@ public class MRGyroPID extends LinearOpMode {
         // wait for the start button to be pressed.
         waitForStart();
 
-        GyroPIDController pidController = new GyroPIDController(gyro, 0, 2);
+        GyroPIDController pidController = new GyroPIDController(gyro, 90, 2);
         pidController.setPID(0.05, 0.0005, 0.5);
         pidController.enable();
 

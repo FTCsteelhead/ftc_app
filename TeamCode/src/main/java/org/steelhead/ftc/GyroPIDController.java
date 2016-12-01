@@ -36,8 +36,7 @@ public class GyroPIDController {
                 double integral = 0;
                 double derivative;
                 while (isActive) {
-                    int yaw = gyro.getIntegratedZValue();
-                    error = yaw - angle;
+                    error = gyro.getIntegratedZValue() - angle;
                     /*
                     Calculate the integral term. We are clamping it when the sign changes
                     when the error is 0 or when the error value is too big.
@@ -59,7 +58,7 @@ public class GyroPIDController {
 
                     output = (kp * error) + (ki * integral) + (kd * derivative);
 
-                    if (yaw <= (angle+tolerance) && yaw >= -(angle+tolerance)) {
+                    if (Math.abs(error) <= tolerance) {
                         isOnTarget = true;
                     } else {
                         isOnTarget = false;

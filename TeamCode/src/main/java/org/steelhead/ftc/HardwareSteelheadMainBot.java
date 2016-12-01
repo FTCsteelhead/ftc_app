@@ -183,5 +183,6 @@ public class HardwareSteelheadMainBot {
         beaconColor.close();
         touchSensor.close();
         policeLED.close();
+        gyro.close();
     }
 }

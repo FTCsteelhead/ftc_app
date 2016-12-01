@@ -53,43 +53,15 @@ public class AutoClassTest extends LinearOpMode {
 
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
         robot.init(hardwareMap);
-        AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions((byte) 1, hardwareMap, this, robot);
-       // autoRobotFunctions.setNavXPIDDriveStraight(0.33, 0.0008, 0.95);
-      //  autoRobotFunctions.setNavXPIDTurn(0.33, 0.0008, 0.95);
-        autoRobotFunctions.setGyroPID(.33, .0008, .95);
+        AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot);
+        autoRobotFunctions.setGyroPID(.05, 0, 0);
         robot.robotForward();
-
-        telemetry.addData(">", "Gyro Calibrating. Do Not move!");
-        telemetry.update();
-        robot.gyro.calibrate();
-
-        // make sure the gyro is calibrated.
-     /*  while (!isStopRequested() && robot.gyro.isCalibrating()) {
-            sleep(50);
-            idle();
-        }*/
-
-        robot.gyro.getConnectionInfo();
-        robot.gyro.getDeviceName();
-        robot.gyro.resetZAxisIntegrator();
-        telemetry.addData(">", "Gyro Calibrated.  Press Start.");
-        telemetry.addData("Gyro", robot.gyro.getIntegratedZValue());
-        telemetry.update();
-
         waitForStart();
         robot.setPoliceLED(true);
-        //autoRobotFunctions.navxRotateToDegree(90, 2, -0.15, 0.15);
-       // autoRobotFunctions.navXDriveStraight(0.0, 2, -0.15, 0.65, 0.5, 5000, 0.0005, 0.1,
-              //  AutoRobotFunctions.StopConditions.BUTTON, 0);
 
-      //  autoRobotFunctions.runWithEncoders(500, 0.5);
+        autoRobotFunctions.MRRotate(90, 2, -.20, .20);
 
-        autoRobotFunctions.MRRotate(90, 2, -.15, .15);
-       // autoRobotFunctions.MRDriveStraight(90, .5, -.15,.75, 2, AutoRobotFunctions.StopConditions.BUTTON, 0);
-
-     //   robot.gyro.getIntegratedZValue();
         robot.setPoliceLED(false);
-
         autoRobotFunctions.close();
 
         robot.close();
