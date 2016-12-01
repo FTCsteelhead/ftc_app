@@ -60,10 +60,6 @@ public class SteelheadMainTeleOp extends OpMode{
     // use the defined hardware class for the robot
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
-    int num = 0;
-    int num1 = 0;
-    int num2 = 0;
-    int num3 = 0;
 
     double left = 0;
     double right = 0;
@@ -94,52 +90,36 @@ public class SteelheadMainTeleOp extends OpMode{
     public void loop() {
 
 
-
-
-        if(gamepad2.a)
-          num++;
-
-        if(num % 2 == 0)
+        if(gamepad2.b)
             robot.sweeperMotor.setPower(0.0);
 
-        if(num % 2 ==1)
+        if(gamepad2.a)
             robot.sweeperMotor.setPower(1.0);
 
-        if(gamepad2.b)
-            num1++;
 
-        if(num1 % 2 == 0)
-            robot.shooterPower(0.0);
-
-        if(num1 % 2 == 1)
-            robot.shooterPower(1.0);
 
         if(gamepad2.x)
-           num2++;
+            robot.shooterPower(0.0);
 
-        if(num2 % 2 == 0)
+        if(gamepad2.y)
+            robot.shooterPower(1.0);
+
+
+        if(gamepad2.dpad_up)
             robot.shooterServo.setPosition(0.2);
 
-        if(num2 % 2 == 1)
+        if(gamepad2.dpad_down)
             robot.shooterServo.setPosition(0.8);
 
 
-
-
-
-        if(gamepad1.a)
-            num3++;
-
-
-       if(num3 % 2 == 1)
+       if(gamepad1.left_bumper)
             robot.robotBackward();
 
-        if(num3 % 2 == 0)
-            robot.robotForward();
 
 
 
-     if(gamepad1.left_stick_y != 0) {
+
+   /* if(gamepad1.left_stick_y != 0) {
          resetStartTime();
          left = gamepad1.left_stick_y;
          if(getRuntime() < rampTime) {
@@ -161,13 +141,12 @@ public class SteelheadMainTeleOp extends OpMode{
                     right = getRuntime()* speed/rampTime;
                 else if (right < 0)
                     right = -(getRuntime()*speed/rampTime);
-
             }
         }
-
+*/
         if(gamepad1.right_bumper) {
-            left /= speed;
-            right /= speed;
+            left = 1;
+            right = 1;
         }
 
         robot.robotLeftPower(left);

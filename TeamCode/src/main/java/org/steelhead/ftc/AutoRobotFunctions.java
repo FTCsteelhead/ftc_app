@@ -32,9 +32,13 @@ public class AutoRobotFunctions {
     private double colorKI;
     private double colorKD;
 
-    private double gyroKP;
-    private double gyroKI;
-    private double gyroKD;
+    private double gyroRotateKP;
+    private double gyroRotateKI;
+    private double gyroRotateKD;
+
+    private double gyroDriveKP;
+    private double gyroDriveKI;
+    private double gyroDriveKD;
 
     //Movement components of the robot including a robot hardware class
     private HardwareSteelheadMainBot robot;
@@ -118,7 +122,7 @@ public class AutoRobotFunctions {
                          double minMotorOutput, double maxMotorOutput) {
         boolean rotationComplete = false;
         GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
-        pidController.setPID(gyroKP, gyroKI, gyroKD);
+        pidController.setPID(gyroRotateKP, gyroRotateKI, gyroRotateKD);
         pidController.enable();
      //  gyro.resetZAxisIntegrator();
         try {
@@ -149,7 +153,7 @@ public class AutoRobotFunctions {
                                 double maxOutputVal, int tolerance,
                                 StopConditions stopCondition, int stopVal) {
         GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
-        pidController.setPID(gyroKP, gyroKI, gyroKD);
+        pidController.setPID(gyroDriveKP, gyroDriveKI, gyroDriveKD);
         pidController.enable();
 
 
@@ -504,10 +508,16 @@ public class AutoRobotFunctions {
         this.colorKI = Ki;
         this.colorKD = Kd;
     }
-    public void setGyroPID(double Kp, double Ki, double Kd) {
-        this.gyroKP = Kp;
-        this.gyroKI = Ki;
-        this.gyroKD = Kd;
+    public void setGyroRotatePID(double Kp, double Ki, double Kd) {
+        this.gyroRotateKP = Kp;
+        this.gyroRotateKI = Ki;
+        this.gyroRotateKD = Kd;
+    }
+
+    public void setGyroDrivePID(double Kp, double Ki, double Kd) {
+        this.gyroDriveKP = Kp;
+        this.gyroDriveKI = Ki;
+        this.gyroDriveKD = Kd;
     }
     //Limit function
     private double limit(double a, double minOutputVal, double maxOutputVal) {
