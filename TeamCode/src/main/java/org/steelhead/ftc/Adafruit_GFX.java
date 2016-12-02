@@ -34,10 +34,23 @@ public class Adafruit_GFX {
         }
     }
 
-    public  void print(String s) {
+    public void print(String s) {
         int length = s.length();
         for (int i = 0; i < length; i++) {
             write(s.charAt(i));
+        }
+    }
+    public void scrollText(String s) {
+        try {
+            for (int i = 7; i >= -(s.length() * 7); i--) {
+                ledMatrix.clearDisplay();
+                setCursor(i, 1);
+                print(s);
+                ledMatrix.updateDisplay();
+                Thread.sleep(100);
+            }
+        }catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
     public void drawChar(byte x, byte y, char c, Adafruit_LedMatrix.Color color) {

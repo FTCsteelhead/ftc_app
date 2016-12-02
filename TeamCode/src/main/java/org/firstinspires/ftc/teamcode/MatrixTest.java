@@ -76,43 +76,13 @@ public class MatrixTest extends OpMode {
             public void run() {
                 while (true) {
                     adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.RED);
-                    for (int i = 7; i >= -45; i--) {
-                        ledMatrix.clearDisplay();
-                        adafruitGfx.setCursor(i, 1);
-                        adafruitGfx.print("Steelhead");
-                        ledMatrix.updateDisplay();
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    adafruitGfx.scrollText("Steelhead");
 
                     adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.YELLOW);
-                    for (int i = 7; i >= -20; i--) {
-                        ledMatrix.clearDisplay();
-                        adafruitGfx.setCursor(i, 1);
-                        adafruitGfx.print("8176");
-                        ledMatrix.updateDisplay();
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.GREEN);
+                    adafruitGfx.scrollText("8176");
 
-                    for (int i = 7; i >= -55; i--) {
-                        ledMatrix.clearDisplay();
-                        adafruitGfx.setCursor(i, 1);
-                        adafruitGfx.print("MIG Sucks! ");
-                        ledMatrix.updateDisplay();
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.GREEN);
+                    adafruitGfx.scrollText("MIG Sucks!");
                 }
             }
         });
@@ -121,7 +91,15 @@ public class MatrixTest extends OpMode {
 
     @Override
     public void loop() {
+    }
 
+    @Override
+    public void stop() {
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
 }
