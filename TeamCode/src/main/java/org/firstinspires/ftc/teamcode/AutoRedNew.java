@@ -43,6 +43,8 @@ public class AutoRedNew extends LinearOpMode {
         telemetry.addData("STATUS:", "init complete");
         telemetry.update();
 
+        robot.shooterServo.setPosition(1.0);
+
         //wait for start of the match
 
         waitForStart();
@@ -52,11 +54,11 @@ public class AutoRedNew extends LinearOpMode {
         //autoRobotFunctions.pusherActive(true);
         autoRobotFunctions.runWithEncoders(500, 1.0);
 
-        autoRobotFunctions.MRRotate(-45, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(-40, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
 
-        autoRobotFunctions.MRDriveStraight(-45, .75,
+        autoRobotFunctions.MRDriveStraight(-40, .75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES,
                 AutoRobotFunctions.StopConditions.COLOR, 20);
 
@@ -71,11 +73,28 @@ public class AutoRedNew extends LinearOpMode {
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
 
         robot.robotBackward();
-        autoRobotFunctions.runWithEncoders(1000, 1.0);
+     //   autoRobotFunctions.runWithEncoders(1000, 1.0);
+
+
+        //drive back more and shoot the ball
+        autoRobotFunctions.MRDriveStraight(-90, .75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES,
+                AutoRobotFunctions.StopConditions.ENCODER, 2500);
+
+        robot.shooterPower(1.0);
+
+        robot.shooterServo.setPosition(0.8);
+
+        sleep(500);
+
+        robot.shooterServo.setPosition(1.0);
+
+        robot.shooterPower(0.0);
+
 
         robot.robotForward();
         //autoRobotFunctions.pusherActive(true);
-        autoRobotFunctions.MRRotate(0, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(-20, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
         autoRobotFunctions.runWithEncoders(500, 1.0);

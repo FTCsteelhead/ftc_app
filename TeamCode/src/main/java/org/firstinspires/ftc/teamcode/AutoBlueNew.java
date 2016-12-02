@@ -66,7 +66,28 @@ public class AutoBlueNew extends LinearOpMode {
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
 
         robot.robotBackward();
-        autoRobotFunctions.runWithEncoders(1000, 0.35);
+      //  autoRobotFunctions.runWithEncoders(1000, 0.35);
+
+        //shoot ball
+        autoRobotFunctions.MRDriveStraight(90, .75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES,
+                AutoRobotFunctions.StopConditions.ENCODER, 2500);
+
+        robot.shooterPower(1.0);
+
+        robot.shooterServo.setPosition(0.8);
+
+        sleep(500);
+
+        robot.shooterServo.setPosition(1.0);
+
+        robot.shooterPower(0.0);
+
+
+        robot.robotForward();
+        //autoRobotFunctions.pusherActive(true);
+        autoRobotFunctions.MRRotate(20, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
         robot.robotForward();
 
