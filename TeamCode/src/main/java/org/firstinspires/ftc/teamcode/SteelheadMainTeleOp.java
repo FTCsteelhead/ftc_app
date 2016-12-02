@@ -94,7 +94,7 @@ public class SteelheadMainTeleOp extends OpMode{
             robot.sweeperMotor.setPower(0.0);
 
         if(gamepad2.a)
-            robot.sweeperMotor.setPower(1.0);
+            robot.sweeperMotor.setPower(-1.0);
 
 
 
@@ -106,14 +106,15 @@ public class SteelheadMainTeleOp extends OpMode{
 
 
         if(gamepad2.dpad_up)
-            robot.shooterServo.setPosition(0.2);
-
-        if(gamepad2.dpad_down)
             robot.shooterServo.setPosition(0.8);
 
+        if(gamepad2.dpad_down)
+            robot.shooterServo.setPosition(1);
 
-       if(gamepad1.left_bumper)
-            robot.robotBackward();
+
+       if(gamepad1.left_bumper) {
+           robot.robotBackward();
+       }
 
 
 
@@ -149,8 +150,11 @@ public class SteelheadMainTeleOp extends OpMode{
             right = 1;
         }
 
-        robot.robotLeftPower(left);
-        robot.robotRightPower(right);
+        left = gamepad1.left_stick_y;
+        right = gamepad1.right_stick_y;
+
+        robot.robotLeftPower(right);
+        robot.robotRightPower(left);
 
         if(gamepad2.right_bumper)
             robot.pusherRight.setPosition(robot.pusherRight.getPosition() - positionChange );

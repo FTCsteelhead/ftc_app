@@ -54,12 +54,16 @@ public class AutoClassTest extends LinearOpMode {
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
         robot.init(hardwareMap);
         AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot);
-        autoRobotFunctions.setGyroRotatePID(.05, 0, 0);
+        //autoRobotFunctions.setGyroPID(.017, 0.0005, 0.0008);
+        autoRobotFunctions.setGyroDrivePID(.08, 0.00085 , 0.0008);
         robot.robotForward();
         waitForStart();
         robot.setPoliceLED(true);
 
-        autoRobotFunctions.MRRotate(90, 2, -.20, .20);
+        //autoRobotFunctions.MRRotate(90, 1, -.20, .20);
+        autoRobotFunctions.MRDriveStraight(0, 0.50, -1.0, 1.0, 1, 0.0005, 3500, 0.15,
+                AutoRobotFunctions.StopConditions.BUTTON, 0);
+        //autoRobotFunctions.runWithEncoders(5000, 0.75);
 
         robot.setPoliceLED(false);
         autoRobotFunctions.close();

@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 /**
  * Demonstrates empty OpMode
  */
+@Deprecated
 @Autonomous(name = "Button Pusher - Red", group = "Button")
 @Disabled
 public class AutoRed extends LinearOpMode {
@@ -77,7 +78,7 @@ public class AutoRed extends LinearOpMode {
 
         //autoRobotFunctions.pusherActive(false);
         autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT, 90, true);
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
 
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
 
@@ -100,7 +101,7 @@ public class AutoRed extends LinearOpMode {
         robot.robotForward();*/
         //autoRobotFunctions.pusherActive(false);
         autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT, 90, true);
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
 
         autoRobotFunctions.close();

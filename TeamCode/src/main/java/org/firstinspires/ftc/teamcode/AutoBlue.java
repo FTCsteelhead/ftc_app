@@ -10,6 +10,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Demonstrates empty OpMode
  */
+@Deprecated
 @Autonomous(name = "Button Pusher - Blue", group = "Button")
 @Disabled
 public class AutoBlue extends LinearOpMode {
@@ -64,7 +65,7 @@ public class AutoBlue extends LinearOpMode {
 
         //autoRobotFunctions.pusherActive(false);
         autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT, 90, true);
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
 
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
 
@@ -84,7 +85,7 @@ public class AutoBlue extends LinearOpMode {
 
         //autoRobotFunctions.pusherActive(false);
         autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT, 90, true);
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
         autoRobotFunctions.close();
         robot.setPoliceLED(false);

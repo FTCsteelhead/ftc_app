@@ -126,19 +126,19 @@ public class AutoRobotFunctions {
         pidController.enable();
      //  gyro.resetZAxisIntegrator();
         try {
-            Thread.sleep(100);
+            Thread.sleep(10);
             while (!rotationComplete && currentOpMode.opModeIsActive()) {
                 currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue() );
-                /*if (pidController.isOnTarget()) {
+                if (pidController.isOnTarget()) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
                     rotationComplete = true;
-                } else {*/
+                } else {
                     double output = pidController.getOutput();
                     leftMotor.setPower(limit(output, minMotorOutput, maxMotorOutput));
                     rightMotor.setPower(limit(-output, minMotorOutput, maxMotorOutput));
                     currentOpMode.telemetry.addData("Output", output);
-                //}
+                }
                 currentOpMode.telemetry.update();
             }
         } catch (InterruptedException e) {
@@ -150,8 +150,12 @@ public class AutoRobotFunctions {
 
     //PID controller for MR Gyro
     public void MRDriveStraight(int degree, double driveSpeed, double minOutputVal,
-                                double maxOutputVal, int tolerance,
+                                double maxOutputVal, int tolerance, double motorSpeedMul,
+                                int encoderDistance, double minEndPower,
                                 StopConditions stopCondition, int stopVal) {
+        double workingForwardSpeed = driveSpeed;
+        robot.enableEncoders(true);
+
         GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
         pidController.setPID(gyroDriveKP, gyroDriveKI, gyroDriveKD);
         pidController.enable();
@@ -159,7 +163,7 @@ public class AutoRobotFunctions {
 
         try {
             //Sleep to allow the pid controller to calculate a first value
-            Thread.sleep(100);
+            Thread.sleep(10);
             while (currentOpMode.opModeIsActive()) {
                 currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue() );
                 if (stopCondition == StopConditions.COLOR && color.alpha() > stopVal) {
@@ -178,17 +182,35 @@ public class AutoRobotFunctions {
                     break;
                 }
                 double output = pidController.getOutput();
-
                 if(pidController.isOnTarget()) {
-                    leftMotor.setPower(driveSpeed);
-                    rightMotor.setPower(driveSpeed);
+                    leftMotor.setPower(workingForwardSpeed);
+                    rightMotor.setPower(workingForwardSpeed);
+                    currentOpMode.telemetry.addData("Output", "Drive Speed");
                 }
                 else {
-                    leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
-                    rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
+                    currentOpMode.telemetry.addData("Output", output);
+                    leftMotor.setPower(limit((workingForwardSpeed + output), minOutputVal, maxOutputVal));
+                    rightMotor.setPower(limit((workingForwardSpeed - output), minOutputVal, maxOutputVal));
 
                 }
 
+                /*
+            Slow the robot as it gets close to the line so it does not overshoot,
+            This is basically a P controller.
+            If the multiplier is equal to -1 turn off the speed reduction
+            */
+                if (motorSpeedMul != -1) {
+                    if (rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
+                        int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
+                        workingForwardSpeed = driveSpeed + error * motorSpeedMul;
+                        if (workingForwardSpeed < minEndPower) {
+                            workingForwardSpeed = minEndPower;
+                        }
+
+                    }
+                }
+
+                currentOpMode.telemetry.update();
 
             }
         } catch (InterruptedException e) {
@@ -348,9 +370,7 @@ public class AutoRobotFunctions {
     public void PIDLineFollow(int threshHoldLow, int threshHoldHigh,
                               double driveSpeed, double minOutputVal,
                               double maxOutputVal, double tolerance,
-                              StopConditions stopConditions, LineSide lineSide,
-                              double rotationLimitDegree, boolean degreeLimitOn) {
-        double currentAngle;
+                              StopConditions stopConditions, LineSide lineSide) {
         ColorPIDController pidController = new ColorPIDController(this.color,
                 threshHoldLow, threshHoldHigh);
         pidController.setPID(colorKP, colorKI, colorKD);
@@ -361,7 +381,6 @@ public class AutoRobotFunctions {
             //Sleep to allow the pid controller to calculate a first value
             Thread.sleep(100);
             while (currentOpMode.opModeIsActive()) {
-                currentAngle = navXDevice.getYaw();
                 if (stopConditions == StopConditions.BUTTON && touchSensor.isPressed()) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
@@ -374,15 +393,9 @@ public class AutoRobotFunctions {
                     rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
                     //TODO: test this with these enabled and disabled to see if they break it or make it better
                     //if you do a rotate first this function should work. with some more tweaking it can work without the rotate
-                    if (degreeLimitOn && currentAngle <= rotationLimitDegree - 45.0) {
-                        lineSide = LineSide.RIGHT;
-                    }
                 } else {
                     leftMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
                     rightMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
-                    if (degreeLimitOn && currentAngle >= rotationLimitDegree + 45.0) {
-                        lineSide = LineSide.LEFT;
-                    }
                 }
 
             }
@@ -450,7 +463,7 @@ public class AutoRobotFunctions {
     public void pushButton(Team team) {
 
         try {
-            Thread.sleep(100);
+            Thread.sleep(200);
             if (team == Team.RED) {
                 if (beaconColor.blueColor() > 60) {
                     robot.pusherRight.setPosition(0.1);
@@ -465,7 +478,7 @@ public class AutoRobotFunctions {
                 }
             }
 
-            Thread.sleep(600);
+            Thread.sleep(300);
             robot.pusherRight.setPosition(0.8);
             robot.pusherLeft.setPosition(0.2);
         } catch (InterruptedException e) {

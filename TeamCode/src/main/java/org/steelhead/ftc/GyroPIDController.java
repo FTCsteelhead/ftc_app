@@ -21,10 +21,11 @@ public class GyroPIDController {
     private double kp;
     private double ki;
     private double kd;
-    private volatile boolean isOnTarget = false;
+    private volatile double cError = 0;
+    private int tolerance = 0;
 
-    public GyroPIDController(final ModernRoboticsI2cGyro gyro, final int angle, final int tolerance) {
-
+    public GyroPIDController(final ModernRoboticsI2cGyro gyro, final int angle, int tolerance) {
+        this.tolerance = tolerance;
         //Setup the separate thread for calculating the values
         //This is in a separate thread so it doesn't slow down the main thread.
         pidThread = new Thread(new Runnable() {
@@ -37,6 +38,7 @@ public class GyroPIDController {
                 double derivative;
                 while (isActive) {
                     error = gyro.getIntegratedZValue() - angle;
+                    cError = error;
                     /*
                     Calculate the integral term. We are clamping it when the sign changes
                     when the error is 0 or when the error value is too big.
@@ -58,11 +60,6 @@ public class GyroPIDController {
 
                     output = (kp * error) + (ki * integral) + (kd * derivative);
 
-                    if (Math.abs(error) <= tolerance) {
-                        isOnTarget = true;
-                    } else {
-                        isOnTarget = false;
-                    }
 
                     //Wait for the sensor to gather new values
                     //and slow down the loop so the integral term doesn't get too big too fast
@@ -90,8 +87,13 @@ public class GyroPIDController {
     public void disable() {
         isActive = false;
     }
+
     public boolean isOnTarget() {
-        return isOnTarget;
+        if (Math.abs(cError) <= tolerance) {
+            return true;
+        } else {
+            return false;
+        }
     }
     @Deprecated
     public boolean isOutputAvailable() {

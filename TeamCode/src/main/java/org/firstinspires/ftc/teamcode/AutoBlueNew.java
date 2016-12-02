@@ -12,15 +12,15 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 @Autonomous(name = "Button Pusher - Blue", group = "Button")
 //@Disabled
 public class AutoBlueNew extends LinearOpMode {
-    private final byte NAVX_DIM_I2C_PORT = 1;
-    private final int TOLERANCE_DEGREES = 2;
+
+    private final int TOLERANCE_DEGREES = 1;
 
     private double MAX_OUTPUT_DRIVE = 1.0;
-    private double MIN_OUTPUT_DRIVE = -0.15;
-    private double MAX_OUTPUT_ROTATE = 0.15;
-    private double MIN_OUTPUT_ROTATE = -0.15;
-    private double MAX_OUTPUT_LINE = 0.30;
-    private double MIN_OUTPUT_LINE = -0.15;
+    private double MIN_OUTPUT_DRIVE = -1.0;
+    private double MAX_OUTPUT_ROTATE = 0.25;
+    private double MIN_OUTPUT_ROTATE = -0.25;
+    private double MAX_OUTPUT_LINE = 0.25;
+    private double MIN_OUTPUT_LINE = -0.25;
 
     private AutoRobotFunctions autoRobotFunctions;
 
@@ -30,38 +30,34 @@ public class AutoBlueNew extends LinearOpMode {
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
         robot.init(hardwareMap);
+        autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
-        autoRobotFunctions = new AutoRobotFunctions(NAVX_DIM_I2C_PORT, hardwareMap, this, robot);
-
-        autoRobotFunctions.setGyroDrivePID(0.33, 0.0008, 0.95);
-        autoRobotFunctions.setGyroRotatePID(0.33, 0.0008, 0.95);
+        autoRobotFunctions.setGyroDrivePID(0.04, 0.00085, 0.0008);
+        autoRobotFunctions.setGyroRotatePID(0.0327, 0.0005, 0.0008);
 
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
 
-        telemetry.addData("STATUS:", "init complete");
+        telemetry.addData("STATUS:", "init complete–check state of gyro");
         telemetry.update();
 
         //wait for start of the match
         robot.setPoliceLED(true);
         waitForStart();
-        robot.setPoliceLED(true);
 
         robot.robotForward();
-        //autoRobotFunctions.pusherActive(true);
-        autoRobotFunctions.runWithEncoders(500, 0.25);
+        autoRobotFunctions.runWithEncoders(500, 1.0);
 
-
-        autoRobotFunctions.MRRotate(45, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(-40, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-        autoRobotFunctions.MRDriveStraight(45, .75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES,
+
+        autoRobotFunctions.MRDriveStraight(-40, .60,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4500, 0.15,
                 AutoRobotFunctions.StopConditions.COLOR, 20);
 
-        //autoRobotFunctions.pusherActive(false);
-        autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT, 90, true);
+        autoRobotFunctions.PIDLineFollow(6, 55, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
 
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
 
@@ -69,15 +65,15 @@ public class AutoBlueNew extends LinearOpMode {
       //  autoRobotFunctions.runWithEncoders(1000, 0.35);
 
         //shoot ball
-        autoRobotFunctions.MRDriveStraight(90, .75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRDriveStraight(90, .6,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2500, 0.15,
                 AutoRobotFunctions.StopConditions.ENCODER, 2500);
 
         robot.shooterPower(1.0);
 
         robot.shooterServo.setPosition(0.8);
 
-        sleep(500);
+        Thread.sleep(500);
 
         robot.shooterServo.setPosition(1.0);
 
@@ -90,20 +86,21 @@ public class AutoBlueNew extends LinearOpMode {
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
         robot.robotForward();
-
-        autoRobotFunctions.MRRotate(0, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(2, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
-        autoRobotFunctions.runWithEncoders(500, 0.35);
 
-        autoRobotFunctions.MRDriveStraight(0, .75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES,
+        autoRobotFunctions.runWithEncoders(500, 1.0);
+
+        autoRobotFunctions.MRDriveStraight(0, 0.60,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
                 AutoRobotFunctions.StopConditions.COLOR, 20);
 
-        //autoRobotFunctions.pusherActive(false);
-        autoRobotFunctions.PIDLineFollow(7, 55, 0.15, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT, 90, true);
+        autoRobotFunctions.PIDLineFollow(9, 55, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
+
         autoRobotFunctions.close();
+
         robot.setPoliceLED(false);
         robot.close();
 
