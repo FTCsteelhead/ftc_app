@@ -31,6 +31,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package org.firstinspires.ftc.teamcode;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -50,6 +55,7 @@ public class MatrixTest extends OpMode {
     private Adafruit_LedMatrix ledMatrix;
     private Adafruit_GFX adafruitGfx;
     private Thread t;
+    private volatile boolean threadActive = true;
 
     @Override
     public void init() {
@@ -74,16 +80,39 @@ public class MatrixTest extends OpMode {
          t = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
-                    adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.RED);
-                    adafruitGfx.scrollText("Steelhead");
+                Context context = hardwareMap.appContext;
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inScaled = false;
 
-                    adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.YELLOW);
-                    adafruitGfx.scrollText("8176");
+                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.testimg, options);
 
-                    adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.GREEN);
-                    adafruitGfx.scrollText("MIG Sucks!");
+                telemetry.addData("height", bitmap.getHeight());
+                telemetry.addData("width", bitmap.getWidth());
+                telemetry.addData("1,1", bitmap.getPixel(1, 1));
+                //telemetry.addData("9,9", bitmap.getPixel(9, 9));
+                telemetry.update();
+
+                for (int y = 0; y < 8; y++) {
+                    for (int x=0; x < 8; x++) {
+                        int c = bitmap.getPixel(x, y);
+                        switch (c) {
+                            case Color.WHITE:
+                                ledMatrix.drawPixel((byte)x, (byte)y, Adafruit_LedMatrix.Color.OFF);
+                                break;
+                            case Color.RED:
+                                ledMatrix.drawPixel((byte)x, (byte)y, Adafruit_LedMatrix.Color.RED);
+                                break;
+                            case Color.GREEN:
+                                ledMatrix.drawPixel((byte)x, (byte)y, Adafruit_LedMatrix.Color.GREEN);
+                                break;
+                            case Color.YELLOW:
+                                ledMatrix.drawPixel((byte)x, (byte)y, Adafruit_LedMatrix.Color.YELLOW);
+                                break;
+                        }
+                    }
                 }
+
+                ledMatrix.updateDisplay();
             }
         });
         t.start();
@@ -95,11 +124,7 @@ public class MatrixTest extends OpMode {
 
     @Override
     public void stop() {
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        threadActive = false;
     }
 
 }
