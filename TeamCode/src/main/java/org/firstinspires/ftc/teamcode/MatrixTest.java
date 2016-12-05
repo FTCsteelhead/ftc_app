@@ -61,7 +61,7 @@ public class MatrixTest extends OpMode {
     public void init() {
         telemetry.addData("Status", "Initialized");
         ledMatrix = new Adafruit_LedMatrix(hardwareMap, "matrix");
-        adafruitGfx = new Adafruit_GFX(ledMatrix, (byte)8, (byte)8);
+        adafruitGfx = new Adafruit_GFX(hardwareMap, ledMatrix, 8, 8);
     }
 
     @Override
@@ -72,47 +72,59 @@ public class MatrixTest extends OpMode {
     @Override
     public void start() {
 
-        runtime.reset();
-        adafruitGfx.drawChar((byte)1, (byte)1,'@', Adafruit_LedMatrix.Color.RED );
-        ledMatrix.updateDisplay();
-        adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.RED);
-
          t = new Thread(new Runnable() {
             @Override
             public void run() {
-                Context context = hardwareMap.appContext;
+                /*Context context = hardwareMap.appContext;
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inScaled = false;
 
-                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.testimg, options);
+                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.treeanimation, options);
 
                 telemetry.addData("height", bitmap.getHeight());
                 telemetry.addData("width", bitmap.getWidth());
-                telemetry.addData("1,1", bitmap.getPixel(1, 1));
-                //telemetry.addData("9,9", bitmap.getPixel(9, 9));
                 telemetry.update();
 
-                for (int y = 0; y < 8; y++) {
-                    for (int x=0; x < 8; x++) {
-                        int c = bitmap.getPixel(x, y);
-                        switch (c) {
-                            case Color.WHITE:
-                                ledMatrix.drawPixel((byte)x, (byte)y, Adafruit_LedMatrix.Color.OFF);
-                                break;
-                            case Color.RED:
-                                ledMatrix.drawPixel((byte)x, (byte)y, Adafruit_LedMatrix.Color.RED);
-                                break;
-                            case Color.GREEN:
-                                ledMatrix.drawPixel((byte)x, (byte)y, Adafruit_LedMatrix.Color.GREEN);
-                                break;
-                            case Color.YELLOW:
-                                ledMatrix.drawPixel((byte)x, (byte)y, Adafruit_LedMatrix.Color.YELLOW);
-                                break;
+                int frame = 0;
+
+                while (threadActive) {
+
+                    for (int y = 0; y < 8; y++) {
+                        for (int x = frame*8; x < 8+(frame*8); x++) {
+                            int c = bitmap.getPixel(x, y);
+                            switch (c) {
+                                case Color.WHITE:
+                                    ledMatrix.drawPixel((byte) (x - 8*frame), (byte) y, Adafruit_LedMatrix.Color.OFF);
+                                    break;
+                                case Color.RED:
+                                    ledMatrix.drawPixel((byte) (x - 8*frame), (byte) y, Adafruit_LedMatrix.Color.RED);
+                                    break;
+                                case Color.GREEN:
+                                    ledMatrix.drawPixel((byte) (x - 8*frame), (byte) y, Adafruit_LedMatrix.Color.GREEN);
+                                    break;
+                                case Color.YELLOW:
+                                    ledMatrix.drawPixel((byte) (x - 8*frame), (byte) y, Adafruit_LedMatrix.Color.YELLOW);
+                                    break;
+                            }
                         }
                     }
-                }
+                    ledMatrix.updateDisplay();
 
-                ledMatrix.updateDisplay();
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    if (frame == 2) {
+                        frame = 0;
+                    } else {
+                        frame++;
+                    }
+                }*/
+
+                adafruitGfx.animateBmp(R.drawable.treeanimation, 3, 200);
+                //adafruitGfx.drawBmp(R.drawable.treeanimation, 1);
+                //ledMatrix.updateDisplay();
             }
         });
         t.start();
@@ -124,7 +136,8 @@ public class MatrixTest extends OpMode {
 
     @Override
     public void stop() {
-        threadActive = false;
+        adafruitGfx.stopAnimation();
+        ledMatrix.clearDisplay();
+        ledMatrix.updateDisplay();
     }
-
 }

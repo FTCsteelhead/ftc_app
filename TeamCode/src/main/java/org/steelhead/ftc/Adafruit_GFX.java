@@ -1,5 +1,10 @@
 package org.steelhead.ftc;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 /**
@@ -10,12 +15,16 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Adafruit_GFX {
     private Adafruit_LedMatrix ledMatrix;
-    private byte width, height;
+    private HardwareMap hardwareMap;
+    private int width, height;
     private int cursorX, cursorY;
     private Adafruit_LedMatrix.Color textColor = Adafruit_LedMatrix.Color.GREEN;
     private final char [] font;
 
-    public Adafruit_GFX(Adafruit_LedMatrix ledMatrix, byte width, byte height) {
+    private boolean animationRunning = false;
+
+    public Adafruit_GFX(HardwareMap hardwareMap, Adafruit_LedMatrix ledMatrix, int width, int height) {
+        this.hardwareMap = hardwareMap;
         this.ledMatrix = ledMatrix;
         this.width = width;
         this.height = height;
@@ -85,8 +94,58 @@ public class Adafruit_GFX {
         drawFastVLine(x, y, h, color);
         drawFastVLine((byte)(x+w-1), y, h, color);
     }
-    public void fillRect(byte x, byte y, byte w, byte h, Adafruit_LedMatrix.Color color) {
-        for (byte i=x; i<(x+w); i++) {
+    public void animateBmp(int id, int numberOfFrames, long sleepTime) {
+        int frame = 0;
+        animationRunning = true;
+        while (animationRunning) {
+            drawBmp(id, frame);
+            ledMatrix.updateDisplay();
+
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            if (frame == numberOfFrames-1) {
+                frame = 0;
+            } else {
+                frame++;
+            }
+        }
+    }
+
+    public void drawBmp(int id, int imagePos) {
+        Context context = hardwareMap.appContext;
+        BitmapFactory.Options options= new BitmapFactory.Options();
+        options.inScaled = false;
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), id, options);
+
+        for(int y=0; y < 8; y++) {
+            for (int x=imagePos*8; x < (imagePos*8)+8; x++) {
+                int c = bitmap.getPixel(x, y);
+                switch (c) {
+                    case Color.WHITE:
+                        ledMatrix.drawPixel(x-(8*imagePos), y, Adafruit_LedMatrix.Color.OFF);
+                        break;
+                    case Color.RED:
+                        ledMatrix.drawPixel(x-(8*imagePos), y, Adafruit_LedMatrix.Color.RED);
+                        break;
+                    case Color.GREEN:
+                        ledMatrix.drawPixel(x-(8*imagePos), y, Adafruit_LedMatrix.Color.GREEN);
+                        break;
+                    case Color.YELLOW:
+                        ledMatrix.drawPixel(x-(8*imagePos), y, Adafruit_LedMatrix.Color.YELLOW);
+                        break;
+                }
+            }
+        }
+
+    }
+    public void stopAnimation() {
+        animationRunning = false;
+    }
+    public void fillRect(int x, int y, int w, int h, Adafruit_LedMatrix.Color color) {
+        for (int i=x; i<(x+w); i++) {
             drawFastVLine(i, y, h, color);
         }
     }
@@ -95,10 +154,10 @@ public class Adafruit_GFX {
     }
 
     // Bresenham's algorithm I still need to figure out how this works
-    public void drawLine(byte x0, byte y0, byte x1, byte y1, Adafruit_LedMatrix.Color color) {
+    public void drawLine(int x0, int y0, int x1, int y1, Adafruit_LedMatrix.Color color) {
         boolean steep = Math.abs(y1-y0) > Math.abs(x1-x0);
         if (steep) {
-            byte t = x0;
+            int t = x0;
             x0 = y0;
             y0 = t;
 
@@ -107,7 +166,7 @@ public class Adafruit_GFX {
             y1 = t;
         }
         if (x0 > x1) {
-            byte t = x0;
+            int t = x0;
             x0 = x1;
             x1 = t;
 
@@ -141,10 +200,10 @@ public class Adafruit_GFX {
             }
         }
     }
-    public void drawFastHLine(byte x, byte y, byte w, Adafruit_LedMatrix.Color color) {
-        drawLine(x, y, (byte)(x+w-1), y, color);
+    public void drawFastHLine(int x, int y, int w, Adafruit_LedMatrix.Color color) {
+        drawLine(x, y, x+w-1, y, color);
     }
-    public void drawFastVLine(byte x, byte y, byte h, Adafruit_LedMatrix.Color color) {
-        drawLine(x, y, x,(byte)(y+h-1), color);
+    public void drawFastVLine(int x, int y, int h, Adafruit_LedMatrix.Color color) {
+        drawLine(x, y, x, y+h-1, color);
     }
 }

@@ -115,7 +115,7 @@ public class Adafruit_LedMatrix implements I2cController.I2cPortReadyCallback {
         }
     }
 
-    public void drawPixel(byte x, byte y, Color color) {
+    public void drawPixel(int x, int y, Color color) {
         if ((y < 0) || (x >= 8)) return;
         if ((x < 0) || (x >= 8)) return;
 
