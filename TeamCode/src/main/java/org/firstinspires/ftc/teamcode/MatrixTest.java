@@ -75,56 +75,13 @@ public class MatrixTest extends OpMode {
          t = new Thread(new Runnable() {
             @Override
             public void run() {
-                /*Context context = hardwareMap.appContext;
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inScaled = false;
-
-                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.treeanimation, options);
-
-                telemetry.addData("height", bitmap.getHeight());
-                telemetry.addData("width", bitmap.getWidth());
-                telemetry.update();
-
-                int frame = 0;
+                adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.YELLOW);
 
                 while (threadActive) {
-
-                    for (int y = 0; y < 8; y++) {
-                        for (int x = frame*8; x < 8+(frame*8); x++) {
-                            int c = bitmap.getPixel(x, y);
-                            switch (c) {
-                                case Color.WHITE:
-                                    ledMatrix.drawPixel((byte) (x - 8*frame), (byte) y, Adafruit_LedMatrix.Color.OFF);
-                                    break;
-                                case Color.RED:
-                                    ledMatrix.drawPixel((byte) (x - 8*frame), (byte) y, Adafruit_LedMatrix.Color.RED);
-                                    break;
-                                case Color.GREEN:
-                                    ledMatrix.drawPixel((byte) (x - 8*frame), (byte) y, Adafruit_LedMatrix.Color.GREEN);
-                                    break;
-                                case Color.YELLOW:
-                                    ledMatrix.drawPixel((byte) (x - 8*frame), (byte) y, Adafruit_LedMatrix.Color.YELLOW);
-                                    break;
-                            }
-                        }
-                    }
-                    ledMatrix.updateDisplay();
-
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                    if (frame == 2) {
-                        frame = 0;
-                    } else {
-                        frame++;
-                    }
-                }*/
-
-                adafruitGfx.animateBmp(R.drawable.treeanimation, 3, 200);
-                //adafruitGfx.drawBmp(R.drawable.treeanimation, 1);
-                //ledMatrix.updateDisplay();
+                    adafruitGfx.animateBmp(R.drawable.firework, 17, 150, false);
+                    adafruitGfx.scrollText("We Won!!");
+                    adafruitGfx.animateBmp(R.drawable.firework, 17, 150, false);
+                }
             }
         });
         t.start();
@@ -136,7 +93,7 @@ public class MatrixTest extends OpMode {
 
     @Override
     public void stop() {
-        adafruitGfx.stopAnimation();
+        threadActive = false;
         ledMatrix.clearDisplay();
         ledMatrix.updateDisplay();
     }

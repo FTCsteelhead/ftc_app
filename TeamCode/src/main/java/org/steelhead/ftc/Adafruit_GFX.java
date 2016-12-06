@@ -94,7 +94,7 @@ public class Adafruit_GFX {
         drawFastVLine(x, y, h, color);
         drawFastVLine((byte)(x+w-1), y, h, color);
     }
-    public void animateBmp(int id, int numberOfFrames, long sleepTime) {
+    public void animateBmp(int id, int numberOfFrames, long sleepTime, boolean isLoop) {
         int frame = 0;
         animationRunning = true;
         while (animationRunning) {
@@ -108,6 +108,10 @@ public class Adafruit_GFX {
             }
             if (frame == numberOfFrames-1) {
                 frame = 0;
+
+                if (!isLoop) {
+                    animationRunning = false;
+                }
             } else {
                 frame++;
             }
