@@ -36,7 +36,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 
 /**
  * This file provides basic Telop driving for a Pushbot robot.
@@ -66,6 +68,7 @@ public class SteelheadMainTeleOp extends OpMode{
     double speed = 0.5;
     double rampTime = 0.25;//seconds
     double positionChange = 0.03;
+    double rampDistance = 10.0;
     @Override
     public void init() {
         /* Initialize the hardware variables.
@@ -102,11 +105,11 @@ public class SteelheadMainTeleOp extends OpMode{
             robot.shooterPower(0.0);
 
         if(gamepad2.y)
-            robot.shooterPower(1.0);
+            robot.shooterPower(0.7);
 
 
         if(gamepad2.dpad_up)
-            robot.shooterServo.setPosition(0.8);
+            robot.shooterServo.setPosition(0.0);
 
         if(gamepad2.dpad_down)
             robot.shooterServo.setPosition(1);
@@ -116,8 +119,35 @@ public class SteelheadMainTeleOp extends OpMode{
            robot.robotBackward();
        }
 
+    //TODO: Test the range sensor
+    if(robot.range.getDistance(DistanceUnit.CM) < rampDistance ) {
+        if(gamepad1.left_stick_y != 0) {
+            if(left < .1) {
+                left = .1;
+            }
+            else{
+                left = (robot.range.getDistance(DistanceUnit.CM)/rampDistance) * speed;
+            }
+        }
+        else {
+            left = 0;
+        }
+        if((gamepad1.right_stick_y != 0)) {
+            if (left < .1 || right < .1) {
+                right = .1;
+            } else {
+                right = (robot.range.getDistance(DistanceUnit.CM) / rampDistance) * speed;
+            }
+        }
+        else{
+            right = 0;
+        }
+    }
 
-
+    {
+        left = gamepad1.left_stick_y;
+        right = gamepad1.right_stick_y;
+    }
 
 
    /* if(gamepad1.left_stick_y != 0) {
@@ -150,8 +180,6 @@ public class SteelheadMainTeleOp extends OpMode{
             right = 1;
         }
 
-        left = gamepad1.left_stick_y;
-        right = gamepad1.right_stick_y;
 
         robot.robotLeftPower(right);
         robot.robotRightPower(left);

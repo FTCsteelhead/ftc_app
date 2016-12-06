@@ -9,6 +9,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.hardware.LED;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+
 
 
 /**
@@ -31,6 +34,7 @@ public class HardwareSteelheadMainBot {
     public ModernRoboticsI2cGyro gyro       = null;
     public Adafruit_ColorSensor beaconColor = null;
     public DigitalChannel policeLED         = null;
+    public ModernRoboticsI2cRangeSensor range       = null;
 
 
     private String leftMotorName_1          = "leftMotor1";
@@ -46,6 +50,7 @@ public class HardwareSteelheadMainBot {
     private String beaconColorName          = "BColor";
     private String policeLEDName            = "policeLED";
     private String shooterServoName         = "shooter";
+    private String rangeSensorName         = "range";
 
     private boolean isRobotBackward = false;
 
@@ -99,6 +104,8 @@ public class HardwareSteelheadMainBot {
         color.getManufacturer();
 
         gyro = (ModernRoboticsI2cGyro)aHwMap.gyroSensor.get(gyroSensorName);
+
+        range = aHwMap.get(ModernRoboticsI2cRangeSensor.class, rangeSensorName);
 
         //Adafruit Color sensor
         beaconColor = new Adafruit_ColorSensor(aHwMap, beaconColorName);
