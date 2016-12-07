@@ -34,11 +34,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 
 /**
  * This file provides basic Telop driving for a Pushbot robot.
@@ -49,7 +47,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
  *
  * This particular OpMode executes a basic Tank Drive Teleop for a PushBot
  * It raises and lowers the claw using the Gampad Y and A buttons respectively.
- * It also opens and closes the claws slowly using the left and right Bumper buttons.
+ * It also opens and closes the claws slowly using the leftSpeed and rightSpeed Bumper buttons.
  *
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
@@ -63,12 +61,14 @@ public class SteelheadMainTeleOp extends OpMode{
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
 
-    double left = 0;
-    double right = 0;
+    double leftSpeed = 0;
+    double rightSpeed = 0;
     double speed = 0.5;
     double rampTime = 0.25;//seconds
     double positionChange = 0.03;
     double rampDistance = 10.0;
+
+    private boolean robotDirectionToggle = false;
     @Override
     public void init() {
         /* Initialize the hardware variables.
@@ -115,49 +115,55 @@ public class SteelheadMainTeleOp extends OpMode{
             robot.shooterServo.setPosition(1);
 
 
-       if(gamepad1.left_bumper) {
+       if(gamepad1.left_bumper && !robotDirectionToggle) {
            robot.robotBackward();
+           robotDirectionToggle = true;
+       } else if (gamepad1.left_bumper && robotDirectionToggle) {
+           robot.robotForward();
+           robotDirectionToggle = false;
        }
+
+
 
     //TODO: Test the range sensor
     if(robot.range.getDistance(DistanceUnit.CM) < rampDistance ) {
         if(gamepad1.left_stick_y != 0) {
-            if(left < .1) {
-                left = .1;
+            if(leftSpeed < .1) {
+                leftSpeed = .1;
             }
             else{
-                left = (robot.range.getDistance(DistanceUnit.CM)/rampDistance) * speed;
+                leftSpeed = (robot.range.getDistance(DistanceUnit.CM)/rampDistance) * speed;
             }
         }
         else {
-            left = 0;
+            leftSpeed = 0;
         }
         if((gamepad1.right_stick_y != 0)) {
-            if (left < .1 || right < .1) {
-                right = .1;
+            if (leftSpeed < .1 || rightSpeed < .1) {
+                rightSpeed = .1;
             } else {
-                right = (robot.range.getDistance(DistanceUnit.CM) / rampDistance) * speed;
+                rightSpeed = (robot.range.getDistance(DistanceUnit.CM) / rampDistance) * speed;
             }
         }
         else{
-            right = 0;
+            rightSpeed = 0;
         }
     }
 
     {
-        left = gamepad1.left_stick_y;
-        right = gamepad1.right_stick_y;
+        leftSpeed = gamepad1.left_stick_y;
+        rightSpeed = gamepad1.right_stick_y;
     }
 
 
    /* if(gamepad1.left_stick_y != 0) {
          resetStartTime();
-         left = gamepad1.left_stick_y;
+         leftSpeed = gamepad1.left_stick_y;
          if(getRuntime() < rampTime) {
-             if(left > 0)
-                 left = getRuntime() * speed/rampTime;
-             else if (left < 0)
-                 left = -(getRuntime() * speed/rampTime);
+             if(leftSpeed > 0)
+                 leftSpeed = getRuntime() * speed/rampTime;
+             else if (leftSpeed < 0)
+                 leftSpeed = -(getRuntime() * speed/rampTime);
 
          }
      }
@@ -165,24 +171,24 @@ public class SteelheadMainTeleOp extends OpMode{
 
         if(gamepad1.right_stick_y != 0) {
             resetStartTime();
-            right = gamepad1.right_stick_y;
+            rightSpeed = gamepad1.right_stick_y;
 
             if(getRuntime() < rampTime) {
-                if(right > 0)
-                    right = getRuntime()* speed/rampTime;
-                else if (right < 0)
-                    right = -(getRuntime()*speed/rampTime);
+                if(rightSpeed > 0)
+                    rightSpeed = getRuntime()* speed/rampTime;
+                else if (rightSpeed < 0)
+                    rightSpeed = -(getRuntime()*speed/rampTime);
             }
         }
 */
         if(gamepad1.right_bumper) {
-            left = 1;
-            right = 1;
+            leftSpeed = 1;
+            rightSpeed = 1;
         }
 
 
-        robot.robotLeftPower(right);
-        robot.robotRightPower(left);
+        robot.robotLeftPower(rightSpeed);
+        robot.robotRightPower(leftSpeed);
 
         if(gamepad2.right_bumper)
             robot.pusherRight.setPosition(robot.pusherRight.getPosition() - positionChange );
@@ -194,8 +200,8 @@ public class SteelheadMainTeleOp extends OpMode{
         if(gamepad2.left_trigger > 0)
             robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - positionChange );
 
-        telemetry.addData("left",  "%.2f", left);
-        telemetry.addData("right", "%.2f", right);
+        telemetry.addData("leftSpeed",  "%.2f", leftSpeed);
+        telemetry.addData("rightSpeed", "%.2f", rightSpeed);
         updateTelemetry(telemetry);
     }
 

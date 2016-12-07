@@ -115,7 +115,6 @@ public class HardwareSteelheadMainBot {
         policeLED = aHwMap.digitalChannel.get(policeLEDName);
         policeLED.setMode(DigitalChannelController.Mode.OUTPUT);
         policeLED.setState(false);
-
     }
 
     public void setLeftMotorName(String newName) {
