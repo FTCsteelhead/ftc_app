@@ -63,18 +63,20 @@ public class AutoRedNew extends LinearOpMode {
 
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
 
+        robot.shooterPower(1.0);
+
         robot.robotBackward();
-     //   autoRobotFunctions.runWithEncoders(1000, 1.0);
+        autoRobotFunctions.runWithEncoders(2500, 1.0);
 
 
         //drive back more and shoot the ball
-        autoRobotFunctions.MRDriveStraight(-90, .60,
+      /*  autoRobotFunctions.MRDriveStraight(90, .60,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 2500);
+                AutoRobotFunctions.StopConditions.ENCODER, 2500);*/
 
-        robot.shooterPower(1.0);
 
-        robot.shooterServo.setPosition(0.8);
+
+        robot.shooterServo.setPosition(0.6);
 
         Thread.sleep(500);
 
@@ -84,12 +86,12 @@ public class AutoRedNew extends LinearOpMode {
 
 
         robot.robotForward();
-        autoRobotFunctions.MRRotate(0, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(20, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-        autoRobotFunctions.runWithEncoders(500, 1.0);
+       // autoRobotFunctions.runWithEncoders(500, 1.0);
 
-        autoRobotFunctions.MRDriveStraight(0, 0.60,
+        autoRobotFunctions.MRDriveStraight(20, 0.60,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
                 AutoRobotFunctions.StopConditions.COLOR, 20);
 

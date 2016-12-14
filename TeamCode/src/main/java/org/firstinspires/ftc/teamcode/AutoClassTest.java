@@ -61,9 +61,9 @@ public class AutoClassTest extends LinearOpMode {
         robot.setPoliceLED(true);
 
         //autoRobotFunctions.MRRotate(90, 1, -.20, .20);
-        autoRobotFunctions.MRDriveStraight(0, 0.50, -1.0, 1.0, 1, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.BUTTON, 0);
-        //autoRobotFunctions.runWithEncoders(5000, 0.75);
+      //  autoRobotFunctions.MRDriveStraight(0, 0.50, -1.0, 1.0, 1, 0.0005, 3500, 0.15,
+       //         AutoRobotFunctions.StopConditions.BUTTON, 0);
+        autoRobotFunctions.runWithEncoders(5000, 0.75);
 
         robot.setPoliceLED(false);
         autoRobotFunctions.close();

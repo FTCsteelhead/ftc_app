@@ -53,9 +53,9 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Steelhead TeleOp", group="Steelhead")
+@TeleOp(name="TeleOp Test", group="Steelhead")
 
-public class SteelheadMainTeleOp extends OpMode{
+public class SteelheadTeleOpTest extends OpMode{
 
     // use the defined hardware class for the robot
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
@@ -63,10 +63,8 @@ public class SteelheadMainTeleOp extends OpMode{
 
     double leftSpeed = 0;
     double rightSpeed = 0;
-    double speed = 0.5;
-    double rampTime = 0.25;//seconds
     double positionChange = 0.03;
-    double rampDistance = 10.0;
+
 
     private boolean robotDirectionToggle = false;
     @Override
@@ -97,95 +95,26 @@ public class SteelheadMainTeleOp extends OpMode{
             robot.sweeperMotor.setPower(0.0);
 
         if(gamepad2.a)
-            robot.sweeperMotor.setPower(1.0);
+            robot.sweeperMotor.setPower(-1.0);
 
 
-     //TODO: fix these vales servo postions have changed
+
         if(gamepad2.x)
             robot.shooterPower(0.0);
 
         if(gamepad2.y)
-            robot.shooterPower(0.5);
+            robot.shooterPower(0.7);
 
 
         if(gamepad2.dpad_up)
-            robot.shooterServo.setPosition(0.6);
+            robot.shooterServo.setPosition(0.0);
 
         if(gamepad2.dpad_down)
-            robot.shooterServo.setPosition(1.0);
+            robot.shooterServo.setPosition(1);
 
 
-       if(gamepad1.left_bumper && !robotDirectionToggle) {
-           robot.robotBackward();
-           robotDirectionToggle = true;
-       } else if (gamepad1.left_bumper && robotDirectionToggle) {
-           robot.robotForward();
-           robotDirectionToggle = false;
-       }
-
-
-
-    //TODO: Test the range sensor
-    if(robot.range.getDistance(DistanceUnit.CM) < rampDistance ) {
-        if(gamepad1.left_stick_y != 0) {
-            if(leftSpeed < .1) {
-                leftSpeed = .1;
-            }
-            else{
-                leftSpeed = (robot.range.getDistance(DistanceUnit.CM)/rampDistance) * speed;
-            }
-        }
-        else {
-            leftSpeed = 0;
-        }
-        if((gamepad1.right_stick_y != 0)) {
-            if (leftSpeed < .1 || rightSpeed < .1) {
-                rightSpeed = .1;
-            } else {
-                rightSpeed = (robot.range.getDistance(DistanceUnit.CM) / rampDistance) * speed;
-            }
-        }
-        else{
-            rightSpeed = 0;
-        }
-    }
-
-    {
         leftSpeed = gamepad1.left_stick_y;
         rightSpeed = gamepad1.right_stick_y;
-    }
-
-
-   /* if(gamepad1.left_stick_y != 0) {
-         resetStartTime();
-         leftSpeed = gamepad1.left_stick_y;
-         if(getRuntime() < rampTime) {
-             if(leftSpeed > 0)
-                 leftSpeed = getRuntime() * speed/rampTime;
-             else if (leftSpeed < 0)
-                 leftSpeed = -(getRuntime() * speed/rampTime);
-
-         }
-     }
-
-
-        if(gamepad1.right_stick_y != 0) {
-            resetStartTime();
-            rightSpeed = gamepad1.right_stick_y;
-
-            if(getRuntime() < rampTime) {
-                if(rightSpeed > 0)
-                    rightSpeed = getRuntime()* speed/rampTime;
-                else if (rightSpeed < 0)
-                    rightSpeed = -(getRuntime()*speed/rampTime);
-            }
-        }
-*/
-        if(gamepad1.right_bumper) {
-            leftSpeed = 1;
-            rightSpeed = 1;
-        }
-
 
         robot.robotLeftPower(rightSpeed);
         robot.robotRightPower(leftSpeed);
@@ -200,14 +129,6 @@ public class SteelheadMainTeleOp extends OpMode{
         if(gamepad2.left_trigger > 0)
             robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - positionChange );
 
-     /*   if(gamepad1.a)
-            robot.LEDs.setPower(1.0);
-
-        if(gamepad1.b)
-            robot.LEDs.setPower(0.0);
-
-        telemetry.addData("LED", robot.LEDs.getPower());*/
-        telemetry.addData("Range Sensor", robot.range.getDistance(DistanceUnit.CM));
         telemetry.addData("leftSpeed",  "%.2f", leftSpeed);
         telemetry.addData("rightSpeed", "%.2f", rightSpeed);
         updateTelemetry(telemetry);

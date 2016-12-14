@@ -34,7 +34,8 @@ public class HardwareSteelheadMainBot {
     public ModernRoboticsI2cGyro gyro       = null;
     public Adafruit_ColorSensor beaconColor = null;
     public DigitalChannel policeLED         = null;
-    public ModernRoboticsI2cRangeSensor range       = null;
+    public ModernRoboticsI2cRangeSensor range   = null;
+  //  public DcMotor LEDs                     = null;
 
 
     private String leftMotorName_1          = "leftMotor1";
@@ -51,6 +52,7 @@ public class HardwareSteelheadMainBot {
     private String policeLEDName            = "policeLED";
     private String shooterServoName         = "shooter";
     private String rangeSensorName         = "range";
+  //  private String LEDname                  = "LEDs";
 
     private boolean isRobotBackward = false;
 
@@ -115,6 +117,8 @@ public class HardwareSteelheadMainBot {
         policeLED = aHwMap.digitalChannel.get(policeLEDName);
         policeLED.setMode(DigitalChannelController.Mode.OUTPUT);
         policeLED.setState(false);
+
+      //  LEDs = aHwMap.dcMotor.get(LEDname);
     }
 
     public void setLeftMotorName(String newName) {
