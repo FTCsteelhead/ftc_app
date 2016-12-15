@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
@@ -41,34 +42,45 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * This file provides basic Telop driving for a Pushbot robot.
  * The code is structured as an Iterative OpMode
- *
+ * <p>
  * This OpMode uses the common Pushbot hardware class to define the devices on the robot.
  * All device access is managed through the HardwarePushbot class.
- *
+ * <p>
  * This particular OpMode executes a basic Tank Drive Teleop for a PushBot
  * It raises and lowers the claw using the Gampad Y and A buttons respectively.
- * It also opens and closes the claws slowly using the leftSpeed and rightSpeed Bumper buttons.
- *
+ * It also opens and closes the claws slowly using the leftError and rightError Bumper buttons.
+ * <p>
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Steelhead TeleOp", group="Steelhead")
+@TeleOp(name = "Steelhead TeleOp", group = "Steelhead")
 
-public class SteelheadMainTeleOp extends OpMode{
+public class SteelheadMainTeleOp extends OpMode {
 
     // use the defined hardware class for the robot
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
+    private ElapsedTime rampTimer = new ElapsedTime();
+    private ElapsedTime buttonTimer = new ElapsedTime();
 
-    double leftSpeed = 0;
-    double rightSpeed = 0;
-    double speed = 0.5;
-    double rampTime = 0.25;//seconds
-    double positionChange = 0.03;
-    double rampDistance = 10.0;
+    double leftError = 0;
+    double rightError = 0;
+
+    private final double buttonTime = 200; //milliseconds
+    private final double rampTime = 50;//milliseconds
+    private final double servoPositionChange = 0.03;
+    private final double rampDistance = 20.0;
+    private final double distanceMultiplier = 0.025;
+    private final double rampMultiplier = 0.15;
 
     private boolean robotDirectionToggle = false;
+    private boolean sweeperMotorToggle = false;
+    private boolean shooterMotorToggle = false;
+
+    private double workingLeftForwardSpeed = 0;
+    private double workingRightForwardSpeed = 0;
+
     @Override
     public void init() {
         /* Initialize the hardware variables.
@@ -77,7 +89,10 @@ public class SteelheadMainTeleOp extends OpMode{
         robot.init(hardwareMap);
         robot.robotForward();
 
-        telemetry.addData("Status", "WAITING");    //
+        gamepad1.setJoystickDeadzone(0.08f);
+        gamepad2.setJoystickDeadzone(0.08f);
+
+        telemetry.addData("Status", "WAITING");
         updateTelemetry(telemetry);
     }
 
@@ -87,129 +102,102 @@ public class SteelheadMainTeleOp extends OpMode{
 
     @Override
     public void start() {
+        buttonTimer.reset();
+        rampTimer.reset();
     }
 
     @Override
     public void loop() {
 
-
-        if(gamepad2.b)
-            robot.sweeperMotor.setPower(0.0);
-
-        if(gamepad2.a)
-            robot.sweeperMotor.setPower(1.0);
-
-
-     //TODO: fix these vales servo postions have changed
-        if(gamepad2.x)
-            robot.shooterPower(0.0);
-
-        if(gamepad2.y)
-            robot.shooterPower(0.5);
-
-
-        if(gamepad2.dpad_up)
-            robot.shooterServo.setPosition(0.6);
-
-        if(gamepad2.dpad_down)
-            robot.shooterServo.setPosition(1.0);
-
-
-       if(gamepad1.left_bumper && !robotDirectionToggle) {
-           robot.robotBackward();
-           robotDirectionToggle = true;
-       } else if (gamepad1.left_bumper && robotDirectionToggle) {
-           robot.robotForward();
-           robotDirectionToggle = false;
-       }
-
-
-
-    //TODO: Test the range sensor
-    if(robot.range.getDistance(DistanceUnit.CM) < rampDistance ) {
-        if(gamepad1.left_stick_y != 0) {
-            if(leftSpeed < .1) {
-                leftSpeed = .1;
+        if (buttonTimer.milliseconds() >= buttonTime) {
+            buttonTimer.reset();
+            if (gamepad2.b && !sweeperMotorToggle) {
+                robot.sweeperMotor.setPower(0.0);
+                sweeperMotorToggle = true;
+            } else if (gamepad2.b && sweeperMotorToggle) {
+                robot.sweeperMotor.setPower(-1.0);
+                sweeperMotorToggle = false;
             }
-            else{
-                leftSpeed = (robot.range.getDistance(DistanceUnit.CM)/rampDistance) * speed;
+
+            if (gamepad2.x && !shooterMotorToggle) {
+                robot.shooterPower(0.0);
+                shooterMotorToggle = true;
+            } else if (gamepad2.x && shooterMotorToggle) {
+                robot.shooterPower(0.7);
+                shooterMotorToggle = false;
+            }
+
+            if (gamepad2.dpad_up)
+                robot.shooterServo.setPosition(0.6);
+
+            if (gamepad2.dpad_down)
+                robot.shooterServo.setPosition(0.9);
+
+            if (gamepad1.left_bumper && !robotDirectionToggle) {
+                robot.robotBackward();
+                robotDirectionToggle = true;
+            } else if (gamepad1.left_bumper && robotDirectionToggle) {
+                robot.robotForward();
+                robotDirectionToggle = false;
             }
         }
-        else {
-            leftSpeed = 0;
+
+        //// TODO: 12/7/2016 Test this whole mess of a control system
+        if (gamepad1.atRest()) {
+            leftError = 0;
+            rightError = 0;
+            workingLeftForwardSpeed = 0;
+            workingRightForwardSpeed = 0;
+        } else {
+            leftError = gamepad1.left_stick_y - workingLeftForwardSpeed;
+            rightError = gamepad1.right_stick_y - workingRightForwardSpeed;
         }
-        if((gamepad1.right_stick_y != 0)) {
-            if (leftSpeed < .1 || rightSpeed < .1) {
-                rightSpeed = .1;
-            } else {
-                rightSpeed = (robot.range.getDistance(DistanceUnit.CM) / rampDistance) * speed;
+
+        if (rampTimer.milliseconds() >= rampTime) {
+            rampTimer.reset();
+            workingLeftForwardSpeed += leftError * rampMultiplier;
+            workingRightForwardSpeed += rightError * rampMultiplier;
+        }
+
+        if (!robot.isRobotForward() && robot.range.getDistance(DistanceUnit.CM) < rampDistance) {
+           /* if (workingLeftForwardSpeed <= -0.2) {
+                workingLeftForwardSpeed += robot.range.getDistance(DistanceUnit.CM) * distanceMultiplier;
+            } else */if (!gamepad1.atRest()){
+                workingLeftForwardSpeed = -0.1;
+           }
+          /*  if (workingRightForwardSpeed <= -0.2) {
+                workingRightForwardSpeed += robot.range.getDistance(DistanceUnit.CM) * distanceMultiplier;
+            } else */if (!gamepad1.atRest()){
+                workingRightForwardSpeed = -0.1;
             }
         }
-        else{
-            rightSpeed = 0;
-        }
-    }
 
-    {
-        leftSpeed = gamepad1.left_stick_y;
-        rightSpeed = gamepad1.right_stick_y;
-    }
-
-
-   /* if(gamepad1.left_stick_y != 0) {
-         resetStartTime();
-         leftSpeed = gamepad1.left_stick_y;
-         if(getRuntime() < rampTime) {
-             if(leftSpeed > 0)
-                 leftSpeed = getRuntime() * speed/rampTime;
-             else if (leftSpeed < 0)
-                 leftSpeed = -(getRuntime() * speed/rampTime);
-
-         }
-     }
-
-
-        if(gamepad1.right_stick_y != 0) {
-            resetStartTime();
-            rightSpeed = gamepad1.right_stick_y;
-
-            if(getRuntime() < rampTime) {
-                if(rightSpeed > 0)
-                    rightSpeed = getRuntime()* speed/rampTime;
-                else if (rightSpeed < 0)
-                    rightSpeed = -(getRuntime()*speed/rampTime);
-            }
-        }
-*/
-        if(gamepad1.right_bumper) {
-            leftSpeed = 1;
-            rightSpeed = 1;
+        if (robot.isRobotForward()) {
+            robot.robotLeftPower(workingRightForwardSpeed);
+            robot.robotRightPower(workingLeftForwardSpeed);
+        } else {
+            robot.robotLeftPower(workingLeftForwardSpeed);
+            robot.robotRightPower(workingRightForwardSpeed);
         }
 
 
-        robot.robotLeftPower(rightSpeed);
-        robot.robotRightPower(leftSpeed);
+        if (gamepad2.right_bumper)
+            robot.pusherRight.setPosition(robot.pusherRight.getPosition() - servoPositionChange);
+        if (gamepad2.right_trigger > 0)
+            robot.pusherRight.setPosition(robot.pusherRight.getPosition() + servoPositionChange);
 
-        if(gamepad2.right_bumper)
-            robot.pusherRight.setPosition(robot.pusherRight.getPosition() - positionChange );
-        if(gamepad2.right_trigger > 0)
-            robot.pusherRight.setPosition(robot.pusherRight.getPosition() + positionChange );
+        if (gamepad2.left_bumper)
+            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() + servoPositionChange);
+        if (gamepad2.left_trigger > 0)
+            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - servoPositionChange);
 
-        if(gamepad2.left_bumper)
-            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() + positionChange );
-        if(gamepad2.left_trigger > 0)
-            robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - positionChange );
-
-     /*   if(gamepad1.a)
-            robot.LEDs.setPower(1.0);
-
-        if(gamepad1.b)
-            robot.LEDs.setPower(0.0);
-
-        telemetry.addData("LED", robot.LEDs.getPower());*/
-        telemetry.addData("Range Sensor", robot.range.getDistance(DistanceUnit.CM));
-        telemetry.addData("leftSpeed",  "%.2f", leftSpeed);
-        telemetry.addData("rightSpeed", "%.2f", rightSpeed);
+        telemetry.addData("left joystick", gamepad1.left_stick_y);
+        telemetry.addData("right joystick", gamepad1.right_stick_y);
+        telemetry.addData("Distance", robot.range.getDistance(DistanceUnit.CM));
+        telemetry.addData("leftError", "%.2f", leftError);
+        telemetry.addData("rightError", "%.2f", rightError);
+        telemetry.addData("working left speed", workingLeftForwardSpeed);
+        telemetry.addData("working right speed", workingRightForwardSpeed);
         updateTelemetry(telemetry);
     }
 

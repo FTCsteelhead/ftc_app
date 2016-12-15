@@ -75,13 +75,17 @@ public class MatrixTest extends OpMode {
          t = new Thread(new Runnable() {
             @Override
             public void run() {
-                adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.YELLOW);
+                adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.GREEN);
 
                 while (threadActive) {
-                    adafruitGfx.animateBmp(R.drawable.firework, 17, 150, false);
+                    /*adafruitGfx.animateBmp(R.drawable.firework, 19, 150, false);
                     adafruitGfx.scrollText("We Won!!");
-                    adafruitGfx.animateBmp(R.drawable.firework, 17, 150, false);
+                    adafruitGfx.animateBmp(R.drawable.firework, 19, 150, false);*/
+                    adafruitGfx.scrollText("Sorry Joey :(");
+                    adafruitGfx.animateBmp(R.drawable.firework, 19, 150, false);
                 }
+                ledMatrix.clearDisplay();
+                ledMatrix.updateDisplay();
             }
         });
         t.start();

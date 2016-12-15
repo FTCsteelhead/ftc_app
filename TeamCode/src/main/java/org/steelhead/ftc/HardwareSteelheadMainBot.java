@@ -34,8 +34,7 @@ public class HardwareSteelheadMainBot {
     public ModernRoboticsI2cGyro gyro       = null;
     public Adafruit_ColorSensor beaconColor = null;
     public DigitalChannel policeLED         = null;
-    public ModernRoboticsI2cRangeSensor range   = null;
-  //  public DcMotor LEDs                     = null;
+    public ModernRoboticsI2cRangeSensor range = null;
 
 
     private String leftMotorName_1          = "leftMotor1";
@@ -51,10 +50,10 @@ public class HardwareSteelheadMainBot {
     private String beaconColorName          = "BColor";
     private String policeLEDName            = "policeLED";
     private String shooterServoName         = "shooter";
-    private String rangeSensorName         = "range";
-  //  private String LEDname                  = "LEDs";
+    private String rangeSensorName          = "range";
 
     private boolean isRobotBackward = false;
+    private boolean isRobotForward = false;
 
     public void init(HardwareMap aHwMap) {
 
@@ -71,8 +70,8 @@ public class HardwareSteelheadMainBot {
 
         sweeperMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         sweeperMotor.setPower(0);
         leftShooterMotor.setPower(0);
@@ -93,7 +92,7 @@ public class HardwareSteelheadMainBot {
 
         shooterServo = aHwMap.servo.get(shooterServoName);
 
-        shooterServo.setPosition(1.0);
+        shooterServo.setPosition(0.9);
 
         //initialize sensors
         touchSensor = aHwMap.touchSensor.get(touchSensorName);
@@ -117,8 +116,6 @@ public class HardwareSteelheadMainBot {
         policeLED = aHwMap.digitalChannel.get(policeLEDName);
         policeLED.setMode(DigitalChannelController.Mode.OUTPUT);
         policeLED.setState(false);
-
-      //  LEDs = aHwMap.dcMotor.get(LEDname);
     }
 
     public void setLeftMotorName(String newName) {
@@ -148,12 +145,14 @@ public class HardwareSteelheadMainBot {
         leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         isRobotBackward = false;
+        isRobotForward = true;
     }
 
     public void robotBackward() {
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         isRobotBackward = true;
+        isRobotForward = false;
     }
 
     public void robotSetZeroPowerBehavior (DcMotor.ZeroPowerBehavior behavior) {
@@ -182,6 +181,9 @@ public class HardwareSteelheadMainBot {
 
     public boolean isRobotBackward() {
         return isRobotBackward;
+    }
+    public boolean isRobotForward() {
+        return isRobotForward;
     }
 
     public void close() {

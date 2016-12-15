@@ -45,7 +45,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Demonstrates empty OpMode
  */
 @Autonomous(name = "Test: Auto Class", group = "Test")
-//@Disabled
+@Disabled
 public class AutoClassTest extends LinearOpMode {
 
     @Override

@@ -53,9 +53,9 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp Test", group="Steelhead")
+@TeleOp(name="TeleOp Old", group="Steelhead")
 
-public class SteelheadTeleOpTest extends OpMode{
+public class SteelheadTeleOpOld extends OpMode{
 
     // use the defined hardware class for the robot
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
