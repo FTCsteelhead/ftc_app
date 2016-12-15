@@ -63,18 +63,10 @@ public class AutoRedNew extends LinearOpMode {
 
         autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
 
-        robot.shooterPower(1.0);
+        robot.shooterPower(0.7);
 
         robot.robotBackward();
-        autoRobotFunctions.runWithEncoders(2500, 1.0);
-
-
-        //drive back more and shoot the ball
-      /*  autoRobotFunctions.MRDriveStraight(90, .60,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 2500);*/
-
-
+        autoRobotFunctions.runWithEncoders(2450, 1.0);
 
         robot.shooterServo.setPosition(0.6);
 

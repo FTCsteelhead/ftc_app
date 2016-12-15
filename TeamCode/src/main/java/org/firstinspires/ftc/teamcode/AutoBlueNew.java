@@ -69,9 +69,12 @@ public class AutoBlueNew extends LinearOpMode {
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2500, 0.15,
                 AutoRobotFunctions.StopConditions.ENCODER, 2500);
 
-        robot.shooterPower(1.0);
+        robot.shooterPower(0.7);
 
-        robot.shooterServo.setPosition(0.8);
+        robot.robotBackward();
+        autoRobotFunctions.runWithEncoders(2450, 1.0);
+
+        robot.shooterServo.setPosition(0.6);
 
         Thread.sleep(500);
 
@@ -82,16 +85,10 @@ public class AutoBlueNew extends LinearOpMode {
 
         robot.robotForward();
         //autoRobotFunctions.pusherActive(true);
-        autoRobotFunctions.MRRotate(20, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(-20, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-        robot.robotForward();
-        autoRobotFunctions.MRRotate(2, TOLERANCE_DEGREES,
-                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
-
-        autoRobotFunctions.runWithEncoders(500, 1.0);
-
-        autoRobotFunctions.MRDriveStraight(0, 0.60,
+        autoRobotFunctions.MRDriveStraight(-20, 0.60,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
                 AutoRobotFunctions.StopConditions.COLOR, 20);
 
