@@ -98,7 +98,7 @@ public class Adafruit_GFX {
         int frame = 0;
         animationRunning = true;
         while (animationRunning) {
-            drawBmp(id, frame);
+            drawBmpFromResource(id, frame);
             ledMatrix.updateDisplay();
 
             try {
@@ -117,8 +117,18 @@ public class Adafruit_GFX {
             }
         }
     }
+    public void drawBmp(byte  pic[], Adafruit_LedMatrix.Color color) {
+        for (int y = 0; y < 8; y++) {
+            byte line = pic[y];
+            for (int x = 0; x < 8; x++, line>>=1) {
+                if ((line & 0x01) == 1) {
+                    ledMatrix.drawPixel(x, y, color);
+                }
+            }
+        }
+    }
 
-    public void drawBmp(int id, int imagePos) {
+    public void drawBmpFromResource(int id, int imagePos) {
         Context context = hardwareMap.appContext;
         BitmapFactory.Options options= new BitmapFactory.Options();
         options.inScaled = false;
@@ -143,7 +153,6 @@ public class Adafruit_GFX {
                 }
             }
         }
-
     }
     public void stopAnimation() {
         animationRunning = false;

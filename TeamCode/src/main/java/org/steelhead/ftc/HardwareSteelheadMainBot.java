@@ -92,7 +92,7 @@ public class HardwareSteelheadMainBot {
 
         shooterServo = aHwMap.servo.get(shooterServoName);
 
-        shooterServo.setPosition(0.9);
+        shooterServo.setPosition(0.55);
 
         //initialize sensors
         touchSensor = aHwMap.touchSensor.get(touchSensorName);

@@ -81,6 +81,8 @@ public class SteelheadMainTeleOp extends OpMode {
     private double workingLeftForwardSpeed = 0;
     private double workingRightForwardSpeed = 0;
 
+    private final double MAX_SPEED = 0.5;
+
     @Override
     public void init() {
         /* Initialize the hardware variables.
@@ -123,15 +125,15 @@ public class SteelheadMainTeleOp extends OpMode {
                 robot.shooterPower(0.0);
                 shooterMotorToggle = true;
             } else if (gamepad2.x && shooterMotorToggle) {
-                robot.shooterPower(0.7);
+                robot.shooterPower(0.33);
                 shooterMotorToggle = false;
             }
 
             if (gamepad2.dpad_up)
-                robot.shooterServo.setPosition(0.6);
+                robot.shooterServo.setPosition(0.4);
 
             if (gamepad2.dpad_down)
-                robot.shooterServo.setPosition(0.9);
+                robot.shooterServo.setPosition(0.55);
 
             if (gamepad1.left_bumper && !robotDirectionToggle) {
                 robot.robotBackward();
@@ -142,21 +144,29 @@ public class SteelheadMainTeleOp extends OpMode {
             }
         }
 
-        //// TODO: 12/7/2016 Test this whole mess of a control system
         if (gamepad1.atRest()) {
-            leftError = 0;
-            rightError = 0;
             workingLeftForwardSpeed = 0;
             workingRightForwardSpeed = 0;
-        } else {
-            leftError = gamepad1.left_stick_y - workingLeftForwardSpeed;
-            rightError = gamepad1.right_stick_y - workingRightForwardSpeed;
-        }
+        } else if (gamepad1.right_bumper) {
+            //ENTER TURBO MODE
+            workingLeftForwardSpeed = gamepad1.left_stick_y;
+            workingRightForwardSpeed = gamepad1.right_stick_y;
 
-        if (rampTimer.milliseconds() >= rampTime) {
-            rampTimer.reset();
-            workingLeftForwardSpeed += leftError * rampMultiplier;
-            workingRightForwardSpeed += rightError * rampMultiplier;
+        } else {
+            workingLeftForwardSpeed = gamepad1.left_stick_y;
+            workingRightForwardSpeed = gamepad1.right_stick_y;
+
+            if (workingRightForwardSpeed > MAX_SPEED) {
+                workingRightForwardSpeed = MAX_SPEED;
+            } else if (workingRightForwardSpeed < -MAX_SPEED) {
+                workingRightForwardSpeed = -MAX_SPEED;
+            }
+
+            if (workingLeftForwardSpeed > MAX_SPEED) {
+                workingLeftForwardSpeed = MAX_SPEED;
+            } else if (workingLeftForwardSpeed < -MAX_SPEED){
+                workingLeftForwardSpeed = -MAX_SPEED;
+            }
         }
 
         if (!robot.isRobotForward() && robot.range.getDistance(DistanceUnit.CM) < rampDistance) {
@@ -206,6 +216,7 @@ public class SteelheadMainTeleOp extends OpMode {
      */
     @Override
     public void stop() {
+        robot.close();
     }
 
 }

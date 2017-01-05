@@ -2,7 +2,8 @@ package org.steelhead.ftc;
 
 /**
  * Created by Alec Matthews on 11/23/2016.
- * This add a structure for the two different types of transfers that need to be done for the chip
+ * This add a structure for the two different types of transfers that need to be done for the led
+ * matrix driver chip
  */
 
 public class I2cTransferHT16K33 {
