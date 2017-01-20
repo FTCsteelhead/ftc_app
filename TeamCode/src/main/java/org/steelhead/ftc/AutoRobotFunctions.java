@@ -46,8 +46,8 @@ public class AutoRobotFunctions {
     private DcMotor rightMotor;
 
     //NavX Sensor
-    private final byte NAVX_DEVICE_UPDATE_RATE_HZ   = 50;
-    private final int  DEVICE_TIMEOUT_MS            = 500;
+    private final byte NAVX_DEVICE_UPDATE_RATE_HZ = 50;
+    private final int DEVICE_TIMEOUT_MS = 500;
     private AHRS navXDevice;
 
     //Rest of the sensors
@@ -94,6 +94,7 @@ public class AutoRobotFunctions {
         }
         navXDevice.zeroYaw();*/
     }
+
     public AutoRobotFunctions(LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
         this.robot = robot;
         this.currentOpMode = currentOpMode;
@@ -108,7 +109,7 @@ public class AutoRobotFunctions {
         navXDevice = null;
 
         gyro.calibrate();
-        while (!currentOpMode.isStopRequested() && gyro.isCalibrating()) {
+        while (gyro.isCalibrating() && !currentOpMode.isStopRequested()) {
             currentOpMode.telemetry.addData("Gyro", "Calibrating. Do Not Move!!");
             currentOpMode.telemetry.update();
         }
@@ -124,11 +125,11 @@ public class AutoRobotFunctions {
         GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
         pidController.setPID(gyroRotateKP, gyroRotateKI, gyroRotateKD);
         pidController.enable();
-     //  gyro.resetZAxisIntegrator();
+        //  gyro.resetZAxisIntegrator();
         try {
             Thread.sleep(10);
             while (!rotationComplete && currentOpMode.opModeIsActive()) {
-                currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue() );
+                currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue());
                 if (pidController.isOnTarget()) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
@@ -154,64 +155,75 @@ public class AutoRobotFunctions {
                                 int encoderDistance, double minEndPower,
                                 StopConditions stopCondition, int stopVal) {
         double workingForwardSpeed = driveSpeed;
+        double output = 0;
+        boolean pidEnable = true;
+        robot.stopAndClearEncoders();
         robot.enableEncoders(true);
 
         GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
         pidController.setPID(gyroDriveKP, gyroDriveKI, gyroDriveKD);
         pidController.enable();
 
-
         try {
             //Sleep to allow the pid controller to calculate a first value
             Thread.sleep(10);
             while (currentOpMode.opModeIsActive()) {
-                currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue() );
+                currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue());
+
+                //Check for different stop conditions and handle them appropriately
                 if (stopCondition == StopConditions.COLOR && color.alpha() > stopVal) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
                     break;
-                } else if (stopCondition == StopConditions.ENCODER) {
-                    if (rightMotor.getCurrentPosition() >= stopVal) {
-                        leftMotor.setPower(0);
-                        rightMotor.setPower(0);
-                        break;
-                    }
+                } else if (stopCondition == StopConditions.ENCODER &&
+                        rightMotor.getCurrentPosition() >= stopVal) {
+                    leftMotor.setPower(0);
+                    rightMotor.setPower(0);
+                    break;
                 } else if (stopCondition == StopConditions.BUTTON && touchSensor.isPressed()) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
                     break;
                 }
-                double output = pidController.getOutput();
-                if(pidController.isOnTarget()) {
+
+                //Get the PID controller output and apply it to the motors
+                if (pidEnable) {
+                    output = pidController.getOutput();
+                    if (pidController.isOnTarget()) {
+                        leftMotor.setPower(workingForwardSpeed);
+                        rightMotor.setPower(workingForwardSpeed);
+                        currentOpMode.telemetry.addData("Output", workingForwardSpeed);
+                    } else {
+                        double leftSpeed = limit((workingForwardSpeed + output), minOutputVal, maxOutputVal);
+                        double righSpeed = limit((workingForwardSpeed - output), minOutputVal, maxOutputVal);
+                        currentOpMode.telemetry.addData("Output", output);
+                        currentOpMode.telemetry.addData("Left Speed", leftSpeed);
+                        currentOpMode.telemetry.addData("Right Speed", righSpeed);
+                        leftMotor.setPower(leftSpeed);
+                        rightMotor.setPower(righSpeed);
+                    }
+                } else {
                     leftMotor.setPower(workingForwardSpeed);
                     rightMotor.setPower(workingForwardSpeed);
-                    currentOpMode.telemetry.addData("Output", "Drive Speed");
-                }
-                else {
-                    currentOpMode.telemetry.addData("Output", output);
-                    leftMotor.setPower(limit((workingForwardSpeed + output), minOutputVal, maxOutputVal));
-                    rightMotor.setPower(limit((workingForwardSpeed - output), minOutputVal, maxOutputVal));
-
                 }
 
                 /*
-            Slow the robot as it gets close to the line so it does not overshoot,
-            This is basically a P controller.
-            If the multiplier is equal to -1 turn off the speed reduction
-            */
+                 * Slow the robot as it gets close to the line so it does not overshoot,
+                 * This is basically a P controller.
+                 * If the multiplier is equal to -1 turn off the speed reduction
+                 */
                 if (motorSpeedMul != -1) {
                     if (rightMotor.getCurrentPosition() >= (encoderDistance - 500)) {
                         int error = (encoderDistance - rightMotor.getCurrentPosition()) - 500;
                         workingForwardSpeed = driveSpeed + error * motorSpeedMul;
                         if (workingForwardSpeed < minEndPower) {
                             workingForwardSpeed = minEndPower;
+                            pidEnable = false;
                         }
-
                     }
                 }
-
+                currentOpMode.telemetry.addData("Encoder", rightMotor.getCurrentPosition());
                 currentOpMode.telemetry.update();
-
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -220,7 +232,7 @@ public class AutoRobotFunctions {
         }
     }
 
-    //PID controller for rotation to a degree
+    //NavX PID controller for rotation to a degree
     public void navxRotateToDegree(double degree, double tolerance,
                                    double minMotorOutput, double maxMotorOutput) {
         boolean rotationComplete = false;
@@ -264,7 +276,6 @@ public class AutoRobotFunctions {
     }
 
 
-
     //Drive straight with a PID controller
     public void navXDriveStraight(double degree, double tolerance,
                                   double minOutputRage, double maxOutputRange,
@@ -295,7 +306,7 @@ public class AutoRobotFunctions {
         try {
             while (currentOpMode.opModeIsActive() && !Thread.currentThread().isInterrupted()) {
 
-               currentOpMode.telemetry.addData("Right Encoder", rightMotor.getCurrentPosition());
+                currentOpMode.telemetry.addData("Right Encoder", rightMotor.getCurrentPosition());
                 currentOpMode.telemetry.addData("Left Encoder", leftMotor.getCurrentPosition());
                 //ramp the motor up to prevent damage and jerk
 
@@ -521,6 +532,7 @@ public class AutoRobotFunctions {
         this.colorKI = Ki;
         this.colorKD = Kd;
     }
+
     public void setGyroRotatePID(double Kp, double Ki, double Kd) {
         this.gyroRotateKP = Kp;
         this.gyroRotateKI = Ki;
@@ -532,6 +544,7 @@ public class AutoRobotFunctions {
         this.gyroDriveKI = Ki;
         this.gyroDriveKD = Kd;
     }
+
     //Limit function
     private double limit(double a, double minOutputVal, double maxOutputVal) {
         return Math.min(Math.max(a, minOutputVal), maxOutputVal);

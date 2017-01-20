@@ -67,12 +67,9 @@ public class SteelheadMainTeleOp extends OpMode {
     double leftError = 0;
     double rightError = 0;
 
-    private final double buttonTime = 200; //milliseconds
-    private final double rampTime = 50;//milliseconds
+    private final double buttonTime = 180; //milliseconds
     private final double servoPositionChange = 0.03;
     private final double rampDistance = 20.0;
-    private final double distanceMultiplier = 0.025;
-    private final double rampMultiplier = 0.15;
 
     private boolean robotDirectionToggle = false;
     private boolean sweeperMotorToggle = false;
@@ -81,7 +78,7 @@ public class SteelheadMainTeleOp extends OpMode {
     private double workingLeftForwardSpeed = 0;
     private double workingRightForwardSpeed = 0;
 
-    private final double MAX_SPEED = 0.5;
+    private final double MAX_SPEED = 0.40;
 
     @Override
     public void init() {
@@ -113,27 +110,12 @@ public class SteelheadMainTeleOp extends OpMode {
 
         if (buttonTimer.milliseconds() >= buttonTime) {
             buttonTimer.reset();
-            if (gamepad2.b && !sweeperMotorToggle) {
-                robot.sweeperMotor.setPower(0.0);
-                sweeperMotorToggle = true;
-            } else if (gamepad2.b && sweeperMotorToggle) {
-                robot.sweeperMotor.setPower(-1.0);
-                sweeperMotorToggle = false;
-            }
-
-            if (gamepad2.x && !shooterMotorToggle) {
-                robot.shooterPower(0.0);
-                shooterMotorToggle = true;
-            } else if (gamepad2.x && shooterMotorToggle) {
-                robot.shooterPower(0.33);
-                shooterMotorToggle = false;
-            }
 
             if (gamepad2.dpad_up)
-                robot.shooterServo.setPosition(0.4);
+                robot.shooterServoDown(false);
 
             if (gamepad2.dpad_down)
-                robot.shooterServo.setPosition(0.55);
+                robot.shooterServoDown(true);
 
             if (gamepad1.left_bumper && !robotDirectionToggle) {
                 robot.robotBackward();
@@ -141,6 +123,26 @@ public class SteelheadMainTeleOp extends OpMode {
             } else if (gamepad1.left_bumper && robotDirectionToggle) {
                 robot.robotForward();
                 robotDirectionToggle = false;
+            }
+        }
+
+        if (gamepad2.atRest()) {
+            robot.shooterPower(0);
+        } else {
+            if (gamepad2.right_stick_y < -0.5) {
+                robot.shooterPower(0.60);
+            } else if (gamepad2.right_stick_y > 0.5) {
+                robot.shooterPower(-0.60);
+            } else {
+                robot.shooterPower(0);
+            }
+
+            if (gamepad2.left_stick_y < -0.5) {
+                robot.sweeperMotor.setPower(-1.0);
+            } else if (gamepad2.left_stick_y > 0.5) {
+                robot.sweeperMotor.setPower(1.0);
+            } else {
+                robot.sweeperMotor.setPower(0);
             }
         }
 
@@ -164,23 +166,19 @@ public class SteelheadMainTeleOp extends OpMode {
 
             if (workingLeftForwardSpeed > MAX_SPEED) {
                 workingLeftForwardSpeed = MAX_SPEED;
-            } else if (workingLeftForwardSpeed < -MAX_SPEED){
+            } else if (workingLeftForwardSpeed < -MAX_SPEED) {
                 workingLeftForwardSpeed = -MAX_SPEED;
             }
         }
 
-        if (!robot.isRobotForward() && robot.range.getDistance(DistanceUnit.CM) < rampDistance) {
-           /* if (workingLeftForwardSpeed <= -0.2) {
-                workingLeftForwardSpeed += robot.range.getDistance(DistanceUnit.CM) * distanceMultiplier;
-            } else */if (!gamepad1.atRest()){
+        /*if (!robot.isRobotForward() && robot.range.getDistance(DistanceUnit.CM) < rampDistance) {
+            if (!gamepad1.atRest()) {
                 workingLeftForwardSpeed = -0.1;
-           }
-          /*  if (workingRightForwardSpeed <= -0.2) {
-                workingRightForwardSpeed += robot.range.getDistance(DistanceUnit.CM) * distanceMultiplier;
-            } else */if (!gamepad1.atRest()){
+            }
+            if (!gamepad1.atRest()) {
                 workingRightForwardSpeed = -0.1;
             }
-        }
+        }*/
 
         if (robot.isRobotForward()) {
             robot.robotLeftPower(workingRightForwardSpeed);
@@ -190,7 +188,7 @@ public class SteelheadMainTeleOp extends OpMode {
             robot.robotRightPower(workingRightForwardSpeed);
         }
 
-
+        //Bumpers control the button pushers
         if (gamepad2.right_bumper)
             robot.pusherRight.setPosition(robot.pusherRight.getPosition() - servoPositionChange);
         if (gamepad2.right_trigger > 0)

@@ -68,7 +68,7 @@ public class HardwareSteelheadMainBot {
         //TODO: check the directions once the electronics are set up
         robotForward();
 
-        sweeperMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        sweeperMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -139,6 +139,14 @@ public class HardwareSteelheadMainBot {
     public void shooterPower(double power){
         leftShooterMotor.setPower(power);
         rightShooterMotor.setPower(power);
+    }
+
+    public void shooterServoDown(boolean state) {
+        if (state) {
+            shooterServo.setPosition(0.55);
+        } else {
+            shooterServo.setPosition(0.4);
+        }
     }
 
     public void robotForward() {

@@ -44,8 +44,8 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Test: Auto Class", group = "Test")
-@Disabled
+@Autonomous(name = "Test: Drive Straight", group = "Test")
+//@Disabled
 public class AutoClassTest extends LinearOpMode {
 
     @Override
@@ -54,17 +54,15 @@ public class AutoClassTest extends LinearOpMode {
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
         robot.init(hardwareMap);
         AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot);
-        //autoRobotFunctions.setGyroPID(.017, 0.0005, 0.0008);
-        autoRobotFunctions.setGyroDrivePID(.08, 0.00085 , 0.0008);
+
+        autoRobotFunctions.setGyroDrivePID(.018, 0.0001, 0.008);
         robot.robotForward();
+
         waitForStart();
         robot.setPoliceLED(true);
 
-        //autoRobotFunctions.MRRotate(90, 1, -.20, .20);
-      //  autoRobotFunctions.MRDriveStraight(0, 0.50, -1.0, 1.0, 1, 0.0005, 3500, 0.15,
-       //         AutoRobotFunctions.StopConditions.BUTTON, 0);
-        autoRobotFunctions.runWithEncoders(5000, 0.75);
-
+        autoRobotFunctions.MRDriveStraight(0, 0.75, 0.50, 1.0, 1, 0.00005, 5600, 0.15,
+                AutoRobotFunctions.StopConditions.BUTTON, 0);
         robot.setPoliceLED(false);
         autoRobotFunctions.close();
 

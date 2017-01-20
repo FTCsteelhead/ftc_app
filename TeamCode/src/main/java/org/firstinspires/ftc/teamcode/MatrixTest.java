@@ -78,7 +78,7 @@ public class MatrixTest extends OpMode {
                 adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.GREEN);
 
                 while (threadActive) {
-                    adafruitGfx.scrollText("Send Nudes");
+                    adafruitGfx.scrollText("MIG BLOWS!");
                     adafruitGfx.animateBmp(R.drawable.firework, 19, 150, false);
                 }
                 ledMatrix.clearDisplay();
