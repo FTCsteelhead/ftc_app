@@ -23,14 +23,29 @@ public class Adafruit_GFX {
 
     private boolean animationRunning = false;
 
-    public Adafruit_GFX(HardwareMap hardwareMap, Adafruit_LedMatrix ledMatrix, int width, int height) {
+    public Adafruit_GFX(HardwareMap hardwareMap, String ledMatrixName, int width, int height) {
         this.hardwareMap = hardwareMap;
-        this.ledMatrix = ledMatrix;
+        this.ledMatrix = new Adafruit_LedMatrix(hardwareMap, ledMatrixName);
         this.width = width;
         this.height = height;
         Font f = new Font();
         font = f.font;
     }
+
+    public void clearDisplay() {
+        ledMatrix.clearDisplay();
+    }
+
+    public void updateDisplay() {
+        ledMatrix.updateDisplay();
+    }
+
+    public void close() {
+        clearDisplay();
+        updateDisplay();
+        ledMatrix.close();
+    }
+
     public void write(char c) {
         if (c == '\n') {
             cursorY += 8;

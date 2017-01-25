@@ -31,72 +31,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package org.firstinspires.ftc.teamcode;
 
-
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.steelhead.ftc.ColorPIDController;
+import org.steelhead.ftc.AutoRobotFunctions;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
 /**
  * Demonstrates empty OpMode
  */
-@TeleOp(name = "Sensor: Color Sensor", group = "Sensor")
-@Disabled
-public class ColorSensorTest extends LinearOpMode {
+@Autonomous(name = "Concept: Test Rotate", group = "Concept")
+//@Disabled
+public class RotateTest extends LinearOpMode {
 
-    private final double MAX_MOTOR_POWER = 0.25;
-    private final double MIN_MOTOR_POWER = -0.25;
-    private final double DRIVE_SPEED = 0.10;
-    private final double TOLERANCE = 0;
+  private ElapsedTime runtime = new ElapsedTime();
+
+  @Override
+  public void runOpMode() throws InterruptedException {
     HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
-    ColorSensor colorSensor;
-    ColorPIDController pidController;
 
-    public double limit(double a) {
-        return Math.min(Math.max(a, MIN_MOTOR_POWER), MAX_MOTOR_POWER);
-    }
+    robot.init(hardwareMap);
+    AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        double output = 0;
+    autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
+    autoRobotFunctions.setGyroRotatePID(0.0327, 0.0005, 0.0008);
+    autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
-        robot.init(hardwareMap);
+    robot.robotForward();
 
-        robot.robotBackward();
+    telemetry.addData("STATUS:", "init complete–check state of gyro");
+    telemetry.update();
 
-        colorSensor = hardwareMap.colorSensor.get("color");
-        pidController = new ColorPIDController(colorSensor, 3, 22);
+    waitForStart();
 
-        //Do this magic to make the color sensor work
-        colorSensor.enableLed(true);
-        colorSensor.enableLed(false);
-        colorSensor.enableLed(true);
-        telemetry.addData("Color sensor device id:", colorSensor.getManufacturer());
-        telemetry.update();
-        pidController.setPID(0.018, 0.05, 0.00203);
-        pidController.setTolerance(TOLERANCE);
+    autoRobotFunctions.MRRotate(90, 2, 0, 0);
 
-        waitForStart();
+    robot.close();
 
-        pidController.enable();
-        while (opModeIsActive()) {
-            output = pidController.getOutput();
-            robot.leftMotor.setPower(limit(DRIVE_SPEED + output));
-            robot.rightMotor.setPower(limit(DRIVE_SPEED - output));
-
-            telemetry.addData("Output: ", pidController.getOutput());
-            telemetry.update();
-        }
-        colorSensor.enableLed(false);
-        pidController.disable();
-
-    }
+  }
 }
-
-
-

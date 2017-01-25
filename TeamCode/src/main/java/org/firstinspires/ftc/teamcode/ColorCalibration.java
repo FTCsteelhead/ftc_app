@@ -78,7 +78,7 @@ public class ColorCalibration extends LinearOpMode {
         // Set the LED in the beginning
         robot.color.enableLed(bLedOn);
 
-        telemetry.addData("Device Connection info: ", robot.color.getConnectionInfo());
+        telemetry.addData("Device Connection info", robot.color.getManufacturer());
         telemetry.update();
 
         // wait for the start button to be pressed.
@@ -87,11 +87,12 @@ public class ColorCalibration extends LinearOpMode {
         // while the op mode is active, loop and read the RGB data.
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
-
-            telemetry.addData("Clear-Necessary for auto program", robot.color.alpha());
+            double avrage = (robot.color.red() + robot.color.green() + robot.color.blue())/3;
+            telemetry.addData("Clear", robot.color.alpha());
             telemetry.addData("Red  ", robot.color.red());
             telemetry.addData("Green", robot.color.green());
             telemetry.addData("Blue ", robot.color.blue());
+            telemetry.addData("Brightness - necessary for auto program", avrage);
 
             telemetry.update();
         }

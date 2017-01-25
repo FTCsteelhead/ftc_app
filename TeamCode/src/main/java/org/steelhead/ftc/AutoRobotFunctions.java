@@ -119,17 +119,23 @@ public class AutoRobotFunctions {
     }
 
     //MR Gyro rotate PID
+    //// TODO: 1/23/2017 Add some code to check if the robot stops moving
     public void MRRotate(int degree, int tolerance,
                          double minMotorOutput, double maxMotorOutput) {
+
+        ElapsedTime rotateTime = new ElapsedTime();
         boolean rotationComplete = false;
+        double angle = 0;
+
         GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
         pidController.setPID(gyroRotateKP, gyroRotateKI, gyroRotateKD);
         pidController.enable();
-        //  gyro.resetZAxisIntegrator();
+
         try {
             Thread.sleep(10);
+            rotateTime.reset();
             while (!rotationComplete && currentOpMode.opModeIsActive()) {
-                currentOpMode.telemetry.addData("Gyro Yaw", gyro.getIntegratedZValue());
+                angle = gyro.getIntegratedZValue();
                 if (pidController.isOnTarget()) {
                     leftMotor.setPower(0);
                     rightMotor.setPower(0);
@@ -139,8 +145,15 @@ public class AutoRobotFunctions {
                     leftMotor.setPower(limit(output, minMotorOutput, maxMotorOutput));
                     rightMotor.setPower(limit(-output, minMotorOutput, maxMotorOutput));
                     currentOpMode.telemetry.addData("Output", output);
+                    if (rotateTime.milliseconds() > 5000) {
+                        currentOpMode.telemetry.addData(">", "reevaluate your life choices!");
+                        rotationComplete = true;
+                    }
                 }
+                currentOpMode.telemetry.addData("Time to error", rotateTime.milliseconds());
+                currentOpMode.telemetry.addData("Yaw", angle);
                 currentOpMode.telemetry.update();
+
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -149,6 +162,7 @@ public class AutoRobotFunctions {
         }
     }
 
+    //// TODO: 1/25/2017 Add code to check for a line overshoot. if it does trun and go for the second beacon
     //PID controller for MR Gyro
     public void MRDriveStraight(int degree, double driveSpeed, double minOutputVal,
                                 double maxOutputVal, int tolerance, double motorSpeedMul,
@@ -222,7 +236,8 @@ public class AutoRobotFunctions {
                         }
                     }
                 }
-                currentOpMode.telemetry.addData("Encoder", rightMotor.getCurrentPosition());
+                currentOpMode.telemetry.addData("Right Encoder", rightMotor.getCurrentPosition());
+                currentOpMode.telemetry.addData("Left Encoder", leftMotor.getCurrentPosition());
                 currentOpMode.telemetry.update();
             }
         } catch (InterruptedException e) {
@@ -398,17 +413,15 @@ public class AutoRobotFunctions {
                     break;
                 }
                 double output = pidController.getOutput();
-
+                currentOpMode.telemetry.addData("Output", output);
                 if (lineSide == LineSide.LEFT) {
                     leftMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
                     rightMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
-                    //TODO: test this with these enabled and disabled to see if they break it or make it better
-                    //if you do a rotate first this function should work. with some more tweaking it can work without the rotate
                 } else {
                     leftMotor.setPower(limit((driveSpeed + output), minOutputVal, maxOutputVal));
                     rightMotor.setPower(limit((driveSpeed - output), minOutputVal, maxOutputVal));
                 }
-
+                currentOpMode.telemetry.update();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

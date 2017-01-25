@@ -21,20 +21,21 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
  **/
 
 public class HardwareSteelheadMainBot {
-    public DcMotor leftMotor                = null;
-    public DcMotor rightMotor               = null;
-    public DcMotor sweeperMotor             = null;
-    public DcMotor rightShooterMotor        = null;
-    public DcMotor leftShooterMotor         = null;
-    public Servo pusherRight                = null;
-    public Servo pusherLeft                 = null;
-    public Servo shooterServo               = null;
-    public ColorSensor color                = null;
-    public TouchSensor touchSensor          = null;
-    public ModernRoboticsI2cGyro gyro       = null;
-    public Adafruit_ColorSensor beaconColor = null;
-    public DigitalChannel policeLED         = null;
-    public ModernRoboticsI2cRangeSensor range = null;
+    public DcMotor leftMotor                    = null;
+    public DcMotor rightMotor                   = null;
+    public DcMotor sweeperMotor                 = null;
+    public DcMotor rightShooterMotor            = null;
+    public DcMotor leftShooterMotor             = null;
+    public DcMotor lifterMotor                  = null;
+    public Servo pusherRight                    = null;
+    public Servo pusherLeft                     = null;
+    public Servo shooterServo                   = null;
+    public ColorSensor color                    = null;
+    public TouchSensor touchSensor              = null;
+    public ModernRoboticsI2cGyro gyro           = null;
+    public Adafruit_ColorSensor beaconColor     = null;
+    public DigitalChannel policeLED             = null;
+    public ModernRoboticsI2cRangeSensor range   = null;
 
 
     private String leftMotorName_1          = "leftMotor1";
@@ -42,6 +43,7 @@ public class HardwareSteelheadMainBot {
     private String sweeperMotorName         = "sweeper";
     private String rightShooterMotorName    = "rightShooter";
     private String leftShooterMotorName     = "leftShooter";
+    private String lifterMotorName          = "lifter";
     private String pusherRightName          = "pusherRight";
     private String pusherLeftName           = "pusherLeft";
     private String touchSensorName          = "touch";
@@ -53,27 +55,29 @@ public class HardwareSteelheadMainBot {
     private String rangeSensorName          = "range";
 
     private boolean isRobotBackward = false;
-    private boolean isRobotForward = false;
+    private boolean isRobotForward  = false;
 
     public void init(HardwareMap aHwMap) {
 
         leftMotor = aHwMap.dcMotor.get(leftMotorName_1);
         rightMotor = aHwMap.dcMotor.get(rightMotorName_1);
-
+        lifterMotor = aHwMap.dcMotor.get(lifterMotorName);
         sweeperMotor = aHwMap.dcMotor.get(sweeperMotorName);
 
         leftShooterMotor = aHwMap.dcMotor.get(leftShooterMotorName);
         rightShooterMotor = aHwMap.dcMotor.get(rightShooterMotorName);
-        //sets the robot direction to backward
         //TODO: check the directions once the electronics are set up
         robotForward();
 
         sweeperMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-
+        lifterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        lifterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         sweeperMotor.setPower(0);
+        lifterMotor.setPower(0);
         leftShooterMotor.setPower(0);
         rightShooterMotor.setPower(0);
 
@@ -92,8 +96,7 @@ public class HardwareSteelheadMainBot {
 
         shooterServo = aHwMap.servo.get(shooterServoName);
 
-        shooterServo.setPosition(0.55);
-
+        shooterServoDown(true);
         //initialize sensors
         touchSensor = aHwMap.touchSensor.get(touchSensorName);
 
@@ -118,16 +121,6 @@ public class HardwareSteelheadMainBot {
         policeLED.setState(false);
     }
 
-    public void setLeftMotorName(String newName) {
-
-        leftMotorName_1 = newName + "1";
-    }
-
-    public void setRightMotorName(String newName) {
-
-        rightMotorName_1 = newName + "1";
-    }
-
     public void robotLeftPower(double power) {
         leftMotor.setPower(power);
     }
@@ -143,9 +136,9 @@ public class HardwareSteelheadMainBot {
 
     public void shooterServoDown(boolean state) {
         if (state) {
-            shooterServo.setPosition(0.55);
+            shooterServo.setPosition(0.8);
         } else {
-            shooterServo.setPosition(0.4);
+            shooterServo.setPosition(0.59);
         }
     }
 

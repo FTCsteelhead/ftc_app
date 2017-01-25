@@ -33,12 +33,13 @@ public class ColorPIDController {
             public void run() {
                 //Calculate the PID output
                 double error;
+                double avrage;
                 double lastError = 0;
                 double integral = 0;
                 double derivative;
                 while (isActive) {
-
-                    error = colorSensor.alpha() - offsetValue;
+                    avrage = (colorSensor.red() + colorSensor.green() + colorSensor.blue())/3;
+                    error = avrage - offsetValue;
                     /*
                     Calculate the integral term. We are clamping it when the sign changes
                     when the error is 0 or when the error value is too big.
@@ -51,7 +52,7 @@ public class ColorPIDController {
                     }else if (error == 0) {
                         integral = 0;
                     }
-                    if (Math.abs(error) > 10) {
+                    if (Math.abs(error) > 1) {
                         integral = 0;
                     }
 
@@ -92,7 +93,7 @@ public class ColorPIDController {
     }
     //Get the value of calculated by the PID controller
     public double getOutput() {
-        if (output < tolerance && output > -tolerance) {
+        if (Math.abs(output) < tolerance) {
             return 0;
         }
         return output;

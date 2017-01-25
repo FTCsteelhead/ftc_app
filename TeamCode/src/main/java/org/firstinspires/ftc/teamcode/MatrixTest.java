@@ -52,7 +52,7 @@ import org.steelhead.ftc.Adafruit_LedMatrix;
 public class MatrixTest extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
-    private Adafruit_LedMatrix ledMatrix;
+
     private Adafruit_GFX adafruitGfx;
     private Thread t;
     private volatile boolean threadActive = true;
@@ -60,14 +60,13 @@ public class MatrixTest extends OpMode {
     @Override
     public void init() {
         telemetry.addData("Status", "Initialized");
-        ledMatrix = new Adafruit_LedMatrix(hardwareMap, "matrix");
-        adafruitGfx = new Adafruit_GFX(hardwareMap, ledMatrix, 8, 8);
+
+        adafruitGfx = new Adafruit_GFX(hardwareMap, "matrix", 8, 8);
     }
 
     @Override
     public void init_loop() {
     }
-
 
     @Override
     public void start() {
@@ -78,11 +77,11 @@ public class MatrixTest extends OpMode {
                 adafruitGfx.setTextColor(Adafruit_LedMatrix.Color.GREEN);
 
                 while (threadActive) {
-                    adafruitGfx.scrollText("MIG BLOWS!");
+                    adafruitGfx.scrollText("Stealhead 8176");
                     adafruitGfx.animateBmp(R.drawable.firework, 19, 150, false);
                 }
-                ledMatrix.clearDisplay();
-                ledMatrix.updateDisplay();
+                adafruitGfx.clearDisplay();
+                adafruitGfx.updateDisplay();
             }
         });
         t.start();
@@ -95,7 +94,6 @@ public class MatrixTest extends OpMode {
     @Override
     public void stop() {
         threadActive = false;
-        ledMatrix.clearDisplay();
-        ledMatrix.updateDisplay();
+        adafruitGfx.close();
     }
 }

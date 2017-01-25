@@ -32,11 +32,14 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.steelhead.ftc.Adafruit_GFX;
+import org.steelhead.ftc.Adafruit_LedMatrix;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
 /**
@@ -64,6 +67,10 @@ public class SteelheadMainTeleOp extends OpMode {
     private ElapsedTime rampTimer = new ElapsedTime();
     private ElapsedTime buttonTimer = new ElapsedTime();
 
+    private Adafruit_LedMatrix ledMatrix;
+    private Adafruit_GFX gfx;
+    private boolean gfxActive = true;
+
     double leftError = 0;
     double rightError = 0;
 
@@ -72,8 +79,7 @@ public class SteelheadMainTeleOp extends OpMode {
     private final double rampDistance = 20.0;
 
     private boolean robotDirectionToggle = false;
-    private boolean sweeperMotorToggle = false;
-    private boolean shooterMotorToggle = false;
+    private boolean lifterActive = false;
 
     private double workingLeftForwardSpeed = 0;
     private double workingRightForwardSpeed = 0;
@@ -90,6 +96,23 @@ public class SteelheadMainTeleOp extends OpMode {
 
         gamepad1.setJoystickDeadzone(0.08f);
         gamepad2.setJoystickDeadzone(0.08f);
+
+        gfx = new Adafruit_GFX(hardwareMap, "matrix", 8, 8);
+
+        Thread graphicsThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                gfx.setTextColor(Adafruit_LedMatrix.Color.RED);
+                while (gfxActive) {
+                    gfx.scrollText("Steelhead 8176");
+                    gfx.animateBmp(R.drawable.firework, 19, 130, false);
+                }
+                gfx.clearDisplay();
+                gfx.updateDisplay();
+                gfx.close();
+            }
+        });
+        graphicsThread.start();
 
         telemetry.addData("Status", "WAITING");
         updateTelemetry(telemetry);
@@ -113,9 +136,24 @@ public class SteelheadMainTeleOp extends OpMode {
 
             if (gamepad2.dpad_up)
                 robot.shooterServoDown(false);
-
-            if (gamepad2.dpad_down)
+            else if (gamepad2.dpad_down)
                 robot.shooterServoDown(true);
+
+            if (gamepad2.y )
+                robot.lifterMotor.setPower(.6);
+            else if (gamepad2.x)
+                robot.lifterMotor.setPower(-0.6);
+            else {
+                if (lifterActive) {
+                    robot.lifterMotor.setPower(0.1);
+                } else {
+                    robot.lifterMotor.setPower(0);
+                }
+            }
+
+            if (gamepad2.b) {
+                lifterActive = true;
+            }
 
             if (gamepad1.left_bumper && !robotDirectionToggle) {
                 robot.robotBackward();
@@ -130,7 +168,7 @@ public class SteelheadMainTeleOp extends OpMode {
             robot.shooterPower(0);
         } else {
             if (gamepad2.right_stick_y < -0.5) {
-                robot.shooterPower(0.60);
+                robot.shooterPower(0.55);
             } else if (gamepad2.right_stick_y > 0.5) {
                 robot.shooterPower(-0.60);
             } else {
@@ -214,6 +252,7 @@ public class SteelheadMainTeleOp extends OpMode {
      */
     @Override
     public void stop() {
+        gfxActive = false;
         robot.close();
     }
 
