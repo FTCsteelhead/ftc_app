@@ -53,45 +53,49 @@ public class AutoBlue extends LinearOpMode {
         autoRobotFunctions.MRRotate(-40, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-
-        autoRobotFunctions.MRDriveStraight(-40, .75,
+        //check to see if we miss the line
+        if (autoRobotFunctions.MRDriveStraight(-40, .75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4000, 0.15,
-                AutoRobotFunctions.StopConditions.COLOR, 20);
+                AutoRobotFunctions.StopConditions.COLOR, 20, 5500)) {
 
-        autoRobotFunctions.PIDLineFollow(5, 45, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
 
-        autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
+            autoRobotFunctions.PIDLineFollow(5, 45, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+                    AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
 
-        robot.robotBackward();
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
 
-        //shoot ball
-        robot.shooterPower(0.7);
-        robot.sweeperMotor.setPower(-1.0);
+            robot.robotBackward();
 
-        autoRobotFunctions.runWithEncoders(2450, 1.0);
+            //shoot ball
+            robot.shooterPower(0.7);
+            robot.sweeperMotor.setPower(-1.0);
 
-        robot.shooterServoDown(false);
-        Thread.sleep(500);
-        robot.shooterServoDown(true);
-        Thread.sleep(800);
-        robot.shooterServoDown(false);
-        Thread.sleep(500);
-        robot.shooterServoDown(true);
-        robot.shooterPower(0.0);
-        robot.sweeperMotor.setPower(0.0);
+            autoRobotFunctions.runWithEncoders(2450, 1.0);
 
-        robot.robotForward();
-        autoRobotFunctions.MRRotate(-25, TOLERANCE_DEGREES,
-                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+            robot.shooterServoDown(false);
+            Thread.sleep(500);
+            robot.shooterServoDown(true);
+            Thread.sleep(800);
+            robot.shooterServoDown(false);
+            Thread.sleep(500);
+            robot.shooterServoDown(true);
+            robot.shooterPower(0.0);
+            robot.sweeperMotor.setPower(0.0);
 
-        autoRobotFunctions.MRDriveStraight(-25, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.15,
-                AutoRobotFunctions.StopConditions.COLOR, 20);
+            robot.robotForward();
+            autoRobotFunctions.MRRotate(-25, TOLERANCE_DEGREES,
+                    MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-        autoRobotFunctions.PIDLineFollow(5, 45, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
-        autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
+            autoRobotFunctions.MRDriveStraight(-25, 0.75,
+                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.15,
+                    AutoRobotFunctions.StopConditions.COLOR, 20, -1);
+            autoRobotFunctions.PIDLineFollow(5, 45, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+                    AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
+            //if the robot misses the line do this
+        } else {
+            telemetry.addData("You Missed the line!!", "<");
+        }
 
         autoRobotFunctions.close();
 

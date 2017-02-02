@@ -52,6 +52,7 @@ public class ConfigureAuto extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
+
     private TelemetryMenuSystem menuSystem;
     private TelemetryMenu firstMenu;
     private TelemetryMenu displayMenu;

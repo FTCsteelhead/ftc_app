@@ -209,15 +209,6 @@ public class SteelheadMainTeleOp extends OpMode {
             }
         }
 
-        /*if (!robot.isRobotForward() && robot.range.getDistance(DistanceUnit.CM) < rampDistance) {
-            if (!gamepad1.atRest()) {
-                workingLeftForwardSpeed = -0.1;
-            }
-            if (!gamepad1.atRest()) {
-                workingRightForwardSpeed = -0.1;
-            }
-        }*/
-
         if (robot.isRobotForward()) {
             robot.robotLeftPower(workingRightForwardSpeed);
             robot.robotRightPower(workingLeftForwardSpeed);
@@ -239,7 +230,6 @@ public class SteelheadMainTeleOp extends OpMode {
 
         telemetry.addData("left joystick", gamepad1.left_stick_y);
         telemetry.addData("right joystick", gamepad1.right_stick_y);
-        telemetry.addData("Distance", robot.range.getDistance(DistanceUnit.CM));
         telemetry.addData("leftError", "%.2f", leftError);
         telemetry.addData("rightError", "%.2f", rightError);
         telemetry.addData("working left speed", workingLeftForwardSpeed);

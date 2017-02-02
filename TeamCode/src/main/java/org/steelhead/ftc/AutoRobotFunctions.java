@@ -162,12 +162,11 @@ public class AutoRobotFunctions {
         }
     }
 
-    //// TODO: 1/25/2017 Add code to check for a line overshoot. if it does trun and go for the second beacon
     //PID controller for MR Gyro
-    public void MRDriveStraight(int degree, double driveSpeed, double minOutputVal,
+    public boolean MRDriveStraight(int degree, double driveSpeed, double minOutputVal,
                                 double maxOutputVal, int tolerance, double motorSpeedMul,
                                 int encoderDistance, double minEndPower,
-                                StopConditions stopCondition, int stopVal) {
+                                StopConditions stopCondition, int stopVal, int maxEncoderDistance) {
         double workingForwardSpeed = driveSpeed;
         double output = 0;
         boolean pidEnable = true;
@@ -221,6 +220,12 @@ public class AutoRobotFunctions {
                     rightMotor.setPower(workingForwardSpeed);
                 }
 
+                //check to see if the robot overshoots the line
+                if (maxEncoderDistance != -1 && rightMotor.getCurrentPosition() >= maxEncoderDistance) {
+                    pidController.disable();
+                    return false;
+                }
+
                 /*
                  * Slow the robot as it gets close to the line so it does not overshoot,
                  * This is basically a P controller.
@@ -244,6 +249,7 @@ public class AutoRobotFunctions {
             Thread.currentThread().interrupt();
         } finally {
             pidController.disable();
+            return true;
         }
     }
 
