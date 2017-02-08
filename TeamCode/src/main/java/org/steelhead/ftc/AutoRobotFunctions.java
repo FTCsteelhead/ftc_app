@@ -495,19 +495,21 @@ public class AutoRobotFunctions {
         try {
             Thread.sleep(200);
             if (team == Team.RED) {
+                currentOpMode.telemetry.addData("Blue Color 60", beaconColor.blueColor());
                 if (beaconColor.blueColor() > 60) {
                     robot.pusherRight.setPosition(0.1);
                 } else {
                     robot.pusherLeft.setPosition(0.9);
                 }
             } else {
+                currentOpMode.telemetry.addData("Blue Color 60", beaconColor.blueColor());
                 if (beaconColor.blueColor() > 60) {
                     robot.pusherLeft.setPosition(0.9);
                 } else {
                     robot.pusherRight.setPosition(0.1);
                 }
             }
-
+            currentOpMode.telemetry.update();
             Thread.sleep(300);
             robot.pusherRight.setPosition(0.8);
             robot.pusherLeft.setPosition(0.2);

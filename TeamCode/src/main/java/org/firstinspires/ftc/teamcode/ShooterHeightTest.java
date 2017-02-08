@@ -38,9 +38,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.steelhead.ftc.HardwareSteelheadMainBot;
+
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StreamCorruptedException;
+import java.util.Locale;
 
 /**
  * Demonstrates empty OpMode
@@ -49,51 +57,94 @@ import java.io.File;
 
 public class ShooterHeightTest extends OpMode {
 
-  private ElapsedTime runtime = new ElapsedTime();
-  private Context context = hardwareMap.appContext.getApplicationContext();
-  private File pathToCSV = null;
+    private ElapsedTime runtime = new ElapsedTime();
+    private File pathToCSV = null;
+    private BufferedWriter writer = null;
+    private long prevTime = 0;
 
-  @Override
-  public void init() {
-    String state = Environment.getExternalStorageState();
-    if (Environment.MEDIA_MOUNTED.equals(state)) {
-      telemetry.addData(">", "SD Card Connected");
-      pathToCSV = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "test.csv");
-      if (!pathToCSV.mkdirs()) {
-        telemetry.addData(">", "Directory not created");
-      }
-      telemetry.update();
+    private VoltageSensor batVolt = null;
+    private HardwareSteelheadMainBot robot = null;
+
+    @Override
+    public void init() {
+        batVolt = hardwareMap.voltageSensor.iterator().next();
+        robot = new HardwareSteelheadMainBot();
+        robot.init(hardwareMap);
+
+        try {
+            pathToCSV = openFile("test.csv");
+
+            writer = new BufferedWriter(new FileWriter(pathToCSV));
+            writer.write("Time,Bat Voltage,Height");
+        } catch (IOException e) {
+            telemetry.addData(">", "Write failed");
+        }
+    }
+
+    /*
+       * Code to run when the op mode is first enabled goes here
+       * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
+       */
+    @Override
+    public void init_loop() {
+    }
+
+    /*
+     * This method will be called ONCE when start is pressed
+     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#loop()
+     */
+    @Override
+    public void start() {
+        robot.shooterPower(1);
+        robot.setPoliceLED(true);
+        runtime.reset();
+    }
+
+    /*
+     * This method will be called repeatedly in a loop
+     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#loop()
+     */
+    @Override
+    public void loop() {
+        try {
+            if ((runtime.seconds()-prevTime) >= 60) {
+                prevTime = (long)runtime.seconds();
+                writer.write("\n" + String.format(Locale.US, "%f", runtime.seconds()) + "," +
+                        String.format(Locale.US,"%2.2f", batVolt.getVoltage()) + ",");
+                robot.shooterServoDown(false);
+                Thread.sleep(800);
+                robot.shooterServoDown(true);
+            }else if (batVolt.getVoltage() < 10 || robot.touchSensor.isPressed()) {
+                if (writer != null)
+                    writer.close();
+                robot.shooterPower(0);
+                robot.setPoliceLED(false);
+                requestOpModeStop();
+            }
+            telemetry.addData("Runtime", runtime.toString());
+            telemetry.addData("PrevTime", prevTime);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
-
-
-    telemetry.addData("Status", "Initialized");
-  }
-
-  /*
-     * Code to run when the op mode is first enabled goes here
-     * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#start()
-     */
-  @Override
-  public void init_loop() {
-  }
-
-  /*
-   * This method will be called ONCE when start is pressed
-   * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#loop()
-   */
-  @Override
-  public void start() {
-    runtime.reset();
-  }
-
-  /*
-   * This method will be called repeatedly in a loop
-   * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#loop()
-   */
-  @Override
-  public void loop() {
-    telemetry.addData("Status", "Run Time: " + runtime.toString());
-  }
+    private File openFile(String fileName) throws IOException {
+        File file = null;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            telemetry.addData(">", "Able to mount Media");
+            file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), fileName);
+            telemetry.addData(">", file.toString());
+            if (!file.exists()) {
+                if (!file.createNewFile()) {
+                    telemetry.addData("!", "Could not create file");
+                }
+            } else {
+                telemetry.addData(">", "Directory exists");
+            }
+        }
+        return file;
+    }
 }
