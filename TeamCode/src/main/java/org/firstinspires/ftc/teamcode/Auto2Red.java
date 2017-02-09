@@ -10,9 +10,9 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Button Pusher - 2", group = "Button")
+@Autonomous(name = "Shoot - Red", group = "Shoot")
 //@Disabled
-public class Auto2 extends LinearOpMode {
+public class Auto2Red extends LinearOpMode {
 
     private final int TOLERANCE_DEGREES = 2;
 
@@ -48,30 +48,71 @@ public class Auto2 extends LinearOpMode {
         robot.setPoliceLED(true);
         waitForStart();
 
+        Thread.sleep(5000);
+
         robot.robotForward();
 
         robot.shooterPower(0.7);
 
-        autoRobotFunctions.runWithEncoders(1000, 1.0);
+        autoRobotFunctions.MRDriveStraight(0, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 500, -1);
 
-        robot.shooterServoDown(false);
+        autoRobotFunctions.MRRotate(20, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+        autoRobotFunctions.MRDriveStraight(20, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 1000, -1);
+
+        autoRobotFunctions.MRRotate(200, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
         Thread.sleep(500);
-        robot.shooterServoDown(true);
-        Thread.sleep(800);
-
         robot.sweeperMotor.setPower(-1.0);
 
         robot.shooterServoDown(false);
         Thread.sleep(500);
         robot.shooterServoDown(true);
+        Thread.sleep(500);
+        robot.shooterServoDown(false);
+        Thread.sleep(500);
+        robot.shooterServoDown(true);
+        Thread.sleep(500);
         robot.shooterPower(0.0);
+
         robot.sweeperMotor.setPower(0.0);
 
-        autoRobotFunctions.MRDriveStraight(0, 0.75,
+        autoRobotFunctions.MRRotate(90, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+        autoRobotFunctions.MRDriveStraight(90, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);
+
+        autoRobotFunctions.MRRotate(20, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+        autoRobotFunctions.MRDriveStraight(20, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 4000, -1);
+
+        autoRobotFunctions.MRRotate(50, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+        robot.robotBackward();
+
+        autoRobotFunctions.MRDriveStraight(50, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);
+
+
+
+      /*  autoRobotFunctions.MRDriveStraight(0, 0.75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
                 AutoRobotFunctions.StopConditions.COLOR, 10, -1);
 
-        autoRobotFunctions.runWithEncoders(500, 1.0);
+        autoRobotFunctions.runWithEncoders(500, 1.0);*/
 
         autoRobotFunctions.close();
 
