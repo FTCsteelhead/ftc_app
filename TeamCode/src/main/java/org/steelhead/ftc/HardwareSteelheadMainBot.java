@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 
 /**
@@ -35,6 +35,7 @@ public class HardwareSteelheadMainBot {
     public ModernRoboticsI2cGyro gyro           = null;
     public Adafruit_ColorSensor beaconColor     = null;
     public DigitalChannel policeLED             = null;
+    public VoltageSensor batVolt                = null;
 
     private String leftMotorName_1          = "leftMotor1";
     private String rightMotorName_1         = "rightMotor1";
@@ -71,6 +72,11 @@ public class HardwareSteelheadMainBot {
         leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        leftShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        sweeperMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         lifterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         sweeperMotor.setPower(0);
@@ -95,6 +101,8 @@ public class HardwareSteelheadMainBot {
 
         shooterServoDown(true);
         //initialize sensors
+        batVolt = aHwMap.voltageSensor.iterator().next();
+
         touchSensor = aHwMap.touchSensor.get(touchSensorName);
 
         //nasty trick to get the color sensor to work
@@ -131,9 +139,25 @@ public class HardwareSteelheadMainBot {
 
     public void shooterServoDown(boolean state) {
         if (state) {
-            shooterServo.setPosition(0.8);
-        } else {
             shooterServo.setPosition(0.59);
+        } else {
+            shooterServo.setPosition(0.40);
+        }
+    }
+
+    public double shooterMotorOn(boolean state) {
+        if (state) {
+            double batVoltage = batVolt.getVoltage();
+            double motorPercent = (5.5/batVoltage);
+            if (motorPercent > 1) {
+                shooterPower(1);
+            } else {
+                shooterPower(motorPercent);
+            }
+            return motorPercent;
+        } else {
+            shooterPower(0);
+            return 0;
         }
     }
 
@@ -183,6 +207,7 @@ public class HardwareSteelheadMainBot {
     }
 
     public void close() {
+        batVolt.close();
         leftMotor.close();
         rightMotor.close();
         pusherLeft.close();

@@ -95,7 +95,7 @@ public class SteelheadMainTeleOp extends OpMode {
         robot.robotForward();
 
         gamepad1.setJoystickDeadzone(0.08f);
-        gamepad2.setJoystickDeadzone(0.08f);
+        gamepad2.setJoystickDeadzone(0.1f);
 
         gfx = new Adafruit_GFX(hardwareMap, "matrix", 8, 8);
 
@@ -165,14 +165,15 @@ public class SteelheadMainTeleOp extends OpMode {
         }
 
         if (gamepad2.atRest()) {
-            robot.shooterPower(0);
+            robot.shooterMotorOn(false);
+            robot.sweeperMotor.setPower(0);
         } else {
             if (gamepad2.right_stick_y < -0.5) {
-                robot.shooterPower(0.55);
+                telemetry.addData("shooter power", robot.shooterMotorOn(true));
             } else if (gamepad2.right_stick_y > 0.5) {
                 robot.shooterPower(-0.60);
             } else {
-                robot.shooterPower(0);
+                robot.shooterMotorOn(false);
             }
 
             if (gamepad2.left_stick_y < -0.5) {

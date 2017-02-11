@@ -67,7 +67,8 @@ public class AutoBlue extends LinearOpMode {
             robot.robotBackward();
 
             //shoot ball
-            robot.shooterPower(0.7);
+            telemetry.addData("shooter power", robot.shooterMotorOn(true));
+            telemetry.update();
             robot.sweeperMotor.setPower(-1.0);
 
             autoRobotFunctions.runWithEncoders(2450, 1.0);
@@ -79,7 +80,7 @@ public class AutoBlue extends LinearOpMode {
             robot.shooterServoDown(false);
             Thread.sleep(500);
             robot.shooterServoDown(true);
-            robot.shooterPower(0.0);
+            robot.shooterMotorOn(false);
             robot.sweeperMotor.setPower(0.0);
 
             robot.robotForward();
@@ -95,6 +96,7 @@ public class AutoBlue extends LinearOpMode {
             //if the robot misses the line do this
         } else {
             telemetry.addData("You Missed the line!!", "<");
+            telemetry.update();
         }
 
         autoRobotFunctions.close();

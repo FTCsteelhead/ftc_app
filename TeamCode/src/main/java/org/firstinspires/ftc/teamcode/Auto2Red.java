@@ -10,7 +10,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Shoot - Red", group = "Shoot")
+@Autonomous(name = "Shoot Left - Red", group = "Shoot")
 //@Disabled
 public class Auto2Red extends LinearOpMode {
 

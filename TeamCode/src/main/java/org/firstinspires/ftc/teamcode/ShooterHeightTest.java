@@ -75,7 +75,7 @@ public class ShooterHeightTest extends OpMode {
             pathToCSV = openFile("test.csv");
 
             writer = new BufferedWriter(new FileWriter(pathToCSV));
-            writer.write("Time,Bat Voltage,Height");
+            writer.write("Time(min),Bat Voltage(volt),Height");
         } catch (IOException e) {
             telemetry.addData(">", "Write failed");
         }
@@ -109,7 +109,7 @@ public class ShooterHeightTest extends OpMode {
         try {
             if ((runtime.seconds()-prevTime) >= 60) {
                 prevTime = (long)runtime.seconds();
-                writer.write("\n" + String.format(Locale.US, "%f", runtime.seconds()) + "," +
+                writer.write("\n" + String.format(Locale.US, "%f", runtime.seconds()/60) + "," +
                         String.format(Locale.US,"%2.2f", batVolt.getVoltage()) + ",");
                 robot.shooterServoDown(false);
                 Thread.sleep(800);

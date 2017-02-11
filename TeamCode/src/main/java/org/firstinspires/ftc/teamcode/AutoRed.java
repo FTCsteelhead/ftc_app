@@ -64,11 +64,12 @@ public class AutoRed extends LinearOpMode {
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
 
             autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
+            robot.robotBackward();
 
-            robot.shooterPower(0.7);
 
             //shoot ball
-            robot.robotBackward();
+            telemetry.addData("shooter power", robot.shooterMotorOn(true));
+            telemetry.update();
             robot.sweeperMotor.setPower(-1.0);
 
             autoRobotFunctions.runWithEncoders(2450, 1.0);
@@ -79,7 +80,7 @@ public class AutoRed extends LinearOpMode {
             Thread.sleep(800);
             robot.shooterServoDown(false);
             Thread.sleep(500);
-            robot.shooterPower(0.0);
+            robot.shooterMotorOn(false);
             robot.sweeperMotor.setPower(0.0);
 
             robot.robotForward();
@@ -96,6 +97,7 @@ public class AutoRed extends LinearOpMode {
             //do this if the robot misses the line
         } else {
             telemetry.addData("You missed the line!!!", "<");
+            telemetry.update();
         }
 
         autoRobotFunctions.close();
