@@ -9,7 +9,7 @@ import org.steelhead.ftc.AutoRobotFunctions;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
 /**
- * Demonstrates empty OpMode
+ * Robot hits both beacons and shoots 2 balls
  */
 @Autonomous(name = "Button Pusher - Blue", group = "Button")
 //@Disabled

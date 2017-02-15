@@ -4,16 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.steelhead.ftc.Adafruit_GFX;
-import org.steelhead.ftc.Adafruit_LedMatrix;
 import org.steelhead.ftc.AutoRobotFunctions;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
 /**
- * Robot hits both beacons and shoots 2 balls
+ * Demonstrates empty OpMode
  */
-@Autonomous(name = "Button Pusher - Red", group = "Button")
+@Autonomous(name = "Button Pusher - Red 3", group = "Button")
 //@Disabled
-public class AutoRed extends LinearOpMode {
+public class AutoRed3 extends LinearOpMode {
 
     private final int TOLERANCE_DEGREES = 2;
 
@@ -58,18 +57,17 @@ public class AutoRed extends LinearOpMode {
 
         if (autoRobotFunctions.MRDriveStraight(40, .75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4500, 0.15,
-                AutoRobotFunctions.StopConditions.COLOR, 20, 5500)) {
+                AutoRobotFunctions.StopConditions.COLOR, 20, 3000)) {
 
             autoRobotFunctions.PIDLineFollow(5, 45, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
 
             autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
-            robot.robotBackward();
 
+            robot.shooterPower(0.7);
 
             //shoot ball
-            telemetry.addData("shooter power", robot.shooterMotorOn(true));
-            telemetry.update();
+            robot.robotBackward();
             robot.sweeperMotor.setPower(-1.0);
 
             autoRobotFunctions.runWithEncoders(2450, 1.0);
@@ -77,10 +75,10 @@ public class AutoRed extends LinearOpMode {
             robot.shooterServoDown(false);
             Thread.sleep(500);
             robot.shooterServoDown(true);
-            Thread.sleep(800);
+            Thread.sleep(500);
             robot.shooterServoDown(false);
             Thread.sleep(500);
-            robot.shooterMotorOn(false);
+            robot.shooterPower(0.0);
             robot.sweeperMotor.setPower(0.0);
 
             robot.robotForward();
@@ -95,9 +93,22 @@ public class AutoRed extends LinearOpMode {
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
             autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
             //do this if the robot misses the line
+
+            robot.robotBackward();
+
+            autoRobotFunctions.runWithEncoders(500, 1.0);
+
+            robot.robotForward();
+
+            autoRobotFunctions.MRRotate(40, TOLERANCE_DEGREES,
+                    MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+            robot.robotBackward();
+
+            autoRobotFunctions.runWithEncoders(4500, 1.0);
+
         } else {
             telemetry.addData("You missed the line!!!", "<");
-            telemetry.update();
         }
 
         autoRobotFunctions.close();

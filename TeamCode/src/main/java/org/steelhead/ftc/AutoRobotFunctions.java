@@ -145,7 +145,7 @@ public class AutoRobotFunctions {
                     leftMotor.setPower(limit(output, minMotorOutput, maxMotorOutput));
                     rightMotor.setPower(limit(-output, minMotorOutput, maxMotorOutput));
                     currentOpMode.telemetry.addData("Output", output);
-                    if (rotateTime.milliseconds() > 5000) {
+                    if (rotateTime.milliseconds() > 4000) {
                         currentOpMode.telemetry.addData(">", "reevaluate your life choices!");
                         rotationComplete = true;
                     }

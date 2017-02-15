@@ -8,11 +8,11 @@ import org.steelhead.ftc.AutoRobotFunctions;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
 /**
- * Demonstrates empty OpMode
+ * Robot hits both beacons, shoots 2 balls, pushes the yoga ball off the center, parks in the center
  */
 @Autonomous(name = "Shoot Left - Blue", group = "Shoot")
 //@Disabled
-public class Auto2Blue extends LinearOpMode {
+public class AutoBlue2 extends LinearOpMode {
 
     private final int TOLERANCE_DEGREES = 2;
 
