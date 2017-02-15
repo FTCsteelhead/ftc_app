@@ -56,7 +56,7 @@ public class AutoBlue extends LinearOpMode {
         //check to see if we miss the line
         if (autoRobotFunctions.MRDriveStraight(-40, .75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4000, 0.15,
-                AutoRobotFunctions.StopConditions.COLOR, 20, 5500)) {
+                AutoRobotFunctions.StopConditions.COLOR, 25, 5500)) {
 
 
             autoRobotFunctions.PIDLineFollow(5, 45, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,

@@ -1,5 +1,7 @@
 package org.steelhead.ftc;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -55,6 +57,8 @@ public class HardwareSteelheadMainBot {
     private boolean isRobotBackward = false;
     private boolean isRobotForward  = false;
 
+    public static final String TAG = "ROBOT";
+
     public void init(HardwareMap aHwMap) {
 
         leftMotor = aHwMap.dcMotor.get(leftMotorName_1);
@@ -72,8 +76,6 @@ public class HardwareSteelheadMainBot {
         leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        leftShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         sweeperMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -89,30 +91,33 @@ public class HardwareSteelheadMainBot {
 
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        lifterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        sweeperMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightShooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         pusherRight = aHwMap.servo.get(pusherRightName);
         pusherLeft = aHwMap.servo.get(pusherLeftName);
+        shooterServo = aHwMap.servo.get(shooterServoName);
 
         pusherRight.setPosition(0.8);
         pusherLeft.setPosition(0.2);
-
-        shooterServo = aHwMap.servo.get(shooterServoName);
-
         shooterServoDown(true);
+
         //initialize sensors
         batVolt = aHwMap.voltageSensor.iterator().next();
-
         touchSensor = aHwMap.touchSensor.get(touchSensorName);
+        Log.i(TAG, touchSensor.getManufacturer().toString());
 
         //nasty trick to get the color sensor to work
         color = aHwMap.colorSensor.get(colorSensorName);
         color.enableLed(true);
         color.enableLed(false);
         color.enableLed(true);
-        color.getManufacturer();
+        Log.i(TAG, color.getManufacturer().toString());
 
         gyro = (ModernRoboticsI2cGyro)aHwMap.gyroSensor.get(gyroSensorName);
+        Log.i(TAG, gyro.getManufacturer().toString());
 
         //Adafruit Color sensor
         beaconColor = new Adafruit_ColorSensor(aHwMap, beaconColorName);
@@ -154,6 +159,7 @@ public class HardwareSteelheadMainBot {
             } else {
                 shooterPower(motorPercent);
             }
+            Log.i(TAG, String.format("%f2.2, %f2.2", batVoltage, motorPercent));
             return motorPercent;
         } else {
             shooterPower(0);
@@ -207,11 +213,18 @@ public class HardwareSteelheadMainBot {
     }
 
     public void close() {
-        batVolt.close();
+        leftShooterMotor.close();
+        rightShooterMotor.close();
+        lifterMotor.close();
         leftMotor.close();
         rightMotor.close();
+        sweeperMotor.close();
+
         pusherLeft.close();
         pusherRight.close();
+        shooterServo.close();
+
+        batVolt.close();
         color.close();
         beaconColor.close();
         touchSensor.close();
