@@ -10,7 +10,8 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Robot hits both beacons, shoots 2 balls, pushes the yoga ball off the center, parks in the center
  */
-@Autonomous(name = "Shoot Left - Blue", group = "Shoot")
+
+@Autonomous(name = "Shoot - Blue", group = "Shoot")
 //@Disabled
 public class AutoBlue2 extends LinearOpMode {
 
@@ -48,25 +49,27 @@ public class AutoBlue2 extends LinearOpMode {
         robot.setPoliceLED(true);
         waitForStart();
 
-        Thread.sleep(5000);
+        Thread.sleep(10000);
 
-        robot.robotForward();
+        robot.robotBackward();
 
         robot.shooterPower(0.7);
 
-        autoRobotFunctions.MRDriveStraight(0, 0.75,
+      /*  autoRobotFunctions.MRDriveStraight(0, 0.75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 500, -1);
+                AutoRobotFunctions.StopConditions.ENCODER, 500, -1);*/
 
-        autoRobotFunctions.MRRotate(-20, TOLERANCE_DEGREES,
+        autoRobotFunctions.runWithEncoders(500, 1.0);
+
+        robot.robotForward();
+
+        autoRobotFunctions.MRRotate(-15, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-        autoRobotFunctions.MRDriveStraight(-20, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 1000, -1);
+        robot.robotBackward();
 
-        autoRobotFunctions.MRRotate(-200, TOLERANCE_DEGREES,
-                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+        autoRobotFunctions.runWithEncoders(2200, 1.0);
+
 
         Thread.sleep(500);
         robot.sweeperMotor.setPower(-1.0);
@@ -74,7 +77,7 @@ public class AutoBlue2 extends LinearOpMode {
         robot.shooterServoDown(false);
         Thread.sleep(500);
         robot.shooterServoDown(true);
-        Thread.sleep(500);
+        Thread.sleep(1000);
         robot.shooterServoDown(false);
         Thread.sleep(500);
         robot.shooterServoDown(true);
@@ -83,36 +86,42 @@ public class AutoBlue2 extends LinearOpMode {
 
         robot.sweeperMotor.setPower(0.0);
 
-        autoRobotFunctions.MRRotate(-90, TOLERANCE_DEGREES,
-                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+        robot.robotForward();
 
-        autoRobotFunctions.MRDriveStraight(-90, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);
-
-        autoRobotFunctions.MRRotate(-20, TOLERANCE_DEGREES,
-                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
-
-        autoRobotFunctions.MRDriveStraight(-20, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 4000, -1);
-
-        autoRobotFunctions.MRRotate(-50, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(-65, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
         robot.robotBackward();
 
-        autoRobotFunctions.MRDriveStraight(-50, 0.75,
+       /* autoRobotFunctions.MRDriveStraight(50, 0.75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);
+                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);*/
 
+        autoRobotFunctions.runWithEncoders(3000, 1.0);
 
+        robot.robotForward();
 
-      /*  autoRobotFunctions.MRDriveStraight(0, 0.75,
+        autoRobotFunctions.MRRotate(25, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+        robot.robotBackward();
+
+        autoRobotFunctions.runWithEncoders(200, 1.0);
+
+        robot.robotForward();
+
+        autoRobotFunctions.MRRotate(45, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+        robot.robotBackward();
+
+       /* autoRobotFunctions.MRDriveStraight(-45, 0.75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.COLOR, 10, -1);
+                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);*/
 
-        autoRobotFunctions.runWithEncoders(500, 1.0);*/
+        autoRobotFunctions.runWithEncoders(1500, 1.0);
+
+
 
         autoRobotFunctions.close();
 

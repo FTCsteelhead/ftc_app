@@ -99,12 +99,12 @@ public class AutoBlue3 extends LinearOpMode {
 
             robot.robotForward();
 
-            autoRobotFunctions.MRRotate(-45, TOLERANCE_DEGREES,
+            autoRobotFunctions.MRRotate(-40, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
             robot.robotBackward();
 
-            autoRobotFunctions.runWithEncoders(3000, 1.0);
+            autoRobotFunctions.runWithEncoders(4500, 1.0);
 
         } else {
             telemetry.addData("You Missed the line!!", "<");
