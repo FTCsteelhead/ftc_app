@@ -490,20 +490,20 @@ public class AutoRobotFunctions {
     }
 
     //Push the proper color button for the team the robot is on
-    public void pushButton(Team team) {
+    public void pushButton(Team team, int blueThreahold) {
 
         try {
             Thread.sleep(200);
             if (team == Team.RED) {
                 currentOpMode.telemetry.addData("Blue Color 60", beaconColor.blueColor());
-                if (beaconColor.blueColor() > 60) {
+                if (beaconColor.blueColor() > blueThreahold) {
                     robot.pusherRight.setPosition(0.1);
                 } else {
                     robot.pusherLeft.setPosition(0.9);
                 }
             } else {
                 currentOpMode.telemetry.addData("Blue Color 60", beaconColor.blueColor());
-                if (beaconColor.blueColor() > 60) {
+                if (beaconColor.blueColor() > blueThreahold) {
                     robot.pusherLeft.setPosition(0.9);
                 } else {
                     robot.pusherRight.setPosition(0.1);

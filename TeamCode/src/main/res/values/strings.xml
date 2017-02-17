@@ -2,5 +2,8 @@
 <resources>
     <string name="AutoPreferences">AutoPref</string>
     <string name="Team">Team</string>
+    <string name="White_Threshold">WhiteThreshold</string>
+    <string name="Blue_Color">BlueColor</string>
+    <string name="Black_Threshold">BlackThreshold</string>
 
 </resources>

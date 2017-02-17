@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.content.Context;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -24,18 +26,27 @@ public class AutoRed3 extends LinearOpMode {
     private double MIN_OUTPUT_LINE = -0.25;
 
     private AutoRobotFunctions autoRobotFunctions;
+    private Context appContext = null;
+
+    private int whiteThreshold = 45;
+    private int blueColor = 60;
+    private int blackColor = 5;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
+        appContext = hardwareMap.appContext;
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
         robot.init(hardwareMap);
-        autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
+        whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
+        blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 60);
+        blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
+
+        autoRobotFunctions = new AutoRobotFunctions(this, robot);
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
         autoRobotFunctions.setGyroRotatePID(0.0327, 0.0005, 0.0008);
-
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
 
@@ -59,10 +70,10 @@ public class AutoRed3 extends LinearOpMode {
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4500, 0.15,
                 AutoRobotFunctions.StopConditions.COLOR, 20, 3000)) {
 
-            autoRobotFunctions.PIDLineFollow(5, 45, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+            autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
 
-            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED, blueColor);
 
             robot.shooterPower(0.7);
 
@@ -89,9 +100,9 @@ public class AutoRed3 extends LinearOpMode {
                     MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
                     AutoRobotFunctions.StopConditions.COLOR, 20, -1);
 
-            autoRobotFunctions.PIDLineFollow(5, 45, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+            autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
-            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED, blueColor);
             //do this if the robot misses the line
 
             robot.robotBackward();

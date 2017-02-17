@@ -1,5 +1,7 @@
 package org.steelhead.ftc;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -14,6 +16,8 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import org.firstinspires.ftc.teamcode.R;
 
 
 /**
@@ -39,6 +43,8 @@ public class HardwareSteelheadMainBot {
     public DigitalChannel policeLED             = null;
     public VoltageSensor batVolt                = null;
 
+    public SharedPreferences sharedPref         = null;
+
     private String leftMotorName_1          = "leftMotor1";
     private String rightMotorName_1         = "rightMotor1";
     private String sweeperMotorName         = "sweeper";
@@ -57,9 +63,11 @@ public class HardwareSteelheadMainBot {
     private boolean isRobotBackward = false;
     private boolean isRobotForward  = false;
 
-    public static final String TAG = "ROBOT";
+    private static final String TAG = "ROBOT";
+    private Context appContext = null;
 
     public void init(HardwareMap aHwMap) {
+        appContext = aHwMap.appContext;
 
         leftMotor = aHwMap.dcMotor.get(leftMotorName_1);
         rightMotor = aHwMap.dcMotor.get(rightMotorName_1);
@@ -127,6 +135,10 @@ public class HardwareSteelheadMainBot {
         policeLED = aHwMap.digitalChannel.get(policeLEDName);
         policeLED.setMode(DigitalChannelController.Mode.OUTPUT);
         policeLED.setState(false);
+
+        //Setup SharedPreferences, this is used for getting the threshold values
+        sharedPref = appContext.getSharedPreferences(appContext.getString(R.string.AutoPreferences),
+                Context.MODE_PRIVATE);
     }
 
     public void robotLeftPower(double power) {
