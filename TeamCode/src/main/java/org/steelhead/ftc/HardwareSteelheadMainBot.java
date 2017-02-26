@@ -115,7 +115,7 @@ public class HardwareSteelheadMainBot {
         shooterServoDown(true);
 
         //initialize sensors
-        batVolt = aHwMap.voltageSensor.iterator().next();
+        batVolt = aHwMap.voltageSensor.get("Drive Motor Controller");
         touchSensor = aHwMap.touchSensor.get(touchSensorName);
         Log.i(TAG, touchSensor.getManufacturer().toString());
 
@@ -229,10 +229,13 @@ public class HardwareSteelheadMainBot {
         pusherRight.close();
         shooterServo.close();
 
-        batVolt.close();
         color.close();
         beaconColor.close();
         touchSensor.close();
         gyro.close();
+
+        Log.i(TAG, "Everything closed exept batVolt");
+        batVolt.close();
+        Log.i(TAG, "BatVolt closed");
     }
 }
