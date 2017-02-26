@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
@@ -40,7 +41,6 @@ public class HardwareSteelheadMainBot {
     public TouchSensor touchSensor              = null;
     public ModernRoboticsI2cGyro gyro           = null;
     public Adafruit_ColorSensor beaconColor     = null;
-    public DigitalChannel policeLED             = null;
     public VoltageSensor batVolt                = null;
 
     public SharedPreferences sharedPref         = null;
@@ -57,7 +57,6 @@ public class HardwareSteelheadMainBot {
     private String colorSensorName          = "color";
     private String gyroSensorName           = "gyro";
     private String beaconColorName          = "BColor";
-    private String policeLEDName            = "policeLED";
     private String shooterServoName         = "shooter";
 
     private boolean isRobotBackward = false;
@@ -84,9 +83,12 @@ public class HardwareSteelheadMainBot {
         leftShooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         rightShooterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         sweeperMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightShooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lifterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         sweeperMotor.setPower(0);
@@ -130,11 +132,6 @@ public class HardwareSteelheadMainBot {
         //Adafruit Color sensor
         beaconColor = new Adafruit_ColorSensor(aHwMap, beaconColorName);
         beaconColor.setLed(false);
-
-        //Police LED
-        policeLED = aHwMap.digitalChannel.get(policeLEDName);
-        policeLED.setMode(DigitalChannelController.Mode.OUTPUT);
-        policeLED.setState(false);
 
         //Setup SharedPreferences, this is used for getting the threshold values
         sharedPref = appContext.getSharedPreferences(appContext.getString(R.string.AutoPreferences),
@@ -212,10 +209,6 @@ public class HardwareSteelheadMainBot {
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
-    //Turn the police LED on or off
-     public void setPoliceLED(boolean state) {
-        policeLED.setState(state);
-    }
 
     public boolean isRobotBackward() {
         return isRobotBackward;
@@ -225,12 +218,12 @@ public class HardwareSteelheadMainBot {
     }
 
     public void close() {
-        leftShooterMotor.close();
+       /* leftShooterMotor.close();
         rightShooterMotor.close();
         lifterMotor.close();
         leftMotor.close();
         rightMotor.close();
-        sweeperMotor.close();
+        sweeperMotor.close();*/
 
         pusherLeft.close();
         pusherRight.close();
@@ -240,7 +233,6 @@ public class HardwareSteelheadMainBot {
         color.close();
         beaconColor.close();
         touchSensor.close();
-        policeLED.close();
         gyro.close();
     }
 }

@@ -56,6 +56,7 @@ public class TelemetryMenu {
                 menuPosition = (menuItems.size() - 1);
             }
             menuItems.get(menuPosition).setSelected(true);
+            debounceTime.reset();
         } else if (gamepad.a && debounceTime.milliseconds() > 400) {
             menuItems.get(menuPosition).itemClicked();
             debounceTime.reset();

@@ -56,7 +56,6 @@ public class AutoRed3 extends LinearOpMode {
         robot.shooterServo.setPosition(1.0);
 
         //wait for start of the match
-        robot.setPoliceLED(true);
         waitForStart();
 
         robot.robotForward();
@@ -124,19 +123,6 @@ public class AutoRed3 extends LinearOpMode {
 
         autoRobotFunctions.close();
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Adafruit_GFX gfx = new Adafruit_GFX(hardwareMap, "matrix", 8, 8);
-                while (opModeIsActive()) {
-                    gfx.animateBmp(R.drawable.firework, 19, 130, false);
-                }
-                gfx.close();
-            }
-        });
-        thread.start();
-
-        robot.setPoliceLED(false);
         robot.close();
 
         telemetry.addData("STATUS:", "Complete");

@@ -63,6 +63,8 @@ public class ThresholdAutoConfig extends OpMode {
     private TelemetryMenu blueMenu;
     private TelemetryMenu blackMenu;
 
+    private MenuItem goBack;
+
     private Context appContext = null;
     private OpMode currentOpMode = this;
     private SharedPreferences sharedPref = null;
@@ -88,6 +90,19 @@ public class ThresholdAutoConfig extends OpMode {
         blueMenu = new TelemetryMenu(currentOpMode, gamepad1, "Blue Color Calibrate");
         blackMenu = new TelemetryMenu(currentOpMode, gamepad1, "Black Color Calibrate");
 
+        goBack = new MenuItem("Go Back", false, new MenuCallable() {
+            @Override
+            public void menuCallable() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                goBack.setSelected(false);
+                menuSystem.goToMenu(0);
+            }
+        });
+
         //Set up the white menu
         whiteMenu.addItem(new MenuItem("Write Value", true, new MenuCallable() {
             @Override
@@ -96,15 +111,18 @@ public class ThresholdAutoConfig extends OpMode {
                 editor.putInt(appContext.getString(R.string.White_Threshold), colorValue);
                 editor.commit();
                 Log.i(TAG, String.format("White color saved %d", colorValue));
-                menuSystem.goToMenu(0);
+                //menuSystem.goToMenu(0);
             }
         }));
-        whiteMenu.addItem(new MenuItem("Go Back", false, new MenuCallable() {
+        whiteMenu.addItem(new MenuItem("Clear Value", false, new MenuCallable() {
             @Override
             public void menuCallable() {
-                menuSystem.goToMenu(0);
+                editor.remove(appContext.getString(R.string.White_Threshold));
+                editor.commit();
+                //menuSystem.goToMenu(0);
             }
         }));
+        whiteMenu.addItem(goBack);
 
         //Set up the blue menu
         blueMenu.addItem(new MenuItem("Write Value", true, new MenuCallable() {
@@ -114,15 +132,18 @@ public class ThresholdAutoConfig extends OpMode {
                 editor.putInt(appContext.getString(R.string.Blue_Color), colorValue);
                 editor.commit();
                 Log.i(TAG, String.format("Beacon blue saved %d", colorValue));
-                menuSystem.goToMenu(0);
+                //menuSystem.goToMenu(0);
             }
         }));
-        blueMenu.addItem(new MenuItem("Go Back", false, new MenuCallable() {
+        blueMenu.addItem(new MenuItem("Clear Value", false, new MenuCallable() {
             @Override
             public void menuCallable() {
-                menuSystem.goToMenu(0);
+                editor.remove(appContext.getString(R.string.Blue_Color));
+                editor.commit();
+                //menuSystem.goToMenu(0);
             }
         }));
+        blueMenu.addItem(goBack);
 
         //Set up the black menu
         blackMenu.addItem(new MenuItem("Write Value", true, new MenuCallable() {
@@ -132,15 +153,18 @@ public class ThresholdAutoConfig extends OpMode {
                 editor.putInt(appContext.getString(R.string.Black_Threshold), colorValue);
                 editor.commit();
                 Log.i(TAG, String.format("Black color saved %d", colorValue));
-                menuSystem.goToMenu(0);
+                //menuSystem.goToMenu(0);
             }
         }));
-        blackMenu.addItem(new MenuItem("Go Back", false, new MenuCallable() {
+        blackMenu.addItem(new MenuItem("Clear Value", false, new MenuCallable() {
             @Override
             public void menuCallable() {
-                menuSystem.goToMenu(0);
+                editor.remove(appContext.getString(R.string.Blue_Color));
+                editor.commit();
+                //menuSystem.goToMenu(0);
             }
         }));
+        blackMenu.addItem(goBack);
 
         //Set up the start menu
         startMenu.addItem(new MenuItem("White Line", true, new MenuCallable() {

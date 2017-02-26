@@ -44,7 +44,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Demonstrates empty OpMode
  */
 @Autonomous(name = "Concept: Test Rotate", group = "Concept")
-//@Disabled
+@Disabled
 public class RotateTest extends LinearOpMode {
 
   private ElapsedTime runtime = new ElapsedTime();

@@ -48,7 +48,7 @@ import org.steelhead.ftc.Adafruit_LedMatrix;
  * Demonstrates empty OpMode
  */
 @Autonomous(name = "Concept: LED Matrix", group = "Concept")
-//@Disabled
+@Disabled
 public class MatrixTest extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();

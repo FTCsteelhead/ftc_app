@@ -75,7 +75,6 @@ public class AutoRobotFunctions {
         this.color = robot.color;
         this.gyro = robot.gyro;
         this.beaconColor = robot.beaconColor;
-        this.policeLED = robot.policeLED;
 
         //Setup the navX sensor and wait for calibration to complete
         navXDevice = AHRS.getInstance(hardwareMap.deviceInterfaceModule.get("dim"),
@@ -104,8 +103,6 @@ public class AutoRobotFunctions {
         this.color = robot.color;
         this.gyro = robot.gyro;
         this.beaconColor = robot.beaconColor;
-        this.policeLED = robot.policeLED;
-
         navXDevice = null;
 
         gyro.calibrate();

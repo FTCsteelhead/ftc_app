@@ -96,7 +96,6 @@ public class ShooterHeightTest extends OpMode {
     @Override
     public void start() {
         robot.shooterPower(1);
-        robot.setPoliceLED(true);
         runtime.reset();
     }
 
@@ -118,7 +117,6 @@ public class ShooterHeightTest extends OpMode {
                 if (writer != null)
                     writer.close();
                 robot.shooterPower(0);
-                robot.setPoliceLED(false);
                 requestOpModeStop();
             }
             telemetry.addData("Runtime", runtime.toString());
