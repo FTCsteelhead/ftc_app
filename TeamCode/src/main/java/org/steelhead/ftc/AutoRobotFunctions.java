@@ -204,13 +204,26 @@ public class AutoRobotFunctions {
                         rightMotor.setPower(workingForwardSpeed);
                         currentOpMode.telemetry.addData("Output", workingForwardSpeed);
                     } else {
-                        double leftSpeed = limit((workingForwardSpeed + output), minOutputVal, maxOutputVal);
-                        double righSpeed = limit((workingForwardSpeed - output), minOutputVal, maxOutputVal);
-                        currentOpMode.telemetry.addData("Output", output);
-                        currentOpMode.telemetry.addData("Left Speed", leftSpeed);
-                        currentOpMode.telemetry.addData("Right Speed", righSpeed);
-                        leftMotor.setPower(leftSpeed);
-                        rightMotor.setPower(righSpeed);
+                        if(robot.isRobotBackward()){
+                            double leftSpeed = limit((workingForwardSpeed - output), minOutputVal, maxOutputVal);
+                            double rightSpeed = limit((workingForwardSpeed + output), minOutputVal, maxOutputVal);
+
+                            currentOpMode.telemetry.addData("Output", output);
+                            currentOpMode.telemetry.addData("Left Speed", leftSpeed);
+                            currentOpMode.telemetry.addData("Right Speed", rightSpeed);
+                            leftMotor.setPower(leftSpeed);
+                            rightMotor.setPower(rightSpeed);
+                        }
+                        else {
+                            double leftSpeed = limit((workingForwardSpeed + output), minOutputVal, maxOutputVal);
+                            double rightSpeed = limit((workingForwardSpeed - output), minOutputVal, maxOutputVal);
+
+                            currentOpMode.telemetry.addData("Output", output);
+                            currentOpMode.telemetry.addData("Left Speed", leftSpeed);
+                            currentOpMode.telemetry.addData("Right Speed", rightSpeed);
+                            leftMotor.setPower(leftSpeed);
+                            rightMotor.setPower(rightSpeed);
+                        }
                     }
                 } else {
                     leftMotor.setPower(workingForwardSpeed);

@@ -67,7 +67,7 @@ public class AutoRed3 extends LinearOpMode {
 
         if (autoRobotFunctions.MRDriveStraight(40, .75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4500, 0.15,
-                AutoRobotFunctions.StopConditions.COLOR, 20, 3000)) {
+                AutoRobotFunctions.StopConditions.COLOR, 20, 5500)) {
 
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
