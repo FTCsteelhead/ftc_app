@@ -55,8 +55,6 @@ public class AutoRed extends LinearOpMode {
         telemetry.addData("STATUS:", "init complete–check state of gyro");
         telemetry.update();
 
-        robot.shooterServo.setPosition(1.0);
-
         //wait for start of the match
         waitForStart();
 
@@ -95,10 +93,10 @@ public class AutoRed extends LinearOpMode {
             robot.sweeperMotor.setPower(0.0);
 
             robot.robotForward();
-            autoRobotFunctions.MRRotate(20, TOLERANCE_DEGREES,
+            autoRobotFunctions.MRRotate(25, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-            autoRobotFunctions.MRDriveStraight(20, 0.75,
+            autoRobotFunctions.MRDriveStraight(25, 0.75,
                     MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
                     AutoRobotFunctions.StopConditions.COLOR, 20, -1);
 

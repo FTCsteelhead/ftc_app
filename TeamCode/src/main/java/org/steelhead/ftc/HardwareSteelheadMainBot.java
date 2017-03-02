@@ -115,7 +115,7 @@ public class HardwareSteelheadMainBot {
         shooterServoDown(true);
 
         //initialize sensors
-        batVolt = aHwMap.voltageSensor.get("Drive Motor Controller");
+        batVolt = aHwMap.voltageSensor.get("Right Aux Motor Controller");
         touchSensor = aHwMap.touchSensor.get(touchSensorName);
         Log.i(TAG, touchSensor.getManufacturer().toString());
 
@@ -235,7 +235,5 @@ public class HardwareSteelheadMainBot {
         gyro.close();
 
         Log.i(TAG, "Everything closed exept batVolt");
-        batVolt.close();
-        Log.i(TAG, "BatVolt closed");
     }
 }
