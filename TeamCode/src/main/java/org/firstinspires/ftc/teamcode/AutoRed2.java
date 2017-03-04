@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.steelhead.ftc.Adafruit_GFX;
 import org.steelhead.ftc.AutoRobotFunctions;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
@@ -54,11 +53,13 @@ public class AutoRed2 extends LinearOpMode {
 
         robot.shooterPower(0.7);
 
-      /*  autoRobotFunctions.MRDriveStraight(0, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 500, -1);*/
 
-        autoRobotFunctions.runWithEncoders(500, 1.0);
+
+      //  autoRobotFunctions.runWithEncoders(500, 1.0);
+
+        autoRobotFunctions.MRDriveStraight(0, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 500, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 500, -1);
 
         robot.robotForward();
 
@@ -67,8 +68,11 @@ public class AutoRed2 extends LinearOpMode {
 
         robot.robotBackward();
 
-        autoRobotFunctions.runWithEncoders(2200, 1.0);
+    //    autoRobotFunctions.runWithEncoders(2200, 1.0);
 
+        autoRobotFunctions.MRDriveStraight(15, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2000, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);
 
         Thread.sleep(500);
         robot.sweeperMotor.setPower(-1.0);
@@ -87,31 +91,42 @@ public class AutoRed2 extends LinearOpMode {
 
         robot.robotForward();
 
-        autoRobotFunctions.MRRotate(55, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(70, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
         robot.robotBackward();
 
-       /* autoRobotFunctions.MRDriveStraight(50, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);*/
+     //   autoRobotFunctions.runWithEncoders(3000, 1.0);
 
-        autoRobotFunctions.runWithEncoders(2200, 1.0);
+             autoRobotFunctions.MRDriveStraight(70, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3150, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 3150, -1);
 
         robot.robotForward();
 
-        autoRobotFunctions.MRRotate(-45, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(-15, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
         robot.robotBackward();
 
-       /* autoRobotFunctions.MRDriveStraight(-45, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);*/
+      //  autoRobotFunctions.runWithEncoders(200, 1.0);
 
-        autoRobotFunctions.runWithEncoders(1700, 1.0);
+             autoRobotFunctions.MRDriveStraight(-15, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2000, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);
 
+        robot.robotForward();
 
+        autoRobotFunctions.MRRotate(-50, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+        robot.robotBackward();
+
+        //  autoRobotFunctions.runWithEncoders(200, 1.0);
+
+        autoRobotFunctions.MRDriveStraight(-15, 0.75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 200, 0.15,
+                AutoRobotFunctions.StopConditions.ENCODER, 200, -1);
 
         autoRobotFunctions.close();
 

@@ -12,7 +12,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Button Pusher - Blue 3", group = "Button")
+@Autonomous(name = "Button Pusher - Blue All", group = "Button")
 //@Disabled
 public class AutoBlue3 extends LinearOpMode {
 

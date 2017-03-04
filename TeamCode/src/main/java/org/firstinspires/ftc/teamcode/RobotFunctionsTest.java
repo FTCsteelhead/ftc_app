@@ -43,9 +43,9 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Concept: Test Rotate", group = "Concept")
-@Disabled
-public class RotateTest extends LinearOpMode {
+@Autonomous(name = "Concept: Test Drive Backward", group = "Concept")
+//@Disabled
+public class RobotFunctionsTest extends LinearOpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
 
@@ -60,14 +60,18 @@ public class RotateTest extends LinearOpMode {
     autoRobotFunctions.setGyroRotatePID(0.0327, 0.0005, 0.0008);
     autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
-    robot.robotForward();
+    robot.robotBackward();
 
     telemetry.addData("STATUS:", "init complete–check state of gyro");
     telemetry.update();
 
     waitForStart();
 
-    autoRobotFunctions.MRRotate(90, 2, 0, 0);
+    autoRobotFunctions.MRDriveStraight(0, .75, .5, 1.0, 2, 0.0005, 3000, 0.15, AutoRobotFunctions.StopConditions.ENCODER, 3000, -1);
+
+      robot.robotForward();
+
+      autoRobotFunctions.MRDriveStraight(0, .75, .5, 1.0, 2, 0.0005, 3000, 0.15, AutoRobotFunctions.StopConditions.ENCODER, 3000, -1);
 
     robot.close();
 

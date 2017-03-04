@@ -149,7 +149,7 @@ public class SteelheadMainTeleOp extends OpMode {
             robot.sweeperMotor.setPower(0);
         } else {
             if (gamepad2.right_stick_y < -0.5) {
-                telemetry.addData("shooter power", robot.shooterMotorOn(true));
+               telemetry.addData("shooter power", robot.shooterMotorOn(true));
             } else if (gamepad2.right_stick_y > 0.5) {
                 robot.shooterPower(-0.60);
             } else {
