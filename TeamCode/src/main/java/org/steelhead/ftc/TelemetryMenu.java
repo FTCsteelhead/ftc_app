@@ -17,6 +17,7 @@ public class TelemetryMenu {
     private String menuTitle;
     private boolean menuActive = false;
     private ElapsedTime debounceTime = new ElapsedTime();
+    private boolean aButtonPressed = false;
 
     private int menuPosition = 0;
     private ArrayList<MenuItem> menuItems;
@@ -57,9 +58,20 @@ public class TelemetryMenu {
             }
             menuItems.get(menuPosition).setSelected(true);
             debounceTime.reset();
-        } else if (gamepad.a && debounceTime.milliseconds() > 400) {
+        } else if (!aButtonPressed && gamepad.a && debounceTime.milliseconds() > 400) {
+            aButtonPressed = true;
+            menuItems.get(menuPosition).setSelected(false);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             menuItems.get(menuPosition).itemClicked();
             debounceTime.reset();
+        }
+
+        if (aButtonPressed && !gamepad.a) {
+            aButtonPressed = false;
         }
     }
 

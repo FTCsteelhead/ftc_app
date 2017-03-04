@@ -234,6 +234,6 @@ public class HardwareSteelheadMainBot {
         touchSensor.close();
         gyro.close();
 
-        Log.i(TAG, "Everything closed exept batVolt");
+        Log.i(TAG, "Everything closed except batVolt");
     }
 }

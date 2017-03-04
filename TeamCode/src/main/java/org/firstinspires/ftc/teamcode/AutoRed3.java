@@ -88,6 +88,7 @@ public class AutoRed3 extends LinearOpMode {
             Thread.sleep(500);
             robot.shooterServoDown(false);
             Thread.sleep(500);
+            robot.shooterServoDown(true);
             robot.shooterPower(0.0);
             robot.sweeperMotor.setPower(0.0);
 
@@ -110,7 +111,7 @@ public class AutoRed3 extends LinearOpMode {
 
             robot.robotForward();
 
-            autoRobotFunctions.MRRotate(40, TOLERANCE_DEGREES,
+            autoRobotFunctions.MRRotate(45, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
             robot.robotBackward();

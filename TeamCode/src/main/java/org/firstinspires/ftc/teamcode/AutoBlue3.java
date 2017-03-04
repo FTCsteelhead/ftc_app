@@ -109,7 +109,7 @@ public class AutoBlue3 extends LinearOpMode {
 
             robot.robotForward();
 
-            autoRobotFunctions.MRRotate(-40, TOLERANCE_DEGREES,
+            autoRobotFunctions.MRRotate(-45, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
             robot.robotBackward();
