@@ -42,6 +42,9 @@ public class HardwareSteelheadMainBot {
     public ModernRoboticsI2cGyro gyro           = null;
     public Adafruit_ColorSensor beaconColor     = null;
     public VoltageSensor batVolt                = null;
+    public Servo pusherRight2                   = null;
+    public Servo pusherLeft2                    = null;
+    public Servo trap                           = null;
 
     public SharedPreferences sharedPref         = null;
 
@@ -58,6 +61,9 @@ public class HardwareSteelheadMainBot {
     private String gyroSensorName           = "gyro";
     private String beaconColorName          = "BColor";
     private String shooterServoName         = "shooter";
+    private String pusherRight2Name         = "pusherRight2";
+    private String pusherLeft2Name          = "pusherLeft2";
+    private String trapName                 = "trap";
 
     private boolean isRobotBackward = false;
     private boolean isRobotForward  = false;
@@ -109,9 +115,16 @@ public class HardwareSteelheadMainBot {
         pusherRight = aHwMap.servo.get(pusherRightName);
         pusherLeft = aHwMap.servo.get(pusherLeftName);
         shooterServo = aHwMap.servo.get(shooterServoName);
+        pusherRight2 = aHwMap.servo.get(pusherRight2Name);
+        pusherLeft2 = aHwMap.servo.get(pusherLeft2Name);
+        trap = aHwMap.servo.get(trapName);
 
-        pusherRight.setPosition(0.8);
-        pusherLeft.setPosition(0.2);
+        pusherRight2.setPosition(0.8);
+        pusherLeft2.setPosition(0.2);
+        trap.setPosition(0.5);
+
+        pusherRight.setPosition(0.9);
+        pusherLeft.setPosition(0.1);
         shooterServoDown(true);
 
         //initialize sensors
@@ -215,6 +228,11 @@ public class HardwareSteelheadMainBot {
     }
     public boolean isRobotForward() {
         return isRobotForward;
+    }
+
+    public void setSidePusherPosition(double position){
+        pusherRight2.setPosition(1-position);
+        pusherLeft2.setPosition(position);
     }
 
     public void close() {

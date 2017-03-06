@@ -115,6 +115,20 @@ public class SteelheadMainTeleOp extends OpMode {
         if (buttonTimer.milliseconds() >= buttonTime) {
             buttonTimer.reset();
 
+            if(gamepad1.dpad_left) {
+                robot.setSidePusherPosition(.1);
+            }
+
+            if(gamepad1.dpad_right) {
+                robot.setSidePusherPosition(0.9);
+            }
+
+            if(gamepad1.b)
+                robot.trap.setPosition(.2);
+
+            if(gamepad1.x)
+                robot.trap.setPosition(.8);
+
             if (gamepad2.dpad_up)
                 robot.shooterServoDown(false);
             else
