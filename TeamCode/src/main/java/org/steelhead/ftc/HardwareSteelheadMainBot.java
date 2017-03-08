@@ -123,8 +123,8 @@ public class HardwareSteelheadMainBot {
         pusherLeft2.setPosition(0.2);
         trap.setPosition(0.5);
 
-        pusherRight.setPosition(0.9);
-        pusherLeft.setPosition(0.1);
+        pusherRight.setPosition(0.7);
+        pusherLeft.setPosition(0.3);
         shooterServoDown(true);
 
         //initialize sensors
