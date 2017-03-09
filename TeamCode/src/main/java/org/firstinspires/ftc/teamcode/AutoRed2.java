@@ -80,7 +80,9 @@ public class AutoRed2 extends LinearOpMode {
         robot.shooterServoDown(false);
         Thread.sleep(500);
         robot.shooterServoDown(true);
-        Thread.sleep(1000);
+        robot.shooterMotorOn(false);
+        Thread.sleep(5000);
+        robot.shooterMotorOn(true);
         robot.shooterServoDown(false);
         Thread.sleep(500);
         robot.shooterServoDown(true);
