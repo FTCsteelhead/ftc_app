@@ -43,7 +43,7 @@ public class AutoRed extends LinearOpMode {
         autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
-        autoRobotFunctions.setGyroRotatePID(0.0327, 0.0005, 0.0008);
+        autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
         appContext = hardwareMap.appContext;
@@ -94,10 +94,10 @@ public class AutoRed extends LinearOpMode {
             robot.sweeperMotor.setPower(0.0);
 
             robot.robotForward();
-            autoRobotFunctions.MRRotate(25, TOLERANCE_DEGREES,
+            autoRobotFunctions.MRRotate(23, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-            autoRobotFunctions.MRDriveStraight(25, 0.75,
+            autoRobotFunctions.MRDriveStraight(23, 0.75,
                     MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
                     AutoRobotFunctions.StopConditions.COLOR, 20, -1);
 

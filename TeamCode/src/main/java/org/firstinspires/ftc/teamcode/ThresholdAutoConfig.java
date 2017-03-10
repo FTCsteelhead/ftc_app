@@ -128,7 +128,7 @@ public class ThresholdAutoConfig extends OpMode {
         blueMenu.addItem(new MenuItem("Write Value", true, new MenuCallable() {
             @Override
             public void menuCallable() {
-                int colorValue = robot.beaconColor.blueColor();
+                int colorValue = ((robot.beaconColor.blueColor()/2) - 10);
                 editor.putInt(appContext.getString(R.string.Blue_Color), colorValue);
                 editor.commit();
                 Log.i(TAG, String.format("Beacon blue saved %d", colorValue));
@@ -221,5 +221,6 @@ public class ThresholdAutoConfig extends OpMode {
         menuSystem.updateMenuSystem();
         telemetry.addData("Brightness", (robot.color.red() + robot.color.green() + robot.color.blue())/3);
         telemetry.addData("Blue Color", robot.beaconColor.blueColor());
+        telemetry.addData("Blue Color to save", ((robot.beaconColor.blueColor()/2)-10));
     }
 }

@@ -31,7 +31,7 @@ public class AutoBlue extends LinearOpMode {
     private Context appContext = null;
 
     private int whiteThreshold = 45;
-    private int blueColor = 60;
+    private int blueColor = 50;
     private int blackColor = 5;
 
     @Override
@@ -43,12 +43,12 @@ public class AutoBlue extends LinearOpMode {
         autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
-        autoRobotFunctions.setGyroRotatePID(0.0327, 0.0005, 0.0008);
+        autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
         appContext = hardwareMap.appContext;
         whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
-        blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 60);
+        blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 50);
         blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
 
         telemetry.addData("STATUS:", "init complete–check state of gyro");
@@ -94,10 +94,10 @@ public class AutoBlue extends LinearOpMode {
             robot.sweeperMotor.setPower(0.0);
 
             robot.robotForward();
-            autoRobotFunctions.MRRotate(-25, TOLERANCE_DEGREES,
+            autoRobotFunctions.MRRotate(-23, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-            autoRobotFunctions.MRDriveStraight(-25, 0.75,
+            autoRobotFunctions.MRDriveStraight(-23, 0.75,
                     MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.15,
                     AutoRobotFunctions.StopConditions.COLOR, 20, -1);
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
