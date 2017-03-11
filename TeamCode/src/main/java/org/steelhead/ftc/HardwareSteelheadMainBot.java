@@ -181,7 +181,7 @@ public class HardwareSteelheadMainBot {
             } else {
                 shooterPower(motorPercent);
             }
-            Log.i(TAG, String.format("%f2.2, %f2.2", batVoltage, motorPercent));
+            //Log.i(TAG, String.format("%f2.2, %f2.2", batVoltage, motorPercent));
             return motorPercent;
         } else {
             shooterPower(0);
@@ -236,16 +236,13 @@ public class HardwareSteelheadMainBot {
     }
 
     public void close() {
-       /* leftShooterMotor.close();
-        rightShooterMotor.close();
-        lifterMotor.close();
-        leftMotor.close();
-        rightMotor.close();
-        sweeperMotor.close();*/
 
         pusherLeft.close();
         pusherRight.close();
         shooterServo.close();
+        pusherLeft2.close();
+        pusherRight2.close();
+        trap.close();
 
         color.close();
         beaconColor.close();

@@ -500,29 +500,33 @@ public class AutoRobotFunctions {
     }
 
     //Push the proper color button for the team the robot is on
-    public void pushButton(Team team, int blueThreahold) {
+    public void pushButton(Team team, int blueThreshold) {
 
         try {
-            Thread.sleep(200);
+            Thread.sleep(300);
             if (team == Team.RED) {
                 currentOpMode.telemetry.addData("Blue Color 60", beaconColor.blueColor());
-                if (beaconColor.blueColor() > blueThreahold) {
+                if (beaconColor.blueColor() > blueThreshold) {
                     robot.pusherRight.setPosition(0.1);
+                    robot.pusherLeft.setPosition(0.1);
                 } else {
                     robot.pusherLeft.setPosition(0.9);
+                    robot.pusherRight.setPosition(0.75);
                 }
             } else {
                 currentOpMode.telemetry.addData("Blue Color 60", beaconColor.blueColor());
-                if (beaconColor.blueColor() > blueThreahold) {
+                if (beaconColor.blueColor() > blueThreshold) {
                     robot.pusherLeft.setPosition(0.9);
+                    robot.pusherRight.setPosition(0.75);
                 } else {
                     robot.pusherRight.setPosition(0.1);
+                    robot.pusherLeft.setPosition(0.1);
                 }
             }
             currentOpMode.telemetry.update();
             Thread.sleep(300);
-            robot.pusherRight.setPosition(0.8);
-            robot.pusherLeft.setPosition(0.2);
+            robot.pusherRight.setPosition(0.9);
+            robot.pusherLeft.setPosition(0.1);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

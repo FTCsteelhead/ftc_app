@@ -29,7 +29,7 @@ public class AutoRed3 extends LinearOpMode {
     private Context appContext = null;
 
     private int whiteThreshold = 45;
-    private int blueColor = 50;
+    private int blueColor = 100;
     private int blackColor = 5;
 
     @Override
@@ -41,7 +41,7 @@ public class AutoRed3 extends LinearOpMode {
         robot.init(hardwareMap);
 
         whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
-        blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 50);
+        blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 100);
         blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
 
         autoRobotFunctions = new AutoRobotFunctions(this, robot);

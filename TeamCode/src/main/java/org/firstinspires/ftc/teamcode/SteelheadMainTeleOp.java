@@ -229,14 +229,14 @@ public class SteelheadMainTeleOp extends OpMode {
         }
 
         //Bumpers control the button pushers
-        if (gamepad2.right_bumper && robot.pusherLeft.getPosition() < 0.7)
+        if (gamepad2.right_bumper)
             robot.pusherRight.setPosition(robot.pusherRight.getPosition() - servoPositionChange);
-        if (gamepad2.right_trigger > 0 && robot.pusherLeft.getPosition() < 0.7)
+        if (gamepad2.right_trigger > 0)
             robot.pusherRight.setPosition(robot.pusherRight.getPosition() + servoPositionChange);
 
-        if (gamepad2.left_bumper && robot.pusherLeft.getPosition() > 0.3)
+        if (gamepad2.left_bumper)
             robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() + servoPositionChange);
-        if (gamepad2.left_trigger > 0 && robot.pusherLeft.getPosition() > 0.3)
+        if (gamepad2.left_trigger > 0)
             robot.pusherLeft.setPosition(robot.pusherLeft.getPosition() - servoPositionChange);
 
         telemetry.addData("left joystick", gamepad1.left_stick_y);
@@ -245,6 +245,8 @@ public class SteelheadMainTeleOp extends OpMode {
         telemetry.addData("rightError", "%.2f", rightError);
         telemetry.addData("working left speed", workingLeftForwardSpeed);
         telemetry.addData("working right speed", workingRightForwardSpeed);
+        telemetry.addData("Left Servo", robot.pusherLeft.getPosition());
+        telemetry.addData("Right Servo", robot.pusherRight.getPosition());
         updateTelemetry(telemetry);
     }
 
