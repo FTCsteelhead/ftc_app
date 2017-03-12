@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.steelhead.ftc.Adafruit_GFX;
-import org.steelhead.ftc.Adafruit_LedMatrix;
 import org.steelhead.ftc.AutoRobotFunctions;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
@@ -34,6 +32,8 @@ public class AutoRed extends LinearOpMode {
     private int blueColor = 100;
     private int blackColor = 5;
 
+    private static final String TAG = "ROBOT";
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -47,13 +47,14 @@ public class AutoRed extends LinearOpMode {
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
         appContext = hardwareMap.appContext;
+      //  whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
+      //  blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 100);
+      //  blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
 
-        whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
-        blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 100);
-        blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
+      //  telemetry.addData("STATUS:", "init complete–check state of gyro");
+       // telemetry.update();
 
-        telemetry.addData("STATUS:", "init complete–check state of gyro");
-        telemetry.update();
+        Log.i(TAG, String.format("STATUS:", "init complete–check state of gyro"));
 
         //wait for start of the match
         waitForStart();
@@ -64,21 +65,25 @@ public class AutoRed extends LinearOpMode {
         autoRobotFunctions.MRRotate(40, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-
+        //check to see if we miss the line
         if (autoRobotFunctions.MRDriveStraight(40, .75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4500, 0.15,
-                AutoRobotFunctions.StopConditions.COLOR, 20, 5500)) {
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4000, 0.15,
+                AutoRobotFunctions.StopConditions.COLOR, 25, 5500)) {
+
 
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
 
-            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED, blueColor);
-            robot.robotBackward();
+                telemetry.addData(">", "Called in use");
 
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED, blueColor);
+
+            robot.robotBackward();
 
             //shoot ball
             telemetry.addData("shooter power", robot.shooterMotorOn(true));
             telemetry.update();
+
             robot.sweeperMotor.setPower(-1.0);
 
             autoRobotFunctions.runWithEncoders(2450, 1.0);
@@ -98,24 +103,29 @@ public class AutoRed extends LinearOpMode {
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
             autoRobotFunctions.MRDriveStraight(23, 0.75,
-                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3500, 0.15,
+                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.15,
                     AutoRobotFunctions.StopConditions.COLOR, 20, -1);
-
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
             autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED, blueColor);
-            //do this if the robot misses the line
+
+
+            //if the robot misses the line do this
         } else {
-            telemetry.addData("You missed the line!!!", "<");
+            telemetry.addData("You Missed the line!!", "<");
             telemetry.update();
+
+
         }
 
         autoRobotFunctions.close();
 
         robot.close();
 
-        telemetry.addData("STATUS:", "Complete");
+       telemetry.addData("STATUS:", "Complete");
         telemetry.update();
+
+
     }
 }
 

@@ -1,5 +1,7 @@
 package org.steelhead.ftc;
 
+import android.util.Log;
+
 import com.kauailabs.navx.ftc.AHRS;
 import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -63,6 +65,10 @@ public class AutoRobotFunctions {
     public enum Team {RED, BLUE}
 
     public enum LineSide {LEFT, RIGHT}
+
+    private static final String TAG = "AUTOROBOT";
+
+    public boolean pushInUse = false;
 
     public AutoRobotFunctions(byte navXDevicePortNumber, HardwareMap hardwareMap,
                               LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
@@ -161,9 +167,9 @@ public class AutoRobotFunctions {
 
     //PID controller for MR Gyro
     public boolean MRDriveStraight(int degree, double driveSpeed, double minOutputVal,
-                                double maxOutputVal, int tolerance, double motorSpeedMul,
-                                int encoderDistance, double minEndPower,
-                                StopConditions stopCondition, int stopVal, int maxEncoderDistance) {
+                                   double maxOutputVal, int tolerance, double motorSpeedMul,
+                                   int encoderDistance, double minEndPower,
+                                   StopConditions stopCondition, int stopVal, int maxEncoderDistance) {
         double workingForwardSpeed = driveSpeed;
         double output = 0;
         boolean pidEnable = true;
@@ -204,7 +210,7 @@ public class AutoRobotFunctions {
                         rightMotor.setPower(workingForwardSpeed);
                         currentOpMode.telemetry.addData("Output", workingForwardSpeed);
                     } else {
-                        if(robot.isRobotBackward()){
+                        if (robot.isRobotBackward()) {
                             double leftSpeed = limit((workingForwardSpeed - output), minOutputVal, maxOutputVal);
                             double rightSpeed = limit((workingForwardSpeed + output), minOutputVal, maxOutputVal);
 
@@ -213,8 +219,7 @@ public class AutoRobotFunctions {
                             currentOpMode.telemetry.addData("Right Speed", rightSpeed);
                             leftMotor.setPower(leftSpeed);
                             rightMotor.setPower(rightSpeed);
-                        }
-                        else {
+                        } else {
                             double leftSpeed = limit((workingForwardSpeed + output), minOutputVal, maxOutputVal);
                             double rightSpeed = limit((workingForwardSpeed - output), minOutputVal, maxOutputVal);
 
@@ -501,30 +506,41 @@ public class AutoRobotFunctions {
 
     //Push the proper color button for the team the robot is on
     public void pushButton(Team team, int blueThreshold) {
-
         try {
-            Thread.sleep(300);
+            Thread.sleep(500);
             if (team == Team.RED) {
-                currentOpMode.telemetry.addData("Blue Color 60", beaconColor.blueColor());
-                if (beaconColor.blueColor() > blueThreshold) {
+                currentOpMode.telemetry.addData("Blue Color", beaconColor.blueColor());
+                Log.i(TAG, String.format("Blue Color: %d", beaconColor.blueColor()));
+                //Log.i(TAG, String.format("Threshold: %f2", blueThreshold));
+                currentOpMode.telemetry.addData("Threshold", blueThreshold);
+                //if (beaconColor.blueColor() > blueThreshold) {
+                if (beaconColor.blueColor() > 70) {
+                    //Log.i(TAG, String.format("RED", "sees BLUE, pushing opposite"));
+                    currentOpMode.telemetry.addData("RED", "sees BLUE, pushing opposite");
                     robot.pusherRight.setPosition(0.1);
-                    robot.pusherLeft.setPosition(0.1);
                 } else {
+                    //Log.i(TAG, String.format("RED", "sees RED, pushing"));
+                    currentOpMode.telemetry.addData("RED", "sees RED, pushing");
                     robot.pusherLeft.setPosition(0.9);
-                    robot.pusherRight.setPosition(0.75);
                 }
             } else {
-                currentOpMode.telemetry.addData("Blue Color 60", beaconColor.blueColor());
-                if (beaconColor.blueColor() > blueThreshold) {
+                Log.i(TAG, String.format("Blue Color: %d", beaconColor.blueColor()));
+                //Log.i(TAG, String.format("Threshold: %f2", blueThreshold));
+                currentOpMode.telemetry.addData("Blue Color", beaconColor.blueColor());
+                currentOpMode.telemetry.addData("Threshold", blueThreshold);
+                //if (beaconColor.blueColor() > blueThreshold) {
+                if (beaconColor.blueColor() > 70) {
+                    //Log.i(TAG, String.format("BLUE", "sees BLUE, pushing"));
+                    currentOpMode.telemetry.addData("BLUE", "sees BLUE, pushing");
                     robot.pusherLeft.setPosition(0.9);
-                    robot.pusherRight.setPosition(0.75);
                 } else {
+                    currentOpMode.telemetry.addData("BLUE", "sees RED, pushing opposite");
+                    //Log.i(TAG, String.format("BLUE", "sees RED, pushing opposite"));
                     robot.pusherRight.setPosition(0.1);
-                    robot.pusherLeft.setPosition(0.1);
                 }
             }
             currentOpMode.telemetry.update();
-            Thread.sleep(300);
+            Thread.sleep(1000);
             robot.pusherRight.setPosition(0.9);
             robot.pusherLeft.setPosition(0.1);
         } catch (InterruptedException e) {

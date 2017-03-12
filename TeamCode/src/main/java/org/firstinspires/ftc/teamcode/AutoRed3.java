@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
 import android.content.Context;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -40,9 +41,9 @@ public class AutoRed3 extends LinearOpMode {
 
         robot.init(hardwareMap);
 
-        whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
-        blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 100);
-        blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
+     //   whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
+     //   blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 100);
+     //   blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
 
         autoRobotFunctions = new AutoRobotFunctions(this, robot);
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -22,6 +23,8 @@ public class AutoRed2 extends LinearOpMode {
     private double MIN_OUTPUT_ROTATE = -0.25;
     private double MAX_OUTPUT_LINE = 0.25;
     private double MIN_OUTPUT_LINE = -0.25;
+
+
 
     private AutoRobotFunctions autoRobotFunctions;
 
@@ -102,48 +105,15 @@ public class AutoRed2 extends LinearOpMode {
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 1100, 0.15,
                 AutoRobotFunctions.StopConditions.ENCODER, 1100, -1);
 
-       /* autoRobotFunctions.MRRotate(70, TOLERANCE_DEGREES,
-                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-        robot.robotBackward();
-
-     //   autoRobotFunctions.runWithEncoders(3000, 1.0);
-
-             autoRobotFunctions.MRDriveStraight(70, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2500, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 2500, -1);
-
-        robot.robotForward();
-
-        autoRobotFunctions.MRRotate(-5, TOLERANCE_DEGREES,
-                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
-
-        robot.robotBackward();
-
-      //  autoRobotFunctions.runWithEncoders(200, 1.0);
-
-             autoRobotFunctions.MRDriveStraight(-5, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3000, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 2500, -1);
-
-        robot.robotForward();
-
-        autoRobotFunctions.MRRotate(-55, TOLERANCE_DEGREES,
-                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
-
-        robot.robotBackward();
-
-
-        autoRobotFunctions.MRDriveStraight(-55, 0.75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 700, 0.15,
-                AutoRobotFunctions.StopConditions.ENCODER, 700, -1);*/
 
         autoRobotFunctions.close();
 
         robot.close();
 
-        telemetry.addData("STATUS:", "Complete");
-        telemetry.update();
+
+       telemetry.addData("STATUS:", "Complete");
+       telemetry.update();
     }
 }
 

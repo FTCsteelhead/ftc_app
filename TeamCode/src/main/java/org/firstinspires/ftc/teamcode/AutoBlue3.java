@@ -41,7 +41,7 @@ public class AutoBlue3 extends LinearOpMode {
         robot.init(hardwareMap);
 
         whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
-        blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 50);
+        blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 100);
         blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
 
         autoRobotFunctions = new AutoRobotFunctions(this, robot);

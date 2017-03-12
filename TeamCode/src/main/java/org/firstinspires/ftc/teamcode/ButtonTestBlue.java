@@ -34,7 +34,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.steelhead.ftc.AutoRobotFunctions;
@@ -43,37 +42,36 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Concept: Test Drive Backward", group = "Concept")
+@Autonomous(name = "TEST: Button Push RED", group = "Concept")
 @Disabled
-public class RobotFunctionsTest extends LinearOpMode {
+public class ButtonTestBlue extends LinearOpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
+  private int blueColor = 100;
+  private AutoRobotFunctions autoRobotFunctions;
+
+  HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
   @Override
   public void runOpMode() throws InterruptedException {
-    HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
-
     robot.init(hardwareMap);
-    AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot);
+    autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
     autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
-    autoRobotFunctions.setGyroRotatePID(0.0327, 0.0005, 0.0008);
+    autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
     autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
-    robot.robotBackward();
-
-    telemetry.addData("STATUS:", "init complete–check state of gyro");
+    telemetry.addData(">", "INIT DONE, PUSHING ~BLUE~");
     telemetry.update();
-
     waitForStart();
 
-    autoRobotFunctions.MRDriveStraight(0, .75, .5, 1.0, 2, 0.0005, 3000, 0.15, AutoRobotFunctions.StopConditions.ENCODER, 3000, -1);
+    autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE, blueColor);
 
-      robot.robotForward();
-
-      autoRobotFunctions.MRDriveStraight(0, .75, .5, 1.0, 2, 0.0005, 3000, 0.15, AutoRobotFunctions.StopConditions.ENCODER, 3000, -1);
-
+    Thread.sleep(1000);
+    autoRobotFunctions.close();
     robot.close();
 
+    telemetry.addData("STATUS:", "Complete");
+    telemetry.update();
   }
 }
