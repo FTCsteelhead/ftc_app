@@ -4,6 +4,7 @@ import android.util.Log;
 import android.content.Context;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.steelhead.ftc.Adafruit_GFX;
@@ -14,7 +15,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Demonstrates empty OpMode
  */
 @Autonomous(name = "Button Pusher - Red All", group = "Button")
-//@Disabled
+@Disabled
 public class AutoRed3 extends LinearOpMode {
 
     private final int TOLERANCE_DEGREES = 2;

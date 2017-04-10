@@ -504,17 +504,19 @@ public class AutoRobotFunctions {
         robot.enableEncoders(false);
     }
 
+    //TODO: compare the red and blue values of the beacon
     //Push the proper color button for the team the robot is on
     public void pushButton(Team team, int blueThreshold) {
         try {
             Thread.sleep(500);
             if (team == Team.RED) {
                 currentOpMode.telemetry.addData("Blue Color", beaconColor.blueColor());
+                currentOpMode.telemetry.addData("Red Color", beaconColor.redColor());
                 Log.i(TAG, String.format("Blue Color: %d", beaconColor.blueColor()));
                 //Log.i(TAG, String.format("Threshold: %f2", blueThreshold));
                 currentOpMode.telemetry.addData("Threshold", blueThreshold);
                 //if (beaconColor.blueColor() > blueThreshold) {
-                if (beaconColor.blueColor() > 70) {
+                if (beaconColor.blueColor() > beaconColor.redColor()) {
                     //Log.i(TAG, String.format("RED", "sees BLUE, pushing opposite"));
                     currentOpMode.telemetry.addData("RED", "sees BLUE, pushing opposite");
                     robot.pusherRight.setPosition(0.1);
@@ -527,9 +529,10 @@ public class AutoRobotFunctions {
                 Log.i(TAG, String.format("Blue Color: %d", beaconColor.blueColor()));
                 //Log.i(TAG, String.format("Threshold: %f2", blueThreshold));
                 currentOpMode.telemetry.addData("Blue Color", beaconColor.blueColor());
+                currentOpMode.telemetry.addData("Red Color", beaconColor.redColor());
                 currentOpMode.telemetry.addData("Threshold", blueThreshold);
                 //if (beaconColor.blueColor() > blueThreshold) {
-                if (beaconColor.blueColor() > 70) {
+                if (beaconColor.blueColor() > beaconColor.redColor()) {
                     //Log.i(TAG, String.format("BLUE", "sees BLUE, pushing"));
                     currentOpMode.telemetry.addData("BLUE", "sees BLUE, pushing");
                     robot.pusherLeft.setPosition(0.9);

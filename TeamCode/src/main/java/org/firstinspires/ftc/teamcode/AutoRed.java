@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.steelhead.ftc.AutoRobotFunctions;
@@ -105,8 +106,10 @@ public class AutoRed extends LinearOpMode {
             autoRobotFunctions.MRDriveStraight(23, 0.75,
                     MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.15,
                     AutoRobotFunctions.StopConditions.COLOR, 20, -1);
+
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
+
             autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED, blueColor);
 
 

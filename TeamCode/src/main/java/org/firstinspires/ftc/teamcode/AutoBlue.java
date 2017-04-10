@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.steelhead.ftc.Adafruit_GFX;
