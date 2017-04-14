@@ -12,8 +12,8 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Robot hits both beacons and shoots 2 balls
  */
-@Autonomous(name = "Button Pusher - New Red", group = "Button")
-//@Disabled
+@Autonomous(name = "New Red", group = "Button")
+
 public class NewAutoRed extends LinearOpMode {
 
     private final int TOLERANCE_DEGREES = 2;

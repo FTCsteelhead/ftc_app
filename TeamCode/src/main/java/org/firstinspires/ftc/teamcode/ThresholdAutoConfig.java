@@ -221,6 +221,7 @@ public class ThresholdAutoConfig extends OpMode {
         menuSystem.updateMenuSystem();
         telemetry.addData("Brightness", (robot.color.red() + robot.color.green() + robot.color.blue())/3);
         telemetry.addData("Blue Color", robot.beaconColor.blueColor());
+        telemetry.addData("Red Color", robot.beaconColor.redColor());
         telemetry.addData("Blue Color to save", ((robot.beaconColor.blueColor()/2)-10));
     }
 }

@@ -13,7 +13,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  */
 
 @Autonomous(name = "Shoot - Red", group = "Shoot")
-@Disabled
+//@Disabled
 public class AutoRed2 extends LinearOpMode {
 
     private final int TOLERANCE_DEGREES = 2;

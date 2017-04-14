@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package org.firstinspires.ftc.teamcode;
 
+import android.content.Context;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -43,11 +45,25 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Concept: Test Drive Backward", group = "Concept")
-@Disabled
+@Autonomous(name = "Concept: Test Functions", group = "Concept")
+//@Disabled
 public class RobotFunctionsTest extends LinearOpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
+
+  private final int TOLERANCE_DEGREES = 2;
+
+  private double MAX_OUTPUT_DRIVE = 1.0;
+  private double MIN_OUTPUT_DRIVE = 0.5;
+  private double MAX_OUTPUT_LINE = 0.25;
+  private double MIN_OUTPUT_LINE = -0.20;
+
+  private AutoRobotFunctions autoRobotFunctions;
+  private Context appContext = null;
+
+  private int whiteThreshold = 45;
+  private int blueColor = 100;
+  private int blackColor = 5;
 
   @Override
   public void runOpMode() throws InterruptedException {
@@ -56,24 +72,25 @@ public class RobotFunctionsTest extends LinearOpMode {
     robot.init(hardwareMap);
     AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
-    autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
-    autoRobotFunctions.setGyroRotatePID(0.0327, 0.0005, 0.0008);
-    autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
+    //autoRobotFunctions.setColorPID(0.010, 0.05, 0.00203);
+     // utoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
+      autoRobotFunctions.setColorPID(0.02, 1.0, 0.0);
 
-    robot.robotBackward();
+    robot.robotForward();
 
     telemetry.addData("STATUS:", "init complete–check state of gyro");
     telemetry.update();
 
     waitForStart();
 
-    autoRobotFunctions.MRDriveStraight(0, .75, .5, 1.0, 2, 0.0005, 3000, 0.15, AutoRobotFunctions.StopConditions.ENCODER, 3000, -1);
+    if (autoRobotFunctions.MRDriveStraight(20, .75,
+            MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2000, 0.07,
+            AutoRobotFunctions.StopConditions.COLOR, 15, -1)) {
 
-      robot.robotForward();
+      autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+              AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
+      robot.close();
 
-      autoRobotFunctions.MRDriveStraight(0, .75, .5, 1.0, 2, 0.0005, 3000, 0.15, AutoRobotFunctions.StopConditions.ENCODER, 3000, -1);
-
-    robot.close();
-
+    }
   }
 }

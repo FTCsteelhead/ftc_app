@@ -20,8 +20,11 @@ public class AutoRed extends LinearOpMode {
     private final int TOLERANCE_DEGREES = 2;
 
     private double MAX_OUTPUT_DRIVE = 1.0;
-    private double MIN_OUTPUT_DRIVE = 0.5;
-    private double MAX_OUTPUT_ROTATE = 0.25;
+    private double MIN_OUTPUT_DRIVE = 0.75;
+ //   private double MAX_OUTPUT_ROTATE = 0.25;
+ //  private double MIN_OUTPUT_ROTATE = -0.25;
+
+    private double MAX_OUTPUT_ROTATE = 0.5;
     private double MIN_OUTPUT_ROTATE = -0.25;
     private double MAX_OUTPUT_LINE = 0.25;
     private double MIN_OUTPUT_LINE = -0.25;
@@ -45,7 +48,8 @@ public class AutoRed extends LinearOpMode {
 
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
         autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
-        autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
+        //autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
+        autoRobotFunctions.setColorPID(0.02, 1.0, 0.0);
 
         appContext = hardwareMap.appContext;
       //  whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
@@ -104,7 +108,7 @@ public class AutoRed extends LinearOpMode {
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
             autoRobotFunctions.MRDriveStraight(23, 0.75,
-                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.15,
+                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.10,
                     AutoRobotFunctions.StopConditions.COLOR, 20, -1);
 
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
