@@ -513,15 +513,15 @@ public class AutoRobotFunctions {
                 currentOpMode.telemetry.addData("Blue Color", beaconColor.blueColor());
                 currentOpMode.telemetry.addData("Red Color", beaconColor.redColor());
                 Log.i(TAG, String.format("Blue Color: %d", beaconColor.blueColor()));
-                //Log.i(TAG, String.format("Threshold: %f2", blueThreshold));
+                //Log.i(TAG, String.format("Threshold: %fd", blueThreshold));
                 currentOpMode.telemetry.addData("Threshold", blueThreshold);
                 //if (beaconColor.blueColor() > blueThreshold) {
                 if (beaconColor.blueColor() > beaconColor.redColor()) {
-                    //Log.i(TAG, String.format("RED", "sees BLUE, pushing opposite"));
+                    Log.i(TAG, String.format("RED", "sees BLUE, pushing opposite"));
                     currentOpMode.telemetry.addData("RED", "sees BLUE, pushing opposite");
                     robot.pusherRight.setPosition(0.1);
                 } else {
-                    //Log.i(TAG, String.format("RED", "sees RED, pushing"));
+                    Log.i(TAG, "RED, sees RED, pushing");
                     currentOpMode.telemetry.addData("RED", "sees RED, pushing");
                     robot.pusherLeft.setPosition(0.9);
                 }
@@ -533,12 +533,12 @@ public class AutoRobotFunctions {
                 currentOpMode.telemetry.addData("Threshold", blueThreshold);
                 //if (beaconColor.blueColor() > blueThreshold) {
                 if (beaconColor.blueColor() > beaconColor.redColor()) {
-                    //Log.i(TAG, String.format("BLUE", "sees BLUE, pushing"));
+                    Log.i(TAG, String.format("BLUE", "sees BLUE, pushing"));
                     currentOpMode.telemetry.addData("BLUE", "sees BLUE, pushing");
                     robot.pusherLeft.setPosition(0.9);
                 } else {
                     currentOpMode.telemetry.addData("BLUE", "sees RED, pushing opposite");
-                    //Log.i(TAG, String.format("BLUE", "sees RED, pushing opposite"));
+                    Log.i(TAG, "BLUE, sees RED, pushing opposite");
                     robot.pusherRight.setPosition(0.1);
                 }
             }
