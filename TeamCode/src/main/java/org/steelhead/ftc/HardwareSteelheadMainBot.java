@@ -166,7 +166,7 @@ public class HardwareSteelheadMainBot {
 
     public void shooterServoDown(boolean state) {
         if (state) {
-            shooterServo.setPosition(0.45);
+            shooterServo.setPosition(0.4 );
         } else {
             shooterServo.setPosition(0.25);
         }
