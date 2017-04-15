@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -14,6 +15,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Robot hits both beacons and shoots 2 balls
  */
 @Autonomous(name = "New Blue", group = "Button")
+@Disabled
 
 public class NewAutoBlue extends LinearOpMode {
 
