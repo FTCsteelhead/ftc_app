@@ -25,8 +25,8 @@ public class AutoBlue extends LinearOpMode {
 
     private double MAX_OUTPUT_DRIVE = 1.0;
     private double MIN_OUTPUT_DRIVE = 0.5;
-    private double MAX_OUTPUT_ROTATE = 0.25;
-    private double MIN_OUTPUT_ROTATE = -0.25;
+    private double MAX_OUTPUT_ROTATE = 0.5;
+    private double MIN_OUTPUT_ROTATE = -0.5;
     private double MAX_OUTPUT_LINE = 0.25;
     private double MIN_OUTPUT_LINE = -0.25;
 
@@ -48,7 +48,8 @@ public class AutoBlue extends LinearOpMode {
         autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
-        autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
+        //autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
+        autoRobotFunctions.setGyroRotatePID(0.035, 0.0001, 0.000093);
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
         appContext = hardwareMap.appContext;

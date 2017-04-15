@@ -25,7 +25,7 @@ public class AutoRed extends LinearOpMode {
     //  private double MIN_OUTPUT_ROTATE = -0.25;
 
     private double MAX_OUTPUT_ROTATE = 0.5;
-    private double MIN_OUTPUT_ROTATE = -0.25;
+    private double MIN_OUTPUT_ROTATE = -0.5;
     private double MAX_OUTPUT_LINE = 0.25;
     private double MIN_OUTPUT_LINE = -0.25;
 
@@ -47,9 +47,9 @@ public class AutoRed extends LinearOpMode {
         autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
-        autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
-        //autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
-        autoRobotFunctions.setColorPID(0.02, 1.0, 0.0);
+        //autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
+        autoRobotFunctions.setGyroRotatePID(0.035, 0.0001, 0.000093);
+        autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
         appContext = hardwareMap.appContext;
         //  whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
