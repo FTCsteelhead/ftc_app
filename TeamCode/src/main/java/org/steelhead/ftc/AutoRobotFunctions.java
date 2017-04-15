@@ -145,13 +145,16 @@ public class AutoRobotFunctions {
                     rotationComplete = true;
                 } else {
                     double output = pidController.getOutput();
+
                     leftMotor.setPower(limit(output, minMotorOutput, maxMotorOutput));
                     rightMotor.setPower(limit(-output, minMotorOutput, maxMotorOutput));
+
+
                     currentOpMode.telemetry.addData("Output", output);
-                    if (rotateTime.milliseconds() > 4000) {
+                  /*  if (rotateTime.milliseconds() > 4000) {
                         currentOpMode.telemetry.addData(">", "reevaluate your life choices!");
                         rotationComplete = true;
-                    }
+                    }*/
                 }
                 currentOpMode.telemetry.addData("Time to error", rotateTime.milliseconds());
                 currentOpMode.telemetry.addData("Yaw", angle);

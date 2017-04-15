@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.steelhead.ftc.AutoRobotFunctions;
@@ -51,12 +52,15 @@ public class RobotFunctionsTest extends LinearOpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
 
-  private final int TOLERANCE_DEGREES = 2;
-
   private double MAX_OUTPUT_DRIVE = 1.0;
   private double MIN_OUTPUT_DRIVE = 0.5;
   private double MAX_OUTPUT_LINE = 0.25;
-  private double MIN_OUTPUT_LINE = -0.20;
+  private double MIN_OUTPUT_LINE = 0;
+  private final int TOLERANCE_DEGREES = 2;
+
+
+  private double MAX_OUTPUT_ROTATE = 0.25;
+  private double MIN_OUTPUT_ROTATE = -0.25;
 
   private AutoRobotFunctions autoRobotFunctions;
   private Context appContext = null;
@@ -72,9 +76,8 @@ public class RobotFunctionsTest extends LinearOpMode {
     robot.init(hardwareMap);
     AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot);
 
-    //autoRobotFunctions.setColorPID(0.010, 0.05, 0.00203);
-     // utoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
-      autoRobotFunctions.setColorPID(0.02, 1.0, 0.0);
+      autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
+
 
     robot.robotForward();
 
@@ -83,14 +86,12 @@ public class RobotFunctionsTest extends LinearOpMode {
 
     waitForStart();
 
-    if (autoRobotFunctions.MRDriveStraight(20, .75,
-            MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2000, 0.07,
-            AutoRobotFunctions.StopConditions.COLOR, 15, -1)) {
-
-      autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+      autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.25, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
               AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
+
+
+
       robot.close();
 
-    }
   }
 }

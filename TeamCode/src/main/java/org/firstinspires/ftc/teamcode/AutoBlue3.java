@@ -13,18 +13,18 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 /**
  * Demonstrates empty OpMode
  */
-@Autonomous(name = "Button Pusher - Blue All", group = "Button")
-@Disabled
+@Autonomous(name = "Button Pusher - Blue New", group = "Button")
+//@Disabled
 public class AutoBlue3 extends LinearOpMode {
 
     private final int TOLERANCE_DEGREES = 2;
 
     private double MAX_OUTPUT_DRIVE = 1.0;
     private double MIN_OUTPUT_DRIVE = 0.5;
-    private double MAX_OUTPUT_ROTATE = 0.25;
-    private double MIN_OUTPUT_ROTATE = -0.25;
+    private double MAX_OUTPUT_ROTATE = 0.5;
+    private double MIN_OUTPUT_ROTATE = -0.5;
     private double MAX_OUTPUT_LINE = 0.25;
-    private double MIN_OUTPUT_LINE = -0.25;
+    private double MIN_OUTPUT_LINE = 0.1;
 
     private AutoRobotFunctions autoRobotFunctions;
     private Context appContext = null;
@@ -47,7 +47,8 @@ public class AutoBlue3 extends LinearOpMode {
 
         autoRobotFunctions = new AutoRobotFunctions(this, robot);
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
-        autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
+     //   autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
+        autoRobotFunctions.setGyroRotatePID(0.035, 0.0001, 0.000093);
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
 
@@ -60,13 +61,13 @@ public class AutoBlue3 extends LinearOpMode {
         robot.robotForward();
         autoRobotFunctions.runWithEncoders(500, 1.0);
 
-        autoRobotFunctions.MRRotate(-40, TOLERANCE_DEGREES,
+        autoRobotFunctions.MRRotate(-20, TOLERANCE_DEGREES,
                 MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
         //check to see if we miss the line
-        if (autoRobotFunctions.MRDriveStraight(-40, .75,
-                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4000, 0.15,
-                AutoRobotFunctions.StopConditions.COLOR, 20, 5500)) {
+        if (autoRobotFunctions.MRDriveStraight(-20, .75,
+                MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 7000, 0.15,
+                AutoRobotFunctions.StopConditions.COLOR, 25, -1)) {
 
 
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
@@ -76,11 +77,50 @@ public class AutoBlue3 extends LinearOpMode {
 
             robot.robotBackward();
 
+            autoRobotFunctions.MRDriveStraight(0, 0.75,
+                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2000, 0.15,
+                    AutoRobotFunctions.StopConditions.ENCODER, 800, -1);
+
+            robot.robotForward();
+
+            autoRobotFunctions.MRRotate(0, TOLERANCE_DEGREES,
+                    MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+            robot.robotBackward();
+
+           // autoRobotFunctions.runWithEncoders(500, 1.0);
+
+            autoRobotFunctions.MRDriveStraight(0, 0.75,
+                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 600, 0.15,
+                    AutoRobotFunctions.StopConditions.ENCODER, 500, -1);
+
+            autoRobotFunctions.MRDriveStraight(0, 0.75,
+                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2200, 0.10,
+                    AutoRobotFunctions.StopConditions.COLOR, 20, -1);
+
+            robot.robotForward();
+
+
+           /* autoRobotFunctions.MRRotate(-90, TOLERANCE_DEGREES,
+                    MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);*/
+
+            autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
+                    AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
+
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE, blueColor);
+
+
             //shoot ball
-            robot.shooterPower(0.7);
+            telemetry.addData("shooter power", robot.shooterMotorOn(true));
+            telemetry.update();
+
             robot.sweeperMotor.setPower(-1.0);
 
-            autoRobotFunctions.runWithEncoders(2450, 1.0);
+            robot.robotBackward();
+
+            autoRobotFunctions.MRDriveStraight(-90, 0.75,
+                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2495, 0.15,
+                    AutoRobotFunctions.StopConditions.ENCODER, 2500, -1);
 
             robot.shooterServoDown(false);
             Thread.sleep(500);
@@ -89,36 +129,26 @@ public class AutoBlue3 extends LinearOpMode {
             robot.shooterServoDown(false);
             Thread.sleep(500);
             robot.shooterServoDown(true);
-            robot.shooterPower(0.0);
+            robot.shooterMotorOn(false);
             robot.sweeperMotor.setPower(0.0);
 
-            robot.robotForward();
-            autoRobotFunctions.MRRotate(-23, TOLERANCE_DEGREES,
-                    MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
-            autoRobotFunctions.MRDriveStraight(-23, 0.75,
-                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.15,
-                    AutoRobotFunctions.StopConditions.COLOR, 20, -1);
-            autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                    AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
-            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE, blueColor);
+            autoRobotFunctions.MRDriveStraight(-20, 0.75,
+                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2495, 0.15,
+                    AutoRobotFunctions.StopConditions.ENCODER, 2500, -1);
+
+          //  robot.leftMotor.setPower(1.0);
+
+          //  Thread.sleep(1000);
+
+           // robot.leftMotor.setPower(0.0);
+
             //if the robot misses the line do this
-
-            robot.robotBackward();
-
-            autoRobotFunctions.runWithEncoders(500, 1.0);
-
-            robot.robotForward();
-
-            autoRobotFunctions.MRRotate(-45, TOLERANCE_DEGREES,
-                    MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
-
-            robot.robotBackward();
-
-            autoRobotFunctions.runWithEncoders(4500, 1.0);
-
         } else {
             telemetry.addData("You Missed the line!!", "<");
+            telemetry.update();
+
+
         }
 
         autoRobotFunctions.close();
@@ -127,6 +157,7 @@ public class AutoBlue3 extends LinearOpMode {
 
         telemetry.addData("STATUS:", "Complete");
         telemetry.update();
+
     }
 }
 
