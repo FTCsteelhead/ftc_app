@@ -21,8 +21,8 @@ public class AutoRed extends LinearOpMode {
 
     private double MAX_OUTPUT_DRIVE = 1.0;
     private double MIN_OUTPUT_DRIVE = 0.75;
- //   private double MAX_OUTPUT_ROTATE = 0.25;
- //  private double MIN_OUTPUT_ROTATE = -0.25;
+    //   private double MAX_OUTPUT_ROTATE = 0.25;
+    //  private double MIN_OUTPUT_ROTATE = -0.25;
 
     private double MAX_OUTPUT_ROTATE = 0.5;
     private double MIN_OUTPUT_ROTATE = -0.25;
@@ -52,12 +52,12 @@ public class AutoRed extends LinearOpMode {
         autoRobotFunctions.setColorPID(0.02, 1.0, 0.0);
 
         appContext = hardwareMap.appContext;
-      //  whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
-      //  blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 100);
-      //  blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
+        //  whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
+        //  blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 100);
+        //  blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
 
-      //  telemetry.addData("STATUS:", "init complete–check state of gyro");
-       // telemetry.update();
+        //  telemetry.addData("STATUS:", "init complete–check state of gyro");
+        // telemetry.update();
 
         Log.i(TAG, String.format("STATUS:", "init complete–check state of gyro"));
 
@@ -79,7 +79,7 @@ public class AutoRed extends LinearOpMode {
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
 
-                telemetry.addData(">", "Called in use");
+            telemetry.addData(">", "Called in use");
 
             autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED, blueColor);
 
@@ -129,7 +129,7 @@ public class AutoRed extends LinearOpMode {
 
         robot.close();
 
-       telemetry.addData("STATUS:", "Complete");
+        telemetry.addData("STATUS:", "Complete");
         telemetry.update();
 
 
