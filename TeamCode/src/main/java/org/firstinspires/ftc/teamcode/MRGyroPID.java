@@ -84,7 +84,7 @@ public class MRGyroPID extends LinearOpMode {
         // wait for the start button to be pressed.
         waitForStart();
 
-        GyroPIDController pidController = new GyroPIDController(gyro, 90, 2);
+        GyroPIDController pidController = new GyroPIDController(gyro, 90, 2, TAG);
         pidController.setPID(0.05, 0.0005, 0.5);
         pidController.enable();
 

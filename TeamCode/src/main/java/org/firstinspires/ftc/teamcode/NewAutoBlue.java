@@ -4,8 +4,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.steelhead.ftc.AutoRobotFunctions;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
@@ -14,7 +14,7 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Robot hits both beacons and shoots 2 balls
  */
 @Autonomous(name = "New Blue", group = "Button")
-
+@Disabled
 public class NewAutoBlue extends LinearOpMode {
 
     private final int TOLERANCE_DEGREES = 2;
@@ -40,7 +40,7 @@ public class NewAutoBlue extends LinearOpMode {
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
         robot.init(hardwareMap);
-        autoRobotFunctions = new AutoRobotFunctions(this, robot);
+        autoRobotFunctions = new AutoRobotFunctions(this, robot, TAG);
 
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
         autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
@@ -74,7 +74,7 @@ public class NewAutoBlue extends LinearOpMode {
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
 
-            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE, blueColor);
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
 
             robot.robotBackward();
 
@@ -92,7 +92,7 @@ public class NewAutoBlue extends LinearOpMode {
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
 
-            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED, blueColor);
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.RED);
 
 
             //shoot ball

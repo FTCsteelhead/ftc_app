@@ -1,19 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.util.Log;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.steelhead.ftc.Adafruit_GFX;
 import org.steelhead.ftc.AutoRobotFunctions;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
 /**
- * Robot hits both beacons, shoots 2 balls, pushes the yoga ball off the center, parks in the center
+ * Robot waits 10 seconds, shoots 2 balls, pushes the yoga ball off the center, and parks
+ * on the center
  */
 
-@Autonomous(name = "Shoot - Blue", group = "Shoot")
+@Autonomous(name = "BLUE: Shoot-10", group = "Shoot")
 //@Disabled
 public class AutoBlue2 extends LinearOpMode {
 
@@ -26,40 +24,31 @@ public class AutoBlue2 extends LinearOpMode {
     private double MAX_OUTPUT_LINE = 0.25;
     private double MIN_OUTPUT_LINE = -0.25;
 
-
+    private static final String TAG = "Second Blue";
 
     private AutoRobotFunctions autoRobotFunctions;
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
         robot.init(hardwareMap);
-        autoRobotFunctions = new AutoRobotFunctions(this, robot);
+        autoRobotFunctions = new AutoRobotFunctions(this, robot, TAG);
 
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
         autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
-
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
-
 
         telemetry.addData("STATUS:", "init complete–check state of gyro");
         telemetry.update();
 
+        robot.shooterServoDown(true);
 
-        robot.shooterServo.setPosition(1.0);
-
-        //wait for start of the match
+        //wait for start of the match and wait for 10 seconds
         waitForStart();
-
         Thread.sleep(10000);
 
         robot.robotBackward();
-
-        robot.shooterMotorOn(true);
-
-      //  autoRobotFunctions.runWithEncoders(500, 1.0);
 
         autoRobotFunctions.MRDriveStraight(0, 0.75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 500, 0.15,
@@ -72,27 +61,22 @@ public class AutoBlue2 extends LinearOpMode {
 
         robot.robotBackward();
 
-    //    autoRobotFunctions.runWithEncoders(2200, 1.0);
-
         autoRobotFunctions.MRDriveStraight(-15, 0.75,
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 2000, 0.15,
                 AutoRobotFunctions.StopConditions.ENCODER, 2000, -1);
 
         Thread.sleep(500);
+        robot.shooterMotorOn(true);
         robot.sweeperMotor.setPower(-1.0);
 
         robot.shooterServoDown(false);
         Thread.sleep(500);
         robot.shooterServoDown(true);
-        robot.shooterMotorOn(false);
-        Thread.sleep(5000);
-        robot.shooterMotorOn(true);
+        Thread.sleep(800);
         robot.shooterServoDown(false);
         Thread.sleep(500);
         robot.shooterServoDown(true);
-        Thread.sleep(500);
         robot.shooterMotorOn(false);
-
         robot.sweeperMotor.setPower(0.0);
 
         robot.robotForward();
@@ -106,15 +90,11 @@ public class AutoBlue2 extends LinearOpMode {
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 1100, 0.15,
                 AutoRobotFunctions.StopConditions.ENCODER, 1100, -1);
 
-
-
         autoRobotFunctions.close();
-
         robot.close();
 
         telemetry.addData("STATUS:", "Complete");
         telemetry.update();
-
     }
 }
 

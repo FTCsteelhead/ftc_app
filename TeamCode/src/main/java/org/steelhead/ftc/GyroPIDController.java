@@ -1,20 +1,20 @@
 package org.steelhead.ftc;
 
+import android.util.Log;
+
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by Alec Matthews on 10/23/2016.
- * This class is a PID controller built for a color sensor.
+ * This class is a PID controller built for a gyro sensor.
  */
 
 public class GyroPIDController {
     //initialize values
     private Thread pidThread;
     private int offsetValue;
-
-    @Deprecated
-    private boolean isOutputAvailable = false;
 
     private volatile double output;
     private boolean isActive = true;
@@ -24,8 +24,13 @@ public class GyroPIDController {
     private volatile double cError = 0;
     private int tolerance = 0;
 
-    public GyroPIDController(final ModernRoboticsI2cGyro gyro, final int angle, int tolerance) {
+    private ElapsedTime logRate = new ElapsedTime();
+    private String TAG;
+
+    public GyroPIDController(final ModernRoboticsI2cGyro gyro, final int angle, int tolerance,
+                             final String TAG) {
         this.tolerance = tolerance;
+        this.TAG = TAG + ":gyro sensor";
         //Setup the separate thread for calculating the values
         //This is in a separate thread so it doesn't slow down the main thread.
         pidThread = new Thread(new Runnable() {
@@ -60,6 +65,10 @@ public class GyroPIDController {
 
                     output = (kp * error) + (ki * integral) + (kd * derivative);
 
+                    if (logRate.milliseconds() >= 500) {
+                        logRate.reset();
+                        Log.i(TAG, String.format("YAW: %d | OUTPUT: %f", angle, output));
+                    }
 
                     //Wait for the sensor to gather new values
                     //and slow down the loop so the integral term doesn't get too big too fast
@@ -81,6 +90,7 @@ public class GyroPIDController {
     //Start the thread
     public void enable() {
         pidThread.start();
+        logRate.reset();
     }
 
     //Stop the thread
@@ -95,12 +105,8 @@ public class GyroPIDController {
             return false;
         }
     }
-    @Deprecated
-    public boolean isOutputAvailable() {
-        return isOutputAvailable;
-    }
-    //Get the value of calculated by the PID controller
 
+    //Get the value of calculated by the PID controller
     public double getOutput() {
         return output;
     }

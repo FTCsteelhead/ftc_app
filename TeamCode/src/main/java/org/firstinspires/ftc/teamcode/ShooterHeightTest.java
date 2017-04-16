@@ -54,7 +54,7 @@ import java.util.Locale;
  * Demonstrates empty OpMode
  */
 @TeleOp(name = "Test: Shooter Test", group = "Test")
-
+@Disabled
 public class ShooterHeightTest extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -121,9 +121,7 @@ public class ShooterHeightTest extends OpMode {
             }
             telemetry.addData("Runtime", runtime.toString());
             telemetry.addData("PrevTime", prevTime);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }

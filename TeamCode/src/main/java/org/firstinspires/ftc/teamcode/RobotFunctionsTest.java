@@ -34,10 +34,7 @@ package org.firstinspires.ftc.teamcode;
 import android.content.Context;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.steelhead.ftc.AutoRobotFunctions;
@@ -50,48 +47,49 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
 //@Disabled
 public class RobotFunctionsTest extends LinearOpMode {
 
-  private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
 
-  private double MAX_OUTPUT_DRIVE = 1.0;
-  private double MIN_OUTPUT_DRIVE = 0.5;
-  private double MAX_OUTPUT_LINE = 0.25;
-  private double MIN_OUTPUT_LINE = 0;
-  private final int TOLERANCE_DEGREES = 2;
+    private double MAX_OUTPUT_DRIVE = 1.0;
+    private double MIN_OUTPUT_DRIVE = 0.5;
+    private double MAX_OUTPUT_LINE = 0.25;
+    private double MIN_OUTPUT_LINE = 0;
 
-
-  private double MAX_OUTPUT_ROTATE = 0.25;
-  private double MIN_OUTPUT_ROTATE = -0.25;
-
-  private AutoRobotFunctions autoRobotFunctions;
-  private Context appContext = null;
-
-  private int whiteThreshold = 45;
-  private int blueColor = 100;
-  private int blackColor = 5;
-
-  @Override
-  public void runOpMode() throws InterruptedException {
-    HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
-
-    robot.init(hardwareMap);
-    AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot);
-
-      autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
+    private final int TOLERANCE_DEGREES = 2;
 
 
-    robot.robotForward();
+    private double MAX_OUTPUT_ROTATE = 0.25;
+    private double MIN_OUTPUT_ROTATE = -0.25;
 
-    telemetry.addData("STATUS:", "init complete–check state of gyro");
-    telemetry.update();
+    private AutoRobotFunctions autoRobotFunctions;
+    private Context appContext = null;
 
-    waitForStart();
+    private int whiteThreshold = 45;
+    private int blackColor = 5;
 
-      autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.25, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-              AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
+    private static final String TAG = "Robot Functions Test";
+    @Override
+    public void runOpMode() throws InterruptedException {
+        HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
+
+        robot.init(hardwareMap);
+        AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot, TAG);
+
+        autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
 
+        robot.robotForward();
 
-      robot.close();
+        telemetry.addData("STATUS:", "init complete–check state of gyro");
+        telemetry.update();
 
-  }
+        waitForStart();
+
+        autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.25, MIN_OUTPUT_LINE,
+                MAX_OUTPUT_LINE, 0, AutoRobotFunctions.StopConditions.BUTTON,
+                AutoRobotFunctions.LineSide.RIGHT);
+
+
+        robot.close();
+
+    }
 }

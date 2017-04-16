@@ -3,21 +3,17 @@ package org.firstinspires.ftc.teamcode;
 import android.util.Log;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.steelhead.ftc.Adafruit_GFX;
-import org.steelhead.ftc.Adafruit_LedMatrix;
 import org.steelhead.ftc.AutoRobotFunctions;
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
 /**
  * Robot hits both beacons and shoots 2 balls
  */
-@Autonomous(name = "Button Pusher - Blue", group = "Button")
+@Autonomous(name = "BLUE: Button Pusher", group = "Button, first")
 //@Disabled
 public class AutoBlue extends LinearOpMode {
 
@@ -34,33 +30,28 @@ public class AutoBlue extends LinearOpMode {
     private Context appContext = null;
 
     private int whiteThreshold = 45;
-    private int blueColor = 100;
     private int blackColor = 5;
 
-    private static final String TAG = "ROBOT";
+    private static final String TAG = "First Blue";
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
 
         robot.init(hardwareMap);
-        autoRobotFunctions = new AutoRobotFunctions(this, robot);
+        autoRobotFunctions = new AutoRobotFunctions(this, robot, TAG);
 
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
-        //autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);
+        //autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);, Old Value
+        //// TODO: 4/15/2017 Work on this value some more so it is stable
         autoRobotFunctions.setGyroRotatePID(0.035, 0.0001, 0.000093);
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
         appContext = hardwareMap.appContext;
-      //  whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
-      //  blueColor = robot.sharedPref.getInt(appContext.getString(R.string.Blue_Color), 100);
-      //  blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
+        //  whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
+        //  blackColor = robot.sharedPref.getInt(appContext.getString(R.string.Black_Threshold), 5);
 
-      //  telemetry.addData("STATUS:", "init complete–check state of gyro");
-       // telemetry.update();
-
-        Log.i(TAG, String.format("STATUS:", "init complete–check state of gyro"));
+        telemetry.addData("STATUS:", "init complete–check state of gyro");
 
         //wait for start of the match
         waitForStart();
@@ -76,11 +67,10 @@ public class AutoBlue extends LinearOpMode {
                 MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4000, 0.15,
                 AutoRobotFunctions.StopConditions.COLOR, 25, 5500)) {
 
-
-            autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                    AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
-
-            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE, blueColor);
+            autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE,
+                    MAX_OUTPUT_LINE, 0, AutoRobotFunctions.StopConditions.BUTTON,
+                    AutoRobotFunctions.LineSide.LEFT);
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
 
             robot.robotBackward();
 
@@ -103,33 +93,26 @@ public class AutoBlue extends LinearOpMode {
             robot.sweeperMotor.setPower(0.0);
 
             robot.robotForward();
+
             autoRobotFunctions.MRRotate(-23, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
-
             autoRobotFunctions.MRDriveStraight(-23, 0.75,
                     MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.15,
                     AutoRobotFunctions.StopConditions.COLOR, 20, -1);
-            autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
-                    AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.LEFT);
-            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE, blueColor);
-
-
-            //if the robot misses the line do this
+            autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE,
+                    MAX_OUTPUT_LINE, 0, AutoRobotFunctions.StopConditions.BUTTON,
+                    AutoRobotFunctions.LineSide.LEFT);
+            autoRobotFunctions.pushButton(AutoRobotFunctions.Team.BLUE);
         } else {
-            telemetry.addData("You Missed the line!!", "<");
-            telemetry.update();
-
-
+            //if the robot misses the line do this
+            telemetry.addData(">", "You Missed the line!!");
         }
 
         autoRobotFunctions.close();
-
         robot.close();
 
-       telemetry.addData("STATUS:", "Complete");
+        telemetry.addData("STATUS:", "Complete");
         telemetry.update();
-
-
     }
 }
 

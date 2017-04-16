@@ -1,5 +1,7 @@
 package org.steelhead.ftc;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,7 +25,12 @@ public class ColorPIDController {
     private double kd;
     private double tolerance;
 
-    public ColorPIDController(final ColorSensor colorSensor, int thresholdLow, int thresholdHigh) {
+    private ElapsedTime logRate = new ElapsedTime();
+    private String TAG;
+
+    public ColorPIDController(final ColorSensor colorSensor, int thresholdLow, int thresholdHigh,
+                              final String TAG) {
+        this.TAG = TAG + ":color sensor";
         this.offsetValue = (thresholdLow + thresholdHigh)/2;
 
         //Setup the separate thread for calculating the values
@@ -33,13 +40,13 @@ public class ColorPIDController {
             public void run() {
                 //Calculate the PID output
                 double error;
-                double avrage;
+                double average;
                 double lastError = 0;
                 double integral = 0;
                 double derivative;
                 while (isActive) {
-                    avrage = (colorSensor.red() + colorSensor.green() + colorSensor.blue())/3;
-                    error = avrage - offsetValue;
+                    average = (colorSensor.red() + colorSensor.green() + colorSensor.blue())/3;
+                    error = average - offsetValue;
                     /*
                     Calculate the integral term. We are clamping it when the sign changes
                     when the error is 0 or when the error value is too big.
@@ -61,6 +68,11 @@ public class ColorPIDController {
 
                     output = (kp * error) + (ki * integral) + (kd * derivative);
 
+                    if (logRate.milliseconds() >= 500) {
+                        logRate.reset();
+                        Log.i(TAG, String.format("BRIGHTNESS: %d | OUTPUT: %f | OFFSET: %d",
+                                average, output, offsetValue));
+                    }
                     //Wait for the sensor to gather new values
                     //and slow down the loop so the integral term doesn't get too big too fast
                     try {
@@ -81,6 +93,7 @@ public class ColorPIDController {
     //Start the thread
     public void enable() {
         pidThread.start();
+        logRate.reset();
     }
 
     //Stop the thread

@@ -31,18 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package org.firstinspires.ftc.teamcode;
 
-import android.app.Activity;
-import android.graphics.Color;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
-import com.qualcomm.ftcrobotcontroller.R;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
 import org.steelhead.ftc.HardwareSteelheadMainBot;
 
@@ -59,24 +49,19 @@ import org.steelhead.ftc.HardwareSteelheadMainBot;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@TeleOp(name = "Cal: Color Threshold", group = "Cal")
+@TeleOp(name = "Cal: Mat Color Threshold", group = "Cal")
 //@Disabled
 public class ColorCalibration extends LinearOpMode {
 
     private HardwareSteelheadMainBot robot;
 
-
     @Override
     public void runOpMode() {
-
         HardwareSteelheadMainBot robot = new HardwareSteelheadMainBot();
         robot.init(hardwareMap);
 
-        boolean bLedOn = true;
-
-
         // Set the LED in the beginning
-        robot.color.enableLed(bLedOn);
+        robot.color.enableLed(true);
 
         telemetry.addData("Device Connection info", robot.color.getManufacturer());
         telemetry.update();
@@ -87,12 +72,12 @@ public class ColorCalibration extends LinearOpMode {
         // while the op mode is active, loop and read the RGB data.
         // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
         while (opModeIsActive()) {
-            double avrage = (robot.color.red() + robot.color.green() + robot.color.blue())/3;
+            double average = (robot.color.red() + robot.color.green() + robot.color.blue())/3;
             telemetry.addData("Clear", robot.color.alpha());
             telemetry.addData("Red  ", robot.color.red());
             telemetry.addData("Green", robot.color.green());
             telemetry.addData("Blue ", robot.color.blue());
-            telemetry.addData("Brightness - necessary for auto program", avrage);
+            telemetry.addData("Brightness - necessary for auto program", average);
 
             telemetry.update();
         }
