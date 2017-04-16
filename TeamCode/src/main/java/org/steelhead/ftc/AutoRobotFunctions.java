@@ -7,6 +7,7 @@ import com.kauailabs.navx.ftc.navXPIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -56,6 +57,7 @@ public class AutoRobotFunctions {
     private ColorSensor color;
     private Adafruit_ColorSensor beaconColor;
     private TouchSensor touchSensor;
+    private DigitalChannel policeLED;
     private ModernRoboticsI2cGyro gyro;
 
     public enum StopConditions {COLOR, ENCODER, BUTTON}
@@ -64,9 +66,10 @@ public class AutoRobotFunctions {
 
     public enum LineSide {LEFT, RIGHT}
 
-    private String TAG = "AUTOROBOT:";
+    private static final String TAG = "AUTOROBOT";
 
-    @Deprecated
+    public boolean pushInUse = false;
+
     public AutoRobotFunctions(byte navXDevicePortNumber, HardwareMap hardwareMap,
                               LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
         boolean calibrationComplete = false;
@@ -97,8 +100,7 @@ public class AutoRobotFunctions {
         navXDevice.zeroYaw();*/
     }
 
-    public AutoRobotFunctions(LinearOpMode currentOpMode, HardwareSteelheadMainBot robot,
-                              String logTag) {
+    public AutoRobotFunctions(LinearOpMode currentOpMode, HardwareSteelheadMainBot robot) {
         this.robot = robot;
         this.currentOpMode = currentOpMode;
         this.leftMotor = robot.leftMotor;
@@ -108,8 +110,6 @@ public class AutoRobotFunctions {
         this.gyro = robot.gyro;
         this.beaconColor = robot.beaconColor;
         navXDevice = null;
-
-        TAG += logTag;
 
         gyro.calibrate();
         while (gyro.isCalibrating() && !currentOpMode.isStopRequested()) {
@@ -122,14 +122,15 @@ public class AutoRobotFunctions {
     }
 
     //MR Gyro rotate PID
+    //// TODO: 1/23/2017 Add some code to check if the robot stops moving
     public void MRRotate(int degree, int tolerance,
                          double minMotorOutput, double maxMotorOutput) {
+
         ElapsedTime rotateTime = new ElapsedTime();
         boolean rotationComplete = false;
         double angle = 0;
 
-        GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance,
-                TAG + ":Rotate");
+        GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
         pidController.setPID(gyroRotateKP, gyroRotateKI, gyroRotateKD);
         pidController.enable();
 
@@ -148,18 +149,19 @@ public class AutoRobotFunctions {
                     leftMotor.setPower(limit(output, minMotorOutput, maxMotorOutput));
                     rightMotor.setPower(limit(-output, minMotorOutput, maxMotorOutput));
 
+
                     currentOpMode.telemetry.addData("Output", output);
-                    if (rotateTime.milliseconds() > 4000) {
+                  /*  if (rotateTime.milliseconds() > 4000) {
                         currentOpMode.telemetry.addData(">", "reevaluate your life choices!");
                         rotationComplete = true;
-                    }
+                    }*/
                 }
                 currentOpMode.telemetry.addData("Time to error", rotateTime.milliseconds());
                 currentOpMode.telemetry.addData("Yaw", angle);
                 currentOpMode.telemetry.update();
+
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
             Thread.currentThread().interrupt();
         } finally {
             pidController.disable();
@@ -170,16 +172,14 @@ public class AutoRobotFunctions {
     public boolean MRDriveStraight(int degree, double driveSpeed, double minOutputVal,
                                    double maxOutputVal, int tolerance, double motorSpeedMul,
                                    int encoderDistance, double minEndPower,
-                                   StopConditions stopCondition, int stopVal,
-                                   int maxEncoderDistance) {
+                                   StopConditions stopCondition, int stopVal, int maxEncoderDistance) {
         double workingForwardSpeed = driveSpeed;
         double output = 0;
         boolean pidEnable = true;
         robot.stopAndClearEncoders();
         robot.enableEncoders(true);
 
-        GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance,
-                TAG + "Drive Straight:");
+        GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance);
         pidController.setPID(gyroDriveKP, gyroDriveKI, gyroDriveKD);
         pidController.enable();
 
@@ -272,7 +272,6 @@ public class AutoRobotFunctions {
     }
 
     //NavX PID controller for rotation to a degree
-    @Deprecated
     public void navxRotateToDegree(double degree, double tolerance,
                                    double minMotorOutput, double maxMotorOutput) {
         boolean rotationComplete = false;
@@ -317,7 +316,6 @@ public class AutoRobotFunctions {
 
 
     //Drive straight with a PID controller
-    @Deprecated
     public void navXDriveStraight(double degree, double tolerance,
                                   double minOutputRage, double maxOutputRange,
                                   double driveSpeed, int encoderDistance,
@@ -424,7 +422,7 @@ public class AutoRobotFunctions {
                               double maxOutputVal, double tolerance,
                               StopConditions stopConditions, LineSide lineSide) {
         ColorPIDController pidController = new ColorPIDController(this.color,
-                threshHoldLow, threshHoldHigh, TAG + "Line Follow:");
+                threshHoldLow, threshHoldHigh);
         pidController.setPID(colorKP, colorKI, colorKD);
         pidController.setTolerance(tolerance);
         pidController.enable();
@@ -460,10 +458,9 @@ public class AutoRobotFunctions {
     public void runWithEncoders(int targetPosition, double motorPower) {
         boolean rampComplete = false;
         ElapsedTime rampTime = new ElapsedTime();
-        ElapsedTime logRate = new ElapsedTime();
         double rampUpMul = motorPower / 500;
         double rampDownMul = motorPower / 30;
-        double workingForwardSpeed = 0;
+        double workingForwardSpeed;
 
         robot.stopAndClearEncoders();
         robot.enableEncoders(true);
@@ -502,13 +499,6 @@ public class AutoRobotFunctions {
             currentOpMode.telemetry.addData("ENC left: ", leftMotor.getCurrentPosition());
             currentOpMode.telemetry.addData("ENC right: ", rightMotor.getCurrentPosition());
             currentOpMode.telemetry.update();
-
-            if (logRate.milliseconds() >= 500) {
-                logRate.reset();
-                Log.i(TAG + ":Encoder", String.format("SPEED: %f | ENC LEFT: %d | ENC RIGHT: %d",
-                        workingForwardSpeed, leftMotor.getCurrentPosition(),
-                        rightMotor.getCurrentPosition()));
-            }
         }
         leftMotor.setPower(0);
         rightMotor.setPower(0);
@@ -517,48 +507,45 @@ public class AutoRobotFunctions {
         robot.enableEncoders(false);
     }
 
+    //TODO: compare the red and blue values of the beacon
     //Push the proper color button for the team the robot is on
-    public void pushButton(Team team) {
+    public void pushButton(Team team, int blueThreshold) {
         try {
             if (team == Team.RED) {
                 currentOpMode.telemetry.addData("Blue Color", beaconColor.blueColor());
                 currentOpMode.telemetry.addData("Red Color", beaconColor.redColor());
-
                 Log.i(TAG, String.format("Blue Color: %d", beaconColor.blueColor()));
-                Log.i(TAG, String.format("Red Color: %d", beaconColor.redColor()));
-
+                //Log.i(TAG, String.format("Threshold: %fd", blueThreshold));
+                currentOpMode.telemetry.addData("Threshold", blueThreshold);
+                //if (beaconColor.blueColor() > blueThreshold) {
                 if (beaconColor.blueColor() > beaconColor.redColor()) {
-                    currentOpMode.telemetry.addData("Team: RED", "sees BLUE, pushing opposite");
-                    Log.i(TAG, "Team: RED, " + "sees BLUE, pushing opposite");
-
+                    Log.i(TAG, String.format("RED", "sees BLUE, pushing opposite"));
+                    currentOpMode.telemetry.addData("RED", "sees BLUE, pushing opposite");
                     robot.pusherRight.setPosition(0.1);
                 } else {
+                    Log.i(TAG, "RED, sees RED, pushing");
                     currentOpMode.telemetry.addData("RED", "sees RED, pushing");
-                    Log.i(TAG, "Team: RED, " + "sees RED, pushing");
-
                     robot.pusherLeft.setPosition(0.9);
                 }
             } else {
+                Log.i(TAG, String.format("Blue Color: %d", beaconColor.blueColor()));
+                //Log.i(TAG, String.format("Threshold: %f2", blueThreshold));
                 currentOpMode.telemetry.addData("Blue Color", beaconColor.blueColor());
                 currentOpMode.telemetry.addData("Red Color", beaconColor.redColor());
-
-                Log.i(TAG, String.format("Blue Color: %d", beaconColor.blueColor()));
-                Log.i(TAG, String.format("Red Color: %d", beaconColor.redColor()));
-
+                currentOpMode.telemetry.addData("Threshold", blueThreshold);
+                //if (beaconColor.blueColor() > blueThreshold) {
                 if (beaconColor.blueColor() > beaconColor.redColor()) {
+                    Log.i(TAG, String.format("BLUE", "sees BLUE, pushing"));
                     currentOpMode.telemetry.addData("BLUE", "sees BLUE, pushing");
-                    Log.i(TAG, "Team: BLUE, " + "sees BLUE, pushing");
-
                     robot.pusherLeft.setPosition(0.9);
                 } else {
                     currentOpMode.telemetry.addData("BLUE", "sees RED, pushing opposite");
-                    Log.i(TAG, "Team: BLUE, " + "sees RED, pushing opposite");
-
+                    Log.i(TAG, "BLUE, sees RED, pushing opposite");
                     robot.pusherRight.setPosition(0.1);
                 }
             }
             currentOpMode.telemetry.update();
-            Thread.sleep(500);
+            Thread.sleep(1000);
             robot.pusherRight.setPosition(0.9);
             robot.pusherLeft.setPosition(0.1);
         } catch (InterruptedException e) {
@@ -566,7 +553,6 @@ public class AutoRobotFunctions {
         }
     }
 
-    @Deprecated
     public void pusherActive(boolean state) {
         if (state) {
             robot.pusherRight.setPosition(0.2);
@@ -584,21 +570,19 @@ public class AutoRobotFunctions {
     }
 
     //Set the PID values for the NavX sensor
-    @Deprecated
     public void setNavXPIDDriveStraight(double Kp, double Ki, double Kd) {
         this.navKPdrive = Kp;
         this.navKIdrive = Ki;
         this.navKDdrive = Kd;
     }
 
-    @Deprecated
     public void setNavXPIDTurn(double Kp, double Ki, double Kd) {
         this.navKPturn = Kp;
         this.navKIturn = Ki;
         this.navKDturn = Kd;
     }
 
-    //Set the PID values for all of the PID controllers
+    //Set the PID values for Color sensor
     public void setColorPID(double Kp, double Ki, double Kd) {
         this.colorKP = Kp;
         this.colorKI = Ki;
