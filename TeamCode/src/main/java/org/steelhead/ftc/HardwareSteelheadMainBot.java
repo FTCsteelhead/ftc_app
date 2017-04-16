@@ -166,7 +166,7 @@ public class HardwareSteelheadMainBot {
 
     public void shooterServoDown(boolean state) {
         if (state) {
-            shooterServo.setPosition(0.4 );
+            shooterServo.setPosition(0.5);
         } else {
             shooterServo.setPosition(0.25);
         }
@@ -175,7 +175,8 @@ public class HardwareSteelheadMainBot {
     public double shooterMotorOn(boolean state) {
         if (state) {
             double batVoltage = batVolt.getVoltage();
-            double motorPercent = (5.5/batVoltage);
+            //The constant changes how high it shoots
+            double motorPercent = (7/batVoltage);
             if (motorPercent > 1) {
                 shooterPower(1);
             } else {

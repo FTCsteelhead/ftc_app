@@ -41,7 +41,8 @@ public class AutoBlue3 extends LinearOpMode {
 
         autoRobotFunctions.setGyroDrivePID(0.018, 0.0001, 0.008);
         // autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);, Old values
-        autoRobotFunctions.setGyroRotatePID(0.035, 0.0001, 0.000093);
+        // autoRobotFunctions.setGyroRotatePID(0.035, 0.0001, 0.000093);
+        autoRobotFunctions.setGyroRotatePID(0.032, 0.0009, 0.0045);
         autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
 
         appContext = hardwareMap.appContext;

@@ -70,7 +70,7 @@ public class ColorPIDController {
 
                     if (logRate.milliseconds() >= 500) {
                         logRate.reset();
-                        Log.i(TAG, String.format("BRIGHTNESS: %d | OUTPUT: %f | OFFSET: %d",
+                        Log.i(TAG, String.format("BRIGHTNESS: %f | OUTPUT: %f | OFFSET: %d",
                                 average, output, offsetValue));
                     }
                     //Wait for the sensor to gather new values

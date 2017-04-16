@@ -54,11 +54,11 @@ public class RobotFunctionsTest extends LinearOpMode {
     private double MAX_OUTPUT_LINE = 0.25;
     private double MIN_OUTPUT_LINE = 0;
 
-    private final int TOLERANCE_DEGREES = 2;
+    private final int TOLERANCE_DEGREES = 0;
 
 
-    private double MAX_OUTPUT_ROTATE = 0.25;
-    private double MIN_OUTPUT_ROTATE = -0.25;
+    private double MAX_OUTPUT_ROTATE = 0.5;
+    private double MIN_OUTPUT_ROTATE = -0.5;
 
     private AutoRobotFunctions autoRobotFunctions;
     private Context appContext = null;
@@ -74,8 +74,7 @@ public class RobotFunctionsTest extends LinearOpMode {
         robot.init(hardwareMap);
         AutoRobotFunctions autoRobotFunctions = new AutoRobotFunctions(this, robot, TAG);
 
-        autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
-
+        autoRobotFunctions.setGyroRotatePID(0.032, 0.0009, 0.0045);
 
         robot.robotForward();
 
@@ -84,12 +83,20 @@ public class RobotFunctionsTest extends LinearOpMode {
 
         waitForStart();
 
-        autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.25, MIN_OUTPUT_LINE,
-                MAX_OUTPUT_LINE, 0, AutoRobotFunctions.StopConditions.BUTTON,
-                AutoRobotFunctions.LineSide.RIGHT);
+        autoRobotFunctions.MRRotate(90, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+
+        Thread.sleep(1000);
+        autoRobotFunctions.MRRotate(180, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+        Thread.sleep(1000);
+        autoRobotFunctions.MRRotate(270, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
+        Thread.sleep(1000);
+        autoRobotFunctions.MRRotate(360, TOLERANCE_DEGREES,
+                MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
 
         robot.close();
-
     }
 }
