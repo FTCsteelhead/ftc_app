@@ -21,7 +21,7 @@ public class AutoRed3 extends LinearOpMode {
     private double MIN_OUTPUT_DRIVE = 0.5;
     private double MAX_OUTPUT_ROTATE = 0.5;
     private double MIN_OUTPUT_ROTATE = -0.5;
-    private double MAX_OUTPUT_LINE = 0.25;
+    private double MAX_OUTPUT_LINE = 0.35;
     private double MIN_OUTPUT_LINE = 0;
 
     private AutoRobotFunctions autoRobotFunctions;
@@ -43,7 +43,7 @@ public class AutoRed3 extends LinearOpMode {
         // autoRobotFunctions.setGyroRotatePID(0.034, 0.0005, 0.0008);, Old values
         // autoRobotFunctions.setGyroRotatePID(0.035, 0.0001, 0.000093);
         autoRobotFunctions.setGyroRotatePID(0.032, 0.0009, 0.0045);
-        autoRobotFunctions.setColorPID(0.018, 0.05, 0.00203);
+        autoRobotFunctions.setColorPID(0.025, 0.05, 0.002);
 
         appContext = hardwareMap.appContext;
         whiteThreshold = robot.sharedPref.getInt(appContext.getString(R.string.White_Threshold), 45);
@@ -54,6 +54,7 @@ public class AutoRed3 extends LinearOpMode {
 
         //wait for start of the match
         waitForStart();
+        autoRobotFunctions.resetGyroAngle();
 
         robot.robotForward();
         autoRobotFunctions.runWithEncoders(500, 1.0);
@@ -67,9 +68,8 @@ public class AutoRed3 extends LinearOpMode {
 
             autoRobotFunctions.runWithEncoders(300, 1.0);
 
-            autoRobotFunctions.MRRotate(75, TOLERANCE_DEGREES,
+            autoRobotFunctions.MRRotate(70, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
-
 
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,
                     AutoRobotFunctions.StopConditions.BUTTON, AutoRobotFunctions.LineSide.RIGHT);
@@ -100,7 +100,7 @@ public class AutoRed3 extends LinearOpMode {
 
             autoRobotFunctions.runWithEncoders(200, 1.0);
 
-            autoRobotFunctions.MRRotate(75, TOLERANCE_DEGREES,
+            autoRobotFunctions.MRRotate(65, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
 
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE, MAX_OUTPUT_LINE, 0,

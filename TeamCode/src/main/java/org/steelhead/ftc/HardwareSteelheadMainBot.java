@@ -176,13 +176,14 @@ public class HardwareSteelheadMainBot {
         if (state) {
             double batVoltage = batVolt.getVoltage();
             //The constant changes how high it shoots
-            double motorPercent = (7/batVoltage);
+            double motorPercent = (6/batVoltage);
+
             if (motorPercent > 1) {
                 shooterPower(1);
             } else {
                 shooterPower(motorPercent);
             }
-          //  Log.i(TAG, String.format("%f2.2, %f2.2", batVoltage, motorPercent));
+          //Log.i(TAG, String.format("%f2.2, %f2.2", batVoltage, motorPercent));
             return motorPercent;
         } else {
             shooterPower(0);

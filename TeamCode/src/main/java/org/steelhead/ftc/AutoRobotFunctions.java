@@ -112,9 +112,10 @@ public class AutoRobotFunctions {
         TAG += logTag;
 
         gyro.calibrate();
-        while (gyro.isCalibrating() && !currentOpMode.isStopRequested()) {
-            currentOpMode.telemetry.addData("Gyro", "Calibrating. Do Not Move!!");
-            currentOpMode.telemetry.update();
+        currentOpMode.telemetry.addData("Gyro", "Calibrating. Do Not Move!!");
+        currentOpMode.telemetry.update();
+        while (!currentOpMode.isStopRequested() && gyro.isCalibrating()) {
+            currentOpMode.idle();
         }
 
         currentOpMode.telemetry.addData("Gyro", "Calibration Complete");
@@ -151,6 +152,7 @@ public class AutoRobotFunctions {
                     currentOpMode.telemetry.addData("Output", output);
                     if (rotateTime.milliseconds() > 4000) {
                         currentOpMode.telemetry.addData(">", "reevaluate your life choices!");
+                        Log.i(TAG + ":Rotate", "Rotate Timed out!!");
                         rotationComplete = true;
                     }
                 }
@@ -179,7 +181,7 @@ public class AutoRobotFunctions {
         robot.enableEncoders(true);
 
         GyroPIDController pidController = new GyroPIDController(this.gyro, degree, tolerance,
-                TAG + "Drive Straight:");
+                TAG + ":Drive Straight");
         pidController.setPID(gyroDriveKP, gyroDriveKI, gyroDriveKD);
         pidController.enable();
 
@@ -424,7 +426,7 @@ public class AutoRobotFunctions {
                               double maxOutputVal, double tolerance,
                               StopConditions stopConditions, LineSide lineSide) {
         ColorPIDController pidController = new ColorPIDController(this.color,
-                threshHoldLow, threshHoldHigh, TAG + "Line Follow:");
+                threshHoldLow, threshHoldHigh, TAG + ":Line Follow");
         pidController.setPID(colorKP, colorKI, colorKD);
         pidController.setTolerance(tolerance);
         pidController.enable();
@@ -564,6 +566,11 @@ public class AutoRobotFunctions {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    //gyro z axis reset function
+    public void resetGyroAngle() {
+        gyro.resetZAxisIntegrator();
     }
 
     @Deprecated

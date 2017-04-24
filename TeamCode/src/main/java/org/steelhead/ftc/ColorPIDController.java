@@ -18,7 +18,7 @@ public class ColorPIDController {
     @Deprecated
     private boolean isOutputAvailable = false;
 
-    private double output;
+    private volatile double output = 0;
     private boolean isActive = true;
     private double kp;
     private double ki;

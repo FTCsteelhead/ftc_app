@@ -16,7 +16,7 @@ public class GyroPIDController {
     private Thread pidThread;
     private int offsetValue;
 
-    private volatile double output;
+    private volatile double output = 0;
     private boolean isActive = true;
     private double kp;
     private double ki;
@@ -67,7 +67,8 @@ public class GyroPIDController {
 
                     if (logRate.milliseconds() >= 500) {
                         logRate.reset();
-                        Log.i(TAG, String.format("YAW: %d | OUTPUT: %f", angle, output));
+                        Log.i(TAG, String.format("YAW: %d | OUTPUT: %f", gyro.getIntegratedZValue(),
+                                output));
                     }
 
                     //Wait for the sensor to gather new values

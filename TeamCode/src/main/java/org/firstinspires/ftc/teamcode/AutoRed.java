@@ -54,6 +54,7 @@ public class AutoRed extends LinearOpMode {
 
         //wait for start of the match
         waitForStart();
+        autoRobotFunctions.resetGyroAngle();
 
         robot.robotForward();
         autoRobotFunctions.runWithEncoders(500, 1.0);
@@ -93,11 +94,11 @@ public class AutoRed extends LinearOpMode {
 
             robot.robotForward();
 
-            autoRobotFunctions.MRRotate(23, TOLERANCE_DEGREES,
+            autoRobotFunctions.MRRotate(22, TOLERANCE_DEGREES,
                     MIN_OUTPUT_ROTATE, MAX_OUTPUT_ROTATE);
-            autoRobotFunctions.MRDriveStraight(23, 0.75,
-                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 3400, 0.10,
-                    AutoRobotFunctions.StopConditions.COLOR, 20, -1);
+            autoRobotFunctions.MRDriveStraight(22, 0.75,
+                    MIN_OUTPUT_DRIVE, MAX_OUTPUT_DRIVE, TOLERANCE_DEGREES, 0.0005, 4000, 0.20,
+                    AutoRobotFunctions.StopConditions.COLOR, 25, -1);
             autoRobotFunctions.PIDLineFollow(blackColor, whiteThreshold, 0.20, MIN_OUTPUT_LINE,
                     MAX_OUTPUT_LINE, 0, AutoRobotFunctions.StopConditions.BUTTON,
                     AutoRobotFunctions.LineSide.RIGHT);

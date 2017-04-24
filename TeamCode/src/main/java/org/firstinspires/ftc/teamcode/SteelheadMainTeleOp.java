@@ -135,10 +135,10 @@ public class SteelheadMainTeleOp extends OpMode {
                 robot.shooterServoDown(true);
 
             if (gamepad2.y ) {
-                robot.lifterMotor.setPower(.6);
+                robot.lifterMotor.setPower(0.7);
                 lifterActive = true;
             } else if (gamepad2.x) {
-                robot.lifterMotor.setPower(-0.6);
+                robot.lifterMotor.setPower(-0.7);
                 lifterActive = false;
             }
             else {
